@@ -1,0 +1,1 @@
+The designsystem for Hippo Applications, consistent of beautiful made UI elements
