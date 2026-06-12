@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "previews": [
+    {
+      "id": "package:hippo_ui_codegen_example/button_preview.dart#ButtonPreview",
+      "targetName": "ButtonPreview",
+      "name": "Button",
+      "path": "Actions/Button",
+      "options": [
+        {
+          "key": "label",
+          "type": "text",
+          "defaultValue": "Continue"
+        },
+        {
+          "key": "count",
+          "type": "integer",
+          "defaultValue": 2,
+          "min": 1,
+          "max": 5,
+          "step": 1
+        }
+      ],
+      "description": "Primary action surface."
+    },
+    {
+      "id": "package:hippo_ui_codegen_example/jaspr_preview.dart#JasprButtonPreview",
+      "targetName": "JasprButtonPreview",
+      "name": "Jaspr button",
+      "path": "Actions/Button",
+      "options": [
+        {
+          "key": "label",
+          "type": "text",
+          "defaultValue": "Continue"
+        }
+      ],
+      "description": "Primary action surface rendered with Jaspr."
+    }
+  ]
+}

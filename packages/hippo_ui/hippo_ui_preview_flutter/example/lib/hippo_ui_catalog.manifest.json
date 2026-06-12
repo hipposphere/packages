@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "previews": [
+    {
+      "id": "package:hippo_ui_preview_flutter_example/button_preview.dart#PreviewButton",
+      "targetName": "PreviewButton",
+      "name": "Demo button",
+      "path": "Components/Button",
+      "options": [
+        {
+          "key": "label",
+          "type": "text",
+          "label": "Label",
+          "defaultValue": "Continue"
+        },
+        {
+          "key": "count",
+          "type": "integer",
+          "label": "Count",
+          "defaultValue": 2,
+          "min": 0,
+          "max": 8,
+          "step": 1
+        },
+        {
+          "key": "prominent",
+          "type": "boolean",
+          "label": "Prominent",
+          "defaultValue": true
+        }
+      ],
+      "description": "A configurable button preview rendered from the generated catalog."
+    },
+    {
+      "id": "package:hippo_ui_preview_flutter_example/button_preview.dart#PreviewStatusCard",
+      "targetName": "PreviewStatusCard",
+      "name": "Status card",
+      "path": "Components/Card",
+      "options": [
+        {
+          "key": "title",
+          "type": "text",
+          "label": "Title",
+          "defaultValue": "Pipeline health"
+        },
+        {
+          "key": "value",
+          "type": "text",
+          "label": "Value",
+          "defaultValue": "98%"
+        },
+        {
+          "key": "warning",
+          "type": "boolean",
+          "label": "Warning",
+          "defaultValue": false
+        },
+        {
+          "key": "alignment",
+          "type": "text",
+          "label": "Alignment",
+          "defaultValue": "center",
+          "values": [
+            {
+              "value": "topLeft",
+              "label": "Top left"
+            },
+            {
+              "value": "topCenter",
+              "label": "Top center"
+            },
+            {
+              "value": "topRight",
+              "label": "Top right"
+            },
+            {
+              "value": "centerLeft",
+              "label": "Center left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "centerRight",
+              "label": "Center right"
+            },
+            {
+              "value": "bottomLeft",
+              "label": "Bottom left"
+            },
+            {
+              "value": "bottomCenter",
+              "label": "Bottom center"
+            },
+            {
+              "value": "bottomRight",
+              "label": "Bottom right"
+            }
+          ]
+        },
+        {
+          "key": "mainAxisAlignment",
+          "type": "enum",
+          "label": "Layout",
+          "defaultValue": "start",
+          "enumType": "MainAxisAlignment",
+          "values": [
+            {
+              "value": "start",
+              "label": "Start"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "end",
+              "label": "End"
+            },
+            {
+              "value": "spaceBetween",
+              "label": "Space between"
+            }
+          ]
+        }
+      ],
+      "description": "A compact status card preview with configurable tone and value."
+    }
+  ]
+}

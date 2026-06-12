@@ -16,7 +16,8 @@ dependency_overrides:
   test_api: 0.7.12
 
 workspace:
-  - packages/*
+  - packages/hippo_ui/*
+  - packages/hippo_core/*
 
 melos:
   ide:

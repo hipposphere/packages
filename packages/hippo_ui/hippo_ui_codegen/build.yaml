@@ -1,0 +1,7 @@
+builders:
+  hippo_ui_catalog:
+    import: "package:hippo_ui_codegen/builder.dart"
+    builder_factories: ["hippoUiCatalogBuilder"]
+    build_extensions: {"$lib$": ["hippo_ui_catalog.g.dart", "hippo_ui_catalog.manifest.json"]}
+    auto_apply: dependents
+    build_to: source

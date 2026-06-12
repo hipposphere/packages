@@ -1,9 +1,0 @@
-name: hippo_workspace_anchor
-description: Private placeholder package that keeps the workspace valid before real packages are added.
-publish_to: none
-version: 0.1.0
-
-environment:
-  sdk: ">=3.12.0 <4.0.0"
-
-resolution: workspace

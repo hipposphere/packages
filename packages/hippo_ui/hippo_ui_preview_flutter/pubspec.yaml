@@ -1,0 +1,31 @@
+name: hippo_ui_preview_flutter
+description: Flutter Hipposphere UI preview package shell.
+version: 0.1.1
+homepage: https://hippolabs.org
+publish_to: "https://registry.hippolabs.org/pub/internal-pub/"
+resolution: workspace
+
+environment:
+  sdk: ">=3.12.0 < 4.0.0"
+  flutter: ">=3.44.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  hippo_core:
+    hosted: https://registry.hippolabs.org/pub/internal-pub/
+    version: ^0.1.0
+  hippo_core_flutter:
+    hosted: https://registry.hippolabs.org/pub/internal-pub/
+    version: ^0.1.0
+  hippo_ui_flutter:
+    hosted: https://registry.hippolabs.org/pub/internal-pub/
+    version: ^0.1.0
+  hippo_ui_preview:
+    hosted: https://registry.hippolabs.org/pub/internal-pub/
+    version: ^0.1.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
