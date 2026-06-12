@@ -1,0 +1,49 @@
+name: hippo_packages_workspace
+description: A Melos workspace for Hipposphere packages.
+publish_to: none
+homepage: https://hippolabs.org
+version: 0.1.0
+
+environment:
+  sdk: ">=3.12.0 <4.0.0"
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  melos: ^7.8.2
+
+dependency_overrides:
+  cli_util: 0.5.1
+  test_api: 0.7.12
+
+workspace:
+  - packages/*
+
+melos:
+  ide:
+    intellij:
+      enabled: false
+  scripts:
+    format:
+      run: dart format .
+      description: Format all Dart files in the repository
+    check-format:
+      run: dart format --set-exit-if-changed .
+      description: Check if all Dart files are formatted
+    analyze:
+      run: dart analyze
+      description: Run Dart analyzer to check for lint errors
+    test:
+      run: melos exec --dir-exists=test -- flutter test
+      description: Run all tests
+    ci:
+      run: |
+        melos run check-format
+        melos run analyze
+        melos run test
+      description: Check formatting, analyze for lint errors, and run tests
+    license-add-headers:
+      run: npx -y license-check-and-add add
+      description: Add/update license headers across the repo
+    license-check-headers:
+      run: npx -y license-check-and-add check
+      description: Fail if headers are missing
