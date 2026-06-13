@@ -214,7 +214,7 @@ packages:
     description:
       name: dart_edge_core
       sha256: b5407398ae118d95ebf564a598127230001a469fcf8c80782499baf0d5c259d6
-      url: "https://pub.hippolabs.org/pub/internal-pub/"
+      url: "https://registry.hippolabs.org/pub/internal-pub/"
     source: hosted
     version: "0.3.25"
   dart_style:
