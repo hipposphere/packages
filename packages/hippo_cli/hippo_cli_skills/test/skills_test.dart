@@ -22,6 +22,17 @@ description: Test skill.
     expect(result.success, isTrue);
   });
 
+  test('resolves bare skill names relative to the skills directory', () async {
+    final repo = await Directory.systemTemp.createTemp('hippo_skills_repo_');
+    addTearDown(() => repo.delete(recursive: true));
+    final skill = Directory('${repo.path}/skills/hippo-dev')..createSync(recursive: true);
+    await File('${skill.path}/SKILL.md').writeAsString('');
+
+    final dirs = resolveSkillDirs(repo, ['hippo-dev']);
+
+    expect(dirs.single.path, skill.path);
+  });
+
   test('installs and uninstalls skill symlinks safely', () async {
     final repo = await Directory.systemTemp.createTemp('hippo_skills_repo_');
     final target = await Directory.systemTemp.createTemp('hippo_skills_target_');

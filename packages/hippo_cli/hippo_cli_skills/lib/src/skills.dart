@@ -211,7 +211,13 @@ List<Directory> resolveSkillDirs(Directory repoRoot, List<String> skillPaths) {
   }
   return [
     for (final path in skillPaths)
-      Directory(p.isAbsolute(path) ? path : p.join(repoRoot.path, path)),
+      Directory(
+        p.isAbsolute(path)
+            ? path
+            : path.contains(p.separator)
+            ? p.join(repoRoot.path, path)
+            : p.join(repoRoot.path, 'skills', path),
+      ),
   ];
 }
 
