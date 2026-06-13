@@ -30,7 +30,7 @@ Recommended installation should download the latest release asset for the host
 platform from `https://storage.hippolabs.org/` and place it on `PATH`.
 
 ```sh
-curl -fsSL https://hipposphere.dev/install.sh | sh
+curl -fsSL https://storage.hippolabs.org/install-hippo-cli.sh | sh
 ```
 
 Windows:
@@ -103,6 +103,15 @@ The release workflow should compile with `dart compile exe`, test the produced
 binary with `hippo self version`, generate shell completions, sign or notarize
 where needed, publish checksums, and upload everything under the public
 `storage.hippolabs.org/hippo-cli-...` path.
+
+The release workflow also publishes the install script and latest-version
+metadata:
+
+```text
+https://storage.hippolabs.org/install-hippo-cli.sh
+https://storage.hippolabs.org/hippo-cli-latest.txt
+https://storage.hippolabs.org/hippo-cli-latest.json
+```
 
 ## Command Shape
 

@@ -189,14 +189,58 @@ jobs:
           python3 -m pip install --user awscli
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
-      - name: Publish artifacts
+      - name: Generate latest metadata
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+          TARGETS: ${{ needs.prepare.outputs.targets }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp tool/install-hippo-cli.sh dist/artifacts/install-hippo-cli.sh
+          printf '%s\n' "$VERSION" > dist/artifacts/hippo-cli-latest.txt
+          jq -n \
+            --arg version "$VERSION" \
+            --arg baseUrl "https://storage.hippolabs.org" \
+            --argjson targets "$TARGETS" \
+            '{
+              version: $version,
+              baseUrl: $baseUrl,
+              artifacts: ($targets | map({
+                os,
+                arch,
+                archive,
+                url: ($baseUrl + "/" + .archive),
+                checksumUrl: ($baseUrl + "/" + .archive + ".sha256")
+              }))
+            }' > dist/artifacts/hippo-cli-latest.json
+
+      - name: Publish versioned artifacts
         shell: bash
         run: |
           set -euo pipefail
           aws s3 sync dist/artifacts "s3://$STORAGE_BUCKET/" \
             --endpoint-url "$S3_ENDPOINT_URL" \
             --acl public-read \
-            --cache-control "public, max-age=31536000, immutable"
+            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "hippo-cli-latest.*" \
+            --exclude "install-hippo-cli.sh"
+
+      - name: Publish latest metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          aws s3 cp dist/artifacts/hippo-cli-latest.txt "s3://$STORAGE_BUCKET/hippo-cli-latest.txt" \
+            --endpoint-url "$S3_ENDPOINT_URL" \
+            --acl public-read \
+            --cache-control "public, max-age=300"
+          aws s3 cp dist/artifacts/hippo-cli-latest.json "s3://$STORAGE_BUCKET/hippo-cli-latest.json" \
+            --endpoint-url "$S3_ENDPOINT_URL" \
+            --acl public-read \
+            --cache-control "public, max-age=300"
+          aws s3 cp dist/artifacts/install-hippo-cli.sh "s3://$STORAGE_BUCKET/install-hippo-cli.sh" \
+            --endpoint-url "$S3_ENDPOINT_URL" \
+            --acl public-read \
+            --cache-control "public, max-age=300"
 
       - name: Print public URLs
         shell: bash
