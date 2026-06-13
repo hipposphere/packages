@@ -79,15 +79,6 @@ jobs:
                 archive: ("hippo-cli-" + $version + "-macos-arm64.tar.gz")
               },
               {
-                os: "macos",
-                arch: "x64",
-                runner: "macos-13",
-                executable: "hippo",
-                compile_args: "",
-                smoke_test: true,
-                archive: ("hippo-cli-" + $version + "-macos-x64.tar.gz")
-              },
-              {
                 os: "windows",
                 arch: "x64",
                 runner: "windows-latest",

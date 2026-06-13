@@ -51,12 +51,6 @@ const hippoCliReleaseTargets = <HippoCliReleaseTarget>[
     executableName: 'hippo',
   ),
   HippoCliReleaseTarget(
-    os: 'macos',
-    arch: 'x64',
-    archiveExtension: 'tar.gz',
-    executableName: 'hippo',
-  ),
-  HippoCliReleaseTarget(
     os: 'windows',
     arch: 'x64',
     archiveExtension: 'zip',

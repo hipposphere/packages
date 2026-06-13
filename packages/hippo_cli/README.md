@@ -74,7 +74,6 @@ Every Hippo CLI release should upload public artifacts to
 https://storage.hippolabs.org/hippo-cli-<version>-linux-x64.tar.gz
 https://storage.hippolabs.org/hippo-cli-<version>-linux-arm64.tar.gz
 https://storage.hippolabs.org/hippo-cli-<version>-macos-arm64.tar.gz
-https://storage.hippolabs.org/hippo-cli-<version>-macos-x64.tar.gz
 https://storage.hippolabs.org/hippo-cli-<version>-windows-x64.zip
 ```
 
@@ -86,7 +85,6 @@ Minimum native targets:
 - Linux x64
 - Linux arm64
 - macOS Apple Silicon
-- macOS Intel
 - Windows x64
 
 Each archive contains:
