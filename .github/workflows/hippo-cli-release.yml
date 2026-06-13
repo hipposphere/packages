@@ -221,12 +221,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          aws s3 sync dist/artifacts "s3://$STORAGE_BUCKET/" \
-            --endpoint-url "$S3_ENDPOINT_URL" \
-            --acl public-read \
-            --cache-control "public, max-age=31536000, immutable" \
-            --exclude "hippo-cli-latest.*" \
-            --exclude "install-hippo-cli.sh"
+          find dist/artifacts -type f \
+            ! -name 'hippo-cli-latest.*' \
+            ! -name 'install-hippo-cli.sh' \
+            -print0 | while IFS= read -r -d '' file; do
+              name="$(basename "$file")"
+              aws s3 cp "$file" "s3://$STORAGE_BUCKET/$name" \
+                --endpoint-url "$S3_ENDPOINT_URL" \
+                --acl public-read \
+                --cache-control "public, max-age=31536000, immutable"
+            done
 
       - name: Publish latest metadata
         shell: bash
