@@ -9,7 +9,7 @@ void main() {
     addTearDown(() => dir.delete(recursive: true));
     await File('${dir.path}/docker.yaml').writeAsString('''
 source: https://example.com/repo
-flutter_version: "3.44.0"
+flutter_version: "3.44.2"
 images:
   server:
     type: dart_server

@@ -465,7 +465,7 @@ OK   hippo              0.4.0
 OK   workspace          Hipposphere package workspace
 OK   skills repo        /Users/felix/Projects/Hipposphere/skills
 WARN docker             not running
-OK   flutter            3.44.0
+OK   flutter            3.44.2
 ```
 
 ## Release Workflow

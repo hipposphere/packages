@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 env:
-  DART_VERSION: 3.12.2
+  FLUTTER_VERSION: 3.44.2
   S3_ENDPOINT_URL: https://storage.hippolabs.org
   STORAGE_BUCKET: artifacts
   AWS_ACCESS_KEY_ID: ${{ secrets.STORAGE_ACCESS_KEY_ID }}
@@ -56,13 +56,17 @@ jobs:
                 arch: "x64",
                 runner: "ubuntu-latest",
                 executable: "hippo",
+                compile_args: "",
+                smoke_test: true,
                 archive: ("hippo-cli-" + $version + "-linux-x64.tar.gz")
               },
               {
                 os: "linux",
                 arch: "arm64",
-                runner: "ubuntu-24.04-arm",
+                runner: "ubuntu-latest",
                 executable: "hippo",
+                compile_args: "--target-os linux --target-arch arm64",
+                smoke_test: false,
                 archive: ("hippo-cli-" + $version + "-linux-arm64.tar.gz")
               },
               {
@@ -70,6 +74,8 @@ jobs:
                 arch: "arm64",
                 runner: "macos-14",
                 executable: "hippo",
+                compile_args: "",
+                smoke_test: true,
                 archive: ("hippo-cli-" + $version + "-macos-arm64.tar.gz")
               },
               {
@@ -77,6 +83,8 @@ jobs:
                 arch: "x64",
                 runner: "macos-13",
                 executable: "hippo",
+                compile_args: "",
+                smoke_test: true,
                 archive: ("hippo-cli-" + $version + "-macos-x64.tar.gz")
               },
               {
@@ -84,6 +92,8 @@ jobs:
                 arch: "x64",
                 runner: "windows-latest",
                 executable: "hippo.exe",
+                compile_args: "",
+                smoke_test: true,
                 archive: ("hippo-cli-" + $version + "-windows-x64.zip")
               }
             ]
@@ -104,13 +114,17 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Set up Dart
-        uses: dart-lang/setup-dart@v1
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
-          sdk: ${{ env.DART_VERSION }}
+          channel: "any"
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+          cache-key: ${{ runner.OS }}-flutter-${{ env.FLUTTER_VERSION }}
+          pub-cache-key: ${{ runner.OS }}-pub-${{ env.FLUTTER_VERSION }}
 
       - name: Resolve workspace
-        run: dart pub get --directory packages/hippo_cli/hippo_cli
+        run: flutter pub get
 
       - name: Compile Hippo CLI
         shell: bash
@@ -118,9 +132,11 @@ jobs:
           set -euo pipefail
           mkdir -p dist/package
           dart compile exe packages/hippo_cli/hippo_cli/bin/hippo.dart \
+            ${{ matrix.target.compile_args }} \
             -o "dist/package/${{ matrix.target.executable }}"
 
       - name: Smoke test binary
+        if: ${{ matrix.target.smoke_test }}
         shell: bash
         run: '"dist/package/${{ matrix.target.executable }}" self version >/dev/null'
 
