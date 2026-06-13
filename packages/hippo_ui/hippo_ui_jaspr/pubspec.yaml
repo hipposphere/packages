@@ -10,7 +10,7 @@ environment:
 
 dependencies:
   hippo_ui:
-    hosted: https://pub.hippolabs.org/pub/internal-pub/
+    hosted: https://registry.hippolabs.org/pub/internal-pub
     version: ^0.1.0
 
 dev_dependencies:

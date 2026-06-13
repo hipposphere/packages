@@ -2,7 +2,7 @@ name: hippo_cli_core
 description: Core command runner interfaces and shared CLI classes for Hipposphere tooling.
 version: 0.1.0
 homepage: https://hippolabs.org
-publish_to: "https://pub.hippolabs.org/pub/internal-pub/"
+publish_to: "https://registry.hippolabs.org/pub/internal-pub"
 resolution: workspace
 
 environment:

@@ -2,7 +2,7 @@ name: hippo_ui
 description: Framework-neutral widget preview annotations for Hipposphere UI tooling.
 version: 0.1.2
 homepage: https://hippolabs.org
-publish_to: "https://pub.hippolabs.org/pub/internal-pub/"
+publish_to: "https://registry.hippolabs.org/pub/internal-pub"
 resolution: workspace
 
 environment:

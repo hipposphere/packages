@@ -2,7 +2,7 @@ name: hippo_ui_preview
 description: Framework-neutral Hipposphere UI preview package shell.
 version: 0.1.2
 homepage: https://hippolabs.org
-publish_to: "https://pub.hippolabs.org/pub/internal-pub/"
+publish_to: "https://registry.hippolabs.org/pub/internal-pub"
 resolution: workspace
 
 environment:
@@ -10,13 +10,13 @@ environment:
 
 dependencies:
   dart_edge_core:
-    hosted: https://registry.hippolabs.org/pub/internal-pub/
+    hosted: https://registry.hippolabs.org/pub/internal-pub
     version: ^0.3.0
   hippo_ui:
-    hosted: https://pub.hippolabs.org/pub/internal-pub/
+    hosted: https://registry.hippolabs.org/pub/internal-pub
     version: ^0.1.0
   hippo_core:
-    hosted: https://pub.hippolabs.org/pub/internal-pub/
+    hosted: https://registry.hippolabs.org/pub/internal-pub
     version: ^0.1.0
 
 dev_dependencies:

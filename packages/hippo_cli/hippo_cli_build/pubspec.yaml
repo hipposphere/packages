@@ -2,7 +2,7 @@ name: hippo_cli_build
 description: Build support package for the Hipposphere CLI.
 version: 0.1.0
 homepage: https://hippolabs.org
-publish_to: "https://pub.hippolabs.org/pub/internal-pub/"
+publish_to: "https://registry.hippolabs.org/pub/internal-pub"
 resolution: workspace
 
 environment:
@@ -14,7 +14,7 @@ dev_dependencies:
 
 dependencies:
   hippo_cli_core:
-    hosted: https://pub.hippolabs.org/pub/internal-pub/
+    hosted: https://registry.hippolabs.org/pub/internal-pub
     version: ^0.1.0
   path: ^1.9.1
   yaml: ^3.1.3
