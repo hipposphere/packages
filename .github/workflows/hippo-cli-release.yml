@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 env:
-  FLUTTER_VERSION: 3.44.0
+  DART_VERSION: 3.12.2
   S3_ENDPOINT_URL: https://storage.hippolabs.org
   STORAGE_BUCKET: artifacts
   AWS_ACCESS_KEY_ID: ${{ secrets.STORAGE_ACCESS_KEY_ID }}
@@ -104,17 +104,13 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
         with:
-          channel: "any"
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          cache: true
-          cache-key: ${{ runner.OS }}-flutter-${{ env.FLUTTER_VERSION }}
-          pub-cache-key: ${{ runner.OS }}-pub-${{ env.FLUTTER_VERSION }}
+          sdk: ${{ env.DART_VERSION }}
 
       - name: Resolve workspace
-        run: flutter pub get
+        run: dart pub get --directory packages/hippo_cli/hippo_cli
 
       - name: Compile Hippo CLI
         shell: bash
@@ -150,12 +146,13 @@ jobs:
           Compress-Archive -Path dist/package/* -DestinationPath "dist/artifacts/${{ matrix.target.archive }}"
 
       - name: Checksum artifact
-        shell: bash
+        shell: pwsh
         run: |
-          (
-            cd dist/artifacts
-            shasum -a 256 "${{ matrix.target.archive }}" > "${{ matrix.target.archive }}.sha256"
-          )
+          $archive = "${{ matrix.target.archive }}"
+          $artifactPath = Join-Path "dist/artifacts" $archive
+          $checksumPath = "$artifactPath.sha256"
+          $hash = (Get-FileHash -Algorithm SHA256 -Path $artifactPath).Hash.ToLowerInvariant()
+          "$hash  $archive" | Out-File -FilePath $checksumPath -Encoding ascii -NoNewline
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
