@@ -1,0 +1,199 @@
+name: Release Hippo CLI
+
+on:
+  push:
+    tags:
+      - "hippo-cli-v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Optional Hippo CLI version. Defaults to packages/hippo_cli/hippo_cli/pubspec.yaml.
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+env:
+  S3_ENDPOINT_URL: https://storage.hippolabs.org
+  STORAGE_BUCKET: artifacts
+  AWS_ACCESS_KEY_ID: ${{ secrets.STORAGE_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.STORAGE_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: auto
+
+jobs:
+  prepare:
+    name: Prepare release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.plan.outputs.version }}
+      targets: ${{ steps.plan.outputs.targets }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Resolve release metadata
+        id: plan
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          package_version="$(sed -nE 's/^version:[[:space:]]*([^[:space:]]+).*/\1/p' packages/hippo_cli/hippo_cli/pubspec.yaml)"
+          version="${INPUT_VERSION:-$package_version}"
+
+          if [[ "${GITHUB_REF_TYPE:-}" == "tag" && "${GITHUB_REF_NAME:-}" != "hippo-cli-v$version" ]]; then
+            echo "::error::Tag ${GITHUB_REF_NAME:-unknown} does not match hippo_cli package version $version."
+            exit 1
+          fi
+
+          targets="$(jq -cn '
+            [
+              {
+                os: "linux",
+                arch: "x64",
+                runner: "ubuntu-latest",
+                executable: "hippo",
+                archive: ("hippo-cli-" + $version + "-linux-x64.tar.gz")
+              },
+              {
+                os: "linux",
+                arch: "arm64",
+                runner: "ubuntu-24.04-arm",
+                executable: "hippo",
+                archive: ("hippo-cli-" + $version + "-linux-arm64.tar.gz")
+              },
+              {
+                os: "macos",
+                arch: "arm64",
+                runner: "macos-14",
+                executable: "hippo",
+                archive: ("hippo-cli-" + $version + "-macos-arm64.tar.gz")
+              },
+              {
+                os: "macos",
+                arch: "x64",
+                runner: "macos-13",
+                executable: "hippo",
+                archive: ("hippo-cli-" + $version + "-macos-x64.tar.gz")
+              },
+              {
+                os: "windows",
+                arch: "x64",
+                runner: "windows-latest",
+                executable: "hippo.exe",
+                archive: ("hippo-cli-" + $version + "-windows-x64.zip")
+              }
+            ]
+          ' --arg version "$version")"
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "targets=$targets" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: ${{ matrix.target.os }}-${{ matrix.target.arch }}
+    needs: prepare
+    runs-on: ${{ matrix.target.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ${{ fromJson(needs.prepare.outputs.targets) }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Resolve workspace
+        run: dart pub get
+
+      - name: Compile Hippo CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist/package
+          dart compile exe packages/hippo_cli/hippo_cli/bin/hippo.dart \
+            -o "dist/package/${{ matrix.target.executable }}"
+
+      - name: Smoke test binary
+        shell: bash
+        run: '"dist/package/${{ matrix.target.executable }}" self version >/dev/null'
+
+      - name: Add release metadata
+        shell: bash
+        run: |
+          cp packages/hippo_cli/README.md dist/package/README.md
+          printf '%s\n' '${{ needs.prepare.outputs.version }}' > dist/package/VERSION
+
+      - name: Archive Unix artifact
+        if: ${{ matrix.target.os != 'windows' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist/artifacts
+          tar -C dist/package -czf "dist/artifacts/${{ matrix.target.archive }}" .
+
+      - name: Archive Windows artifact
+        if: ${{ matrix.target.os == 'windows' }}
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist/artifacts | Out-Null
+          Compress-Archive -Path dist/package/* -DestinationPath "dist/artifacts/${{ matrix.target.archive }}"
+
+      - name: Checksum artifact
+        shell: bash
+        run: |
+          (
+            cd dist/artifacts
+            shasum -a 256 "${{ matrix.target.archive }}" > "${{ matrix.target.archive }}.sha256"
+          )
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target.archive }}
+          path: dist/artifacts/*
+          if-no-files-found: error
+
+  publish:
+    name: Publish to storage.hippolabs.org
+    needs:
+      - prepare
+      - build
+    runs-on: ubuntu-latest
+    environment: cli-release
+    steps:
+      - name: Download workflow artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist/artifacts
+          merge-multiple: true
+
+      - name: Install AWS CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user awscli
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Publish artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          aws s3 sync dist/artifacts "s3://$STORAGE_BUCKET/" \
+            --endpoint-url "$S3_ENDPOINT_URL" \
+            --acl public-read \
+            --cache-control "public, max-age=31536000, immutable"
+
+      - name: Print public URLs
+        shell: bash
+        run: |
+          set -euo pipefail
+          find dist/artifacts -type f | sort | while read -r file; do
+            name="$(basename "$file")"
+            echo "https://storage.hippolabs.org/$name"
+          done

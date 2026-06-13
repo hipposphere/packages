@@ -1,0 +1,12 @@
+name: hippo_repo_analyzer
+description: Repository analysis package for Hipposphere development tooling.
+version: 0.1.0
+homepage: https://hippolabs.org
+publish_to: "https://pub.hippolabs.org/pub/internal-pub/"
+resolution: workspace
+
+environment:
+  sdk: ">=3.12.0 < 4.0.0"
+
+dev_dependencies:
+  lints: ^6.1.0

@@ -34,7 +34,7 @@ jobs:
         env:
           PUB_TOKEN: ${{ secrets.PUB_CREDENTIALS }}
         run: |
-          echo "$PUB_TOKEN" | dart pub token add https://registry.hippolabs.org/pub/internal-pub/
+          echo "$PUB_TOKEN" | dart pub token add https://pub.hippolabs.org/pub/internal-pub/
 
       - name: Bootstrap workspace
         run: dart pub global run melos bootstrap

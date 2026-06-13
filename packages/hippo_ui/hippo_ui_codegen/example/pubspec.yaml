@@ -8,15 +8,15 @@ environment:
 
 dependencies:
   hippo_ui:
-    hosted: https://registry.hippolabs.org/pub/internal-pub/
+    hosted: https://pub.hippolabs.org/pub/internal-pub/
     version: ^0.1.0
   hippo_ui_jaspr:
-    hosted: https://registry.hippolabs.org/pub/internal-pub/
+    hosted: https://pub.hippolabs.org/pub/internal-pub/
     version: ^0.1.0
 
 dev_dependencies:
   build_runner: ^2.15.0
   hippo_ui_codegen:
-    hosted: https://registry.hippolabs.org/pub/internal-pub/
+    hosted: https://pub.hippolabs.org/pub/internal-pub/
     version: ^0.1.0
   lints: ^6.1.0
