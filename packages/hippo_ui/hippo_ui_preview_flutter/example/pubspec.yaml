@@ -11,16 +11,16 @@ dependencies:
   flutter:
     sdk: flutter
   hippo_core_flutter:
-    hosted: https://registry.hippolabs.org/pub/internal-pub
+    hosted: https://pub.hippolabs.org
     version: ^0.1.0
   hippo_ui:
-    hosted: https://registry.hippolabs.org/pub/internal-pub
+    hosted: https://pub.hippolabs.org
     version: ^0.1.0
   hippo_ui_flutter:
-    hosted: https://registry.hippolabs.org/pub/internal-pub
+    hosted: https://pub.hippolabs.org
     version: ^0.1.0
   hippo_ui_preview_flutter:
-    hosted: https://registry.hippolabs.org/pub/internal-pub
+    hosted: https://pub.hippolabs.org
     version: ^0.1.0
 
 dev_dependencies:
@@ -28,6 +28,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   hippo_ui_codegen:
-    hosted: https://registry.hippolabs.org/pub/internal-pub
+    hosted: https://pub.hippolabs.org
     version: ^0.1.0
   flutter_lints: ^6.0.0
