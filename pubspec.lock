@@ -217,6 +217,46 @@ packages:
       url: "https://registry.hippolabs.org/pub/internal-pub/"
     source: hosted
     version: "0.3.25"
+  dart_edge_native_assets:
+    dependency: transitive
+    description:
+      name: dart_edge_native_assets
+      sha256: a57ad7766839737b1385fb18cf43ccb5292c3ff3536a455a500a47b156b28ce2
+      url: "https://registry.hippolabs.org/pub/internal-pub/"
+    source: hosted
+    version: "0.1.3"
+  dart_edge_sql:
+    dependency: transitive
+    description:
+      name: dart_edge_sql
+      sha256: "1f18dd545e3cfd7a29586f9433de266eb5e2c07c725336f2beb4523e91ca54ce"
+      url: "https://registry.hippolabs.org/pub/internal-pub/"
+    source: hosted
+    version: "0.3.24"
+  dart_edge_sql_codegen:
+    dependency: transitive
+    description:
+      name: dart_edge_sql_codegen
+      sha256: c188d014c60dcb38913be727d986b405c0f465c961c9e2c746d024a1d697ad4f
+      url: "https://registry.hippolabs.org/pub/internal-pub/"
+    source: hosted
+    version: "0.3.29"
+  dart_edge_sql_migrator:
+    dependency: transitive
+    description:
+      name: dart_edge_sql_migrator
+      sha256: b99e5b6bfa781f42a678e9cabe12dcca1fc569289a0ca0202a938c405f14ff16
+      url: "https://registry.hippolabs.org/pub/internal-pub/"
+    source: hosted
+    version: "0.3.16"
+  dart_edge_sql_pglite:
+    dependency: transitive
+    description:
+      name: dart_edge_sql_pglite
+      sha256: "15c0a7e57c37fcb8be3d7e810ab990921da4e7d97d6eadb81439102168f54f55"
+      url: "https://registry.hippolabs.org/pub/internal-pub/"
+    source: hosted
+    version: "0.1.11"
   dart_style:
     dependency: transitive
     description:
@@ -225,6 +265,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.9"
+  data_assets:
+    dependency: transitive
+    description:
+      name: data_assets
+      sha256: "8bfdbf25ec8a0f4b5a3c993042c4ab9996ba354f0b03d40f4e360f3730d71cae"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.20.0"
   fake_async:
     dependency: transitive
     description:
@@ -512,6 +560,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.5"
+  native_toolchain_rust:
+    dependency: transitive
+    description:
+      name: native_toolchain_rust
+      sha256: faa57d2258a3b0fd2a634054f54e4496c9fcbd971977e7d2b7e6916d56892857
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4+0"
   node_preamble:
     dependency: transitive
     description:
@@ -869,6 +925,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.18"
+  toml:
+    dependency: transitive
+    description:
+      name: toml
+      sha256: "35a35f782228656a2af31e8c73d1353cc4ef3d683fd68af1111b44631879c05e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.18.0"
   typed_data:
     dependency: transitive
     description:
