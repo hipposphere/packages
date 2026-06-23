@@ -1,7 +1,10 @@
 import 'package:dart_edge_core/dart_edge_core.dart';
+import 'user.g.dart';
 
-final class HippobaseAuthAccountRow implements JsonEncodable {
-  const HippobaseAuthAccountRow({
+extension type const AuthAccountId(String value) {}
+
+final class AuthAccountRow implements JsonEncodable {
+  const AuthAccountRow({
     required this.id,
     required this.accountId,
     required this.providerId,
@@ -17,54 +20,50 @@ final class HippobaseAuthAccountRow implements JsonEncodable {
     required this.updatedAt,
   });
 
-  factory HippobaseAuthAccountRow.fromSqlRow(SqlRow row, {String prefix = ''}) =>
-      HippobaseAuthAccountRow(
-        id: row.read<String>('${prefix}id'),
-        accountId: row.read<String>('${prefix}accountId'),
-        providerId: row.read<String>('${prefix}providerId'),
-        userId: row.read<String>('${prefix}userId'),
-        accessToken: row.readNullable<String>('${prefix}accessToken'),
-        refreshToken: row.readNullable<String>('${prefix}refreshToken'),
-        idToken: row.readNullable<String>('${prefix}idToken'),
-        accessTokenExpiresAt: switch (row.readNullable<Object?>('${prefix}accessTokenExpiresAt')) {
-          null => null,
-          final DateTime value => value,
-          final String value => DateTime.parse(value),
-          final value => value as DateTime,
-        },
-        refreshTokenExpiresAt: switch (row.readNullable<Object?>(
-          '${prefix}refreshTokenExpiresAt',
-        )) {
-          null => null,
-          final DateTime value => value,
-          final String value => DateTime.parse(value),
-          final value => value as DateTime,
-        },
-        scope: row.readNullable<String>('${prefix}scope'),
-        password: row.readNullable<String>('${prefix}password'),
-        createdAt: switch (row.read<Object?>('${prefix}createdAt')) {
-          final DateTime value => value,
-          final String value => DateTime.parse(value),
-          final value => value as DateTime,
-        },
-        updatedAt: switch (row.read<Object?>('${prefix}updatedAt')) {
-          final DateTime value => value,
-          final String value => DateTime.parse(value),
-          final value => value as DateTime,
-        },
-      );
+  factory AuthAccountRow.fromSqlRow(SqlRow row, {String prefix = ''}) => AuthAccountRow(
+    id: AuthAccountId(row.read<String>('${prefix}id')),
+    accountId: row.read<String>('${prefix}accountId'),
+    providerId: row.read<String>('${prefix}providerId'),
+    userId: AuthUserId(row.read<String>('${prefix}userId')),
+    accessToken: row.readNullable<String>('${prefix}accessToken'),
+    refreshToken: row.readNullable<String>('${prefix}refreshToken'),
+    idToken: row.readNullable<String>('${prefix}idToken'),
+    accessTokenExpiresAt: switch (row.readNullable<Object?>('${prefix}accessTokenExpiresAt')) {
+      null => null,
+      final DateTime value => value,
+      final String value => DateTime.parse(value),
+      final value => value as DateTime,
+    },
+    refreshTokenExpiresAt: switch (row.readNullable<Object?>('${prefix}refreshTokenExpiresAt')) {
+      null => null,
+      final DateTime value => value,
+      final String value => DateTime.parse(value),
+      final value => value as DateTime,
+    },
+    scope: row.readNullable<String>('${prefix}scope'),
+    password: row.readNullable<String>('${prefix}password'),
+    createdAt: switch (row.read<Object?>('${prefix}createdAt')) {
+      final DateTime value => value,
+      final String value => DateTime.parse(value),
+      final value => value as DateTime,
+    },
+    updatedAt: switch (row.read<Object?>('${prefix}updatedAt')) {
+      final DateTime value => value,
+      final String value => DateTime.parse(value),
+      final value => value as DateTime,
+    },
+  );
 
-  factory HippobaseAuthAccountRow.fromColumns(Map<String, Object?> columns, {String prefix = ''}) =>
-      HippobaseAuthAccountRow.fromSqlRow(SqlRow(columns), prefix: prefix);
+  factory AuthAccountRow.fromColumns(Map<String, Object?> columns, {String prefix = ''}) =>
+      AuthAccountRow.fromSqlRow(SqlRow(columns), prefix: prefix);
 
-  factory HippobaseAuthAccountRow.decode(Object? value) =>
-      HippobaseAuthAccountRow.fromJson(readJsonObject(value));
+  factory AuthAccountRow.decode(Object? value) => AuthAccountRow.fromJson(readJsonObject(value));
 
-  factory HippobaseAuthAccountRow.fromJson(Map<String, Object?> json) => HippobaseAuthAccountRow(
-    id: (json['id'] as String),
+  factory AuthAccountRow.fromJson(Map<String, Object?> json) => AuthAccountRow(
+    id: AuthAccountId((json['id'] as String)),
     accountId: (json['accountId'] as String),
     providerId: (json['providerId'] as String),
-    userId: (json['userId'] as String),
+    userId: AuthUserId((json['userId'] as String)),
     accessToken: json['accessToken'] == null ? null : (json['accessToken'] as String),
     refreshToken: json['refreshToken'] == null ? null : (json['refreshToken'] as String),
     idToken: json['idToken'] == null ? null : (json['idToken'] as String),
@@ -80,7 +79,7 @@ final class HippobaseAuthAccountRow implements JsonEncodable {
     updatedAt: DateTime.parse((json['updatedAt'] as String)),
   );
 
-  static const schemaId = 'HippobaseAuthAccountRow';
+  static const schemaId = 'AuthAccountRow';
 
   static const schemaRef = JsonSchema.componentRef(schemaId);
 
@@ -119,13 +118,13 @@ final class HippobaseAuthAccountRow implements JsonEncodable {
     additionalProperties: false,
   );
 
-  final String id;
+  final AuthAccountId id;
 
   final String accountId;
 
   final String providerId;
 
-  final String userId;
+  final AuthUserId userId;
 
   final String? accessToken;
 
@@ -145,11 +144,11 @@ final class HippobaseAuthAccountRow implements JsonEncodable {
 
   final DateTime updatedAt;
 
-  HippobaseAuthAccountRow copyWith({
-    String? id,
+  AuthAccountRow copyWith({
+    AuthAccountId? id,
     String? accountId,
     String? providerId,
-    String? userId,
+    AuthUserId? userId,
     SqlValue<String?>? accessToken,
     SqlValue<String?>? refreshToken,
     SqlValue<String?>? idToken,
@@ -160,7 +159,7 @@ final class HippobaseAuthAccountRow implements JsonEncodable {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return HippobaseAuthAccountRow(
+    return AuthAccountRow(
       id: id ?? this.id,
       accountId: accountId ?? this.accountId,
       providerId: providerId ?? this.providerId,
@@ -186,10 +185,10 @@ final class HippobaseAuthAccountRow implements JsonEncodable {
   }
 
   Map<String, Object?> toColumns() => <String, Object?>{
-    'id': id,
+    'id': id.value,
     'accountId': accountId,
     'providerId': providerId,
-    'userId': userId,
+    'userId': userId.value,
     'accessToken': accessToken,
     'refreshToken': refreshToken,
     'idToken': idToken,
@@ -203,10 +202,10 @@ final class HippobaseAuthAccountRow implements JsonEncodable {
 
   @override
   Map<String, Object?> toJson() => <String, Object?>{
-    'id': id,
+    'id': id.value,
     'accountId': accountId,
     'providerId': providerId,
-    'userId': userId,
+    'userId': userId.value,
     'accessToken': accessToken,
     'refreshToken': refreshToken,
     'idToken': idToken,
@@ -220,11 +219,11 @@ final class HippobaseAuthAccountRow implements JsonEncodable {
 
   @override
   String toString() =>
-      'HippobaseAuthAccountRow(id: $id, accountId: $accountId, providerId: $providerId, userId: $userId, accessToken: $accessToken, refreshToken: $refreshToken, idToken: $idToken, accessTokenExpiresAt: $accessTokenExpiresAt, refreshTokenExpiresAt: $refreshTokenExpiresAt, scope: $scope, password: $password, createdAt: $createdAt, updatedAt: $updatedAt)';
+      'AuthAccountRow(id: $id, accountId: $accountId, providerId: $providerId, userId: $userId, accessToken: $accessToken, refreshToken: $refreshToken, idToken: $idToken, accessTokenExpiresAt: $accessTokenExpiresAt, refreshTokenExpiresAt: $refreshTokenExpiresAt, scope: $scope, password: $password, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
-final class HippobaseAuthAccountInsert implements JsonEncodable {
-  const HippobaseAuthAccountInsert({
+final class AuthAccountInsert implements JsonEncodable {
+  const AuthAccountInsert({
     this.id = const SqlValue.absent(),
     required this.accountId,
     required this.providerId,
@@ -240,33 +239,32 @@ final class HippobaseAuthAccountInsert implements JsonEncodable {
     required this.updatedAt,
   });
 
-  factory HippobaseAuthAccountInsert.decode(Object? value) =>
-      HippobaseAuthAccountInsert.fromJson(readJsonObject(value));
+  factory AuthAccountInsert.decode(Object? value) =>
+      AuthAccountInsert.fromJson(readJsonObject(value));
 
-  factory HippobaseAuthAccountInsert.fromJson(Map<String, Object?> json) =>
-      HippobaseAuthAccountInsert(
-        id: json.containsKey('id')
-            ? SqlValue<String>((json['id'] as String))
-            : const SqlValue.absent(),
-        accountId: (json['accountId'] as String),
-        providerId: (json['providerId'] as String),
-        userId: (json['userId'] as String),
-        accessToken: json['accessToken'] == null ? null : (json['accessToken'] as String),
-        refreshToken: json['refreshToken'] == null ? null : (json['refreshToken'] as String),
-        idToken: json['idToken'] == null ? null : (json['idToken'] as String),
-        accessTokenExpiresAt: json['accessTokenExpiresAt'] == null
-            ? null
-            : DateTime.parse((json['accessTokenExpiresAt'] as String)),
-        refreshTokenExpiresAt: json['refreshTokenExpiresAt'] == null
-            ? null
-            : DateTime.parse((json['refreshTokenExpiresAt'] as String)),
-        scope: json['scope'] == null ? null : (json['scope'] as String),
-        password: json['password'] == null ? null : (json['password'] as String),
-        createdAt: DateTime.parse((json['createdAt'] as String)),
-        updatedAt: DateTime.parse((json['updatedAt'] as String)),
-      );
+  factory AuthAccountInsert.fromJson(Map<String, Object?> json) => AuthAccountInsert(
+    id: json.containsKey('id')
+        ? SqlValue<AuthAccountId>(AuthAccountId((json['id'] as String)))
+        : const SqlValue.absent(),
+    accountId: (json['accountId'] as String),
+    providerId: (json['providerId'] as String),
+    userId: AuthUserId((json['userId'] as String)),
+    accessToken: json['accessToken'] == null ? null : (json['accessToken'] as String),
+    refreshToken: json['refreshToken'] == null ? null : (json['refreshToken'] as String),
+    idToken: json['idToken'] == null ? null : (json['idToken'] as String),
+    accessTokenExpiresAt: json['accessTokenExpiresAt'] == null
+        ? null
+        : DateTime.parse((json['accessTokenExpiresAt'] as String)),
+    refreshTokenExpiresAt: json['refreshTokenExpiresAt'] == null
+        ? null
+        : DateTime.parse((json['refreshTokenExpiresAt'] as String)),
+    scope: json['scope'] == null ? null : (json['scope'] as String),
+    password: json['password'] == null ? null : (json['password'] as String),
+    createdAt: DateTime.parse((json['createdAt'] as String)),
+    updatedAt: DateTime.parse((json['updatedAt'] as String)),
+  );
 
-  static const schemaId = 'HippobaseAuthAccountInsert';
+  static const schemaId = 'AuthAccountInsert';
 
   static const schemaRef = JsonSchema.componentRef(schemaId);
 
@@ -304,13 +302,13 @@ final class HippobaseAuthAccountInsert implements JsonEncodable {
     additionalProperties: false,
   );
 
-  final SqlValue<String> id;
+  final SqlValue<AuthAccountId> id;
 
   final String accountId;
 
   final String providerId;
 
-  final String userId;
+  final AuthUserId userId;
 
   final String? accessToken;
 
@@ -330,11 +328,11 @@ final class HippobaseAuthAccountInsert implements JsonEncodable {
 
   final DateTime updatedAt;
 
-  HippobaseAuthAccountInsert copyWith({
-    SqlValue<String>? id,
+  AuthAccountInsert copyWith({
+    SqlValue<AuthAccountId>? id,
     String? accountId,
     String? providerId,
-    String? userId,
+    AuthUserId? userId,
     SqlValue<String?>? accessToken,
     SqlValue<String?>? refreshToken,
     SqlValue<String?>? idToken,
@@ -345,7 +343,7 @@ final class HippobaseAuthAccountInsert implements JsonEncodable {
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return HippobaseAuthAccountInsert(
+    return AuthAccountInsert(
       id: id ?? this.id,
       accountId: accountId ?? this.accountId,
       providerId: providerId ?? this.providerId,
@@ -371,10 +369,10 @@ final class HippobaseAuthAccountInsert implements JsonEncodable {
   }
 
   Map<String, Object?> toColumns() => <String, Object?>{
-    if (id.isPresent) 'id': id.value,
+    if (id.isPresent) 'id': id.value?.value,
     'accountId': accountId,
     'providerId': providerId,
-    'userId': userId,
+    'userId': userId.value,
     'accessToken': accessToken,
     'refreshToken': refreshToken,
     'idToken': idToken,
@@ -388,10 +386,10 @@ final class HippobaseAuthAccountInsert implements JsonEncodable {
 
   @override
   Map<String, Object?> toJson() => <String, Object?>{
-    if (id.isPresent) 'id': id.value,
+    if (id.isPresent) 'id': id.value?.value,
     'accountId': accountId,
     'providerId': providerId,
-    'userId': userId,
+    'userId': userId.value,
     'accessToken': accessToken,
     'refreshToken': refreshToken,
     'idToken': idToken,
@@ -405,11 +403,11 @@ final class HippobaseAuthAccountInsert implements JsonEncodable {
 
   @override
   String toString() =>
-      'HippobaseAuthAccountInsert(id: $id, accountId: $accountId, providerId: $providerId, userId: $userId, accessToken: $accessToken, refreshToken: $refreshToken, idToken: $idToken, accessTokenExpiresAt: $accessTokenExpiresAt, refreshTokenExpiresAt: $refreshTokenExpiresAt, scope: $scope, password: $password, createdAt: $createdAt, updatedAt: $updatedAt)';
+      'AuthAccountInsert(id: $id, accountId: $accountId, providerId: $providerId, userId: $userId, accessToken: $accessToken, refreshToken: $refreshToken, idToken: $idToken, accessTokenExpiresAt: $accessTokenExpiresAt, refreshTokenExpiresAt: $refreshTokenExpiresAt, scope: $scope, password: $password, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
-final class HippobaseAuthAccountUpdate implements JsonEncodable {
-  const HippobaseAuthAccountUpdate({
+final class AuthAccountUpdate implements JsonEncodable {
+  const AuthAccountUpdate({
     this.id = const SqlValue.absent(),
     this.accountId = const SqlValue.absent(),
     this.providerId = const SqlValue.absent(),
@@ -425,13 +423,13 @@ final class HippobaseAuthAccountUpdate implements JsonEncodable {
     this.updatedAt = const SqlValue.absent(),
   });
 
-  factory HippobaseAuthAccountUpdate.decode(Object? value) =>
-      HippobaseAuthAccountUpdate.fromJson(readJsonObject(value));
+  factory AuthAccountUpdate.decode(Object? value) =>
+      AuthAccountUpdate.fromJson(readJsonObject(value));
 
-  factory HippobaseAuthAccountUpdate.fromJson(
-    Map<String, Object?> json,
-  ) => HippobaseAuthAccountUpdate(
-    id: json.containsKey('id') ? SqlValue<String>((json['id'] as String)) : const SqlValue.absent(),
+  factory AuthAccountUpdate.fromJson(Map<String, Object?> json) => AuthAccountUpdate(
+    id: json.containsKey('id')
+        ? SqlValue<AuthAccountId>(AuthAccountId((json['id'] as String)))
+        : const SqlValue.absent(),
     accountId: json.containsKey('accountId')
         ? SqlValue<String>((json['accountId'] as String))
         : const SqlValue.absent(),
@@ -439,7 +437,7 @@ final class HippobaseAuthAccountUpdate implements JsonEncodable {
         ? SqlValue<String>((json['providerId'] as String))
         : const SqlValue.absent(),
     userId: json.containsKey('userId')
-        ? SqlValue<String>((json['userId'] as String))
+        ? SqlValue<AuthUserId>(AuthUserId((json['userId'] as String)))
         : const SqlValue.absent(),
     accessToken: json.containsKey('accessToken')
         ? SqlValue<String?>(json['accessToken'] == null ? null : (json['accessToken'] as String))
@@ -478,7 +476,7 @@ final class HippobaseAuthAccountUpdate implements JsonEncodable {
         : const SqlValue.absent(),
   );
 
-  static const schemaId = 'HippobaseAuthAccountUpdate';
+  static const schemaId = 'AuthAccountUpdate';
 
   static const schemaRef = JsonSchema.componentRef(schemaId);
 
@@ -503,13 +501,13 @@ final class HippobaseAuthAccountUpdate implements JsonEncodable {
     additionalProperties: false,
   );
 
-  final SqlValue<String> id;
+  final SqlValue<AuthAccountId> id;
 
   final SqlValue<String> accountId;
 
   final SqlValue<String> providerId;
 
-  final SqlValue<String> userId;
+  final SqlValue<AuthUserId> userId;
 
   final SqlValue<String?> accessToken;
 
@@ -529,11 +527,11 @@ final class HippobaseAuthAccountUpdate implements JsonEncodable {
 
   final SqlValue<DateTime> updatedAt;
 
-  HippobaseAuthAccountUpdate copyWith({
-    SqlValue<String>? id,
+  AuthAccountUpdate copyWith({
+    SqlValue<AuthAccountId>? id,
     SqlValue<String>? accountId,
     SqlValue<String>? providerId,
-    SqlValue<String>? userId,
+    SqlValue<AuthUserId>? userId,
     SqlValue<String?>? accessToken,
     SqlValue<String?>? refreshToken,
     SqlValue<String?>? idToken,
@@ -544,7 +542,7 @@ final class HippobaseAuthAccountUpdate implements JsonEncodable {
     SqlValue<DateTime>? createdAt,
     SqlValue<DateTime>? updatedAt,
   }) {
-    return HippobaseAuthAccountUpdate(
+    return AuthAccountUpdate(
       id: id ?? this.id,
       accountId: accountId ?? this.accountId,
       providerId: providerId ?? this.providerId,
@@ -562,10 +560,10 @@ final class HippobaseAuthAccountUpdate implements JsonEncodable {
   }
 
   Map<String, Object?> toColumns() => <String, Object?>{
-    if (id.isPresent) 'id': id.value,
+    if (id.isPresent) 'id': id.value?.value,
     if (accountId.isPresent) 'accountId': accountId.value,
     if (providerId.isPresent) 'providerId': providerId.value,
-    if (userId.isPresent) 'userId': userId.value,
+    if (userId.isPresent) 'userId': userId.value?.value,
     if (accessToken.isPresent) 'accessToken': accessToken.value,
     if (refreshToken.isPresent) 'refreshToken': refreshToken.value,
     if (idToken.isPresent) 'idToken': idToken.value,
@@ -579,10 +577,10 @@ final class HippobaseAuthAccountUpdate implements JsonEncodable {
 
   @override
   Map<String, Object?> toJson() => <String, Object?>{
-    if (id.isPresent) 'id': id.value,
+    if (id.isPresent) 'id': id.value?.value,
     if (accountId.isPresent) 'accountId': accountId.value,
     if (providerId.isPresent) 'providerId': providerId.value,
-    if (userId.isPresent) 'userId': userId.value,
+    if (userId.isPresent) 'userId': userId.value?.value,
     if (accessToken.isPresent) 'accessToken': accessToken.value,
     if (refreshToken.isPresent) 'refreshToken': refreshToken.value,
     if (idToken.isPresent) 'idToken': idToken.value,
@@ -598,22 +596,21 @@ final class HippobaseAuthAccountUpdate implements JsonEncodable {
 
   @override
   String toString() =>
-      'HippobaseAuthAccountUpdate(id: $id, accountId: $accountId, providerId: $providerId, userId: $userId, accessToken: $accessToken, refreshToken: $refreshToken, idToken: $idToken, accessTokenExpiresAt: $accessTokenExpiresAt, refreshTokenExpiresAt: $refreshTokenExpiresAt, scope: $scope, password: $password, createdAt: $createdAt, updatedAt: $updatedAt)';
+      'AuthAccountUpdate(id: $id, accountId: $accountId, providerId: $providerId, userId: $userId, accessToken: $accessToken, refreshToken: $refreshToken, idToken: $idToken, accessTokenExpiresAt: $accessTokenExpiresAt, refreshTokenExpiresAt: $refreshTokenExpiresAt, scope: $scope, password: $password, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
-final class HippobaseAuthAccountsTable
-    extends
-        SqlTable<HippobaseAuthAccountRow, HippobaseAuthAccountInsert, HippobaseAuthAccountUpdate> {
-  const HippobaseAuthAccountsTable._() : schema = null;
+final class AuthAccountsTable
+    extends SqlTable<AuthAccountRow, AuthAccountInsert, AuthAccountUpdate> {
+  const AuthAccountsTable._() : schema = 'auth';
 
-  const HippobaseAuthAccountsTable.withSchema(this.schema);
+  const AuthAccountsTable.withSchema(this.schema);
 
   @override
   final String? schema;
 
-  static const table = HippobaseAuthAccountsTable._();
+  static const table = AuthAccountsTable._();
 
-  static final id = SqlColumn<String>(
+  static final id = SqlColumn<AuthAccountId>(
     table: table,
     name: 'id',
     nullable: false,
@@ -634,7 +631,7 @@ final class HippobaseAuthAccountsTable
     databaseType: 'text',
   );
 
-  static final userId = SqlColumn<String>(
+  static final userId = SqlColumn<AuthUserId>(
     table: table,
     name: 'userId',
     nullable: false,
@@ -709,10 +706,10 @@ final class HippobaseAuthAccountsTable
 
   @override
   List<SqlColumn<Object?>> get columns => <SqlColumn<Object?>>[
-    column<String>('id', nullable: false, databaseType: 'text').asObjectColumn,
+    column<AuthAccountId>('id', nullable: false, databaseType: 'text').asObjectColumn,
     column<String>('accountId', nullable: false, databaseType: 'text').asObjectColumn,
     column<String>('providerId', nullable: false, databaseType: 'text').asObjectColumn,
-    column<String>('userId', nullable: false, databaseType: 'text').asObjectColumn,
+    column<AuthUserId>('userId', nullable: false, databaseType: 'text').asObjectColumn,
     column<String>('accessToken', nullable: true, databaseType: 'text').asObjectColumn,
     column<String>('refreshToken', nullable: true, databaseType: 'text').asObjectColumn,
     column<String>('idToken', nullable: true, databaseType: 'text').asObjectColumn,
@@ -733,18 +730,19 @@ final class HippobaseAuthAccountsTable
   ];
 
   @override
-  HippobaseAuthAccountRow mapRow(SqlRow row, {String prefix = ''}) =>
-      HippobaseAuthAccountRow.fromSqlRow(row, prefix: prefix);
+  AuthAccountRow mapRow(SqlRow row, {String prefix = ''}) =>
+      AuthAccountRow.fromSqlRow(row, prefix: prefix);
 
   @override
-  Map<String, Object?> encodeInsert(HippobaseAuthAccountInsert value) => value.toColumns();
+  Map<String, Object?> encodeInsert(AuthAccountInsert value) => value.toColumns();
 
   @override
-  Map<String, Object?> encodeUpdate(HippobaseAuthAccountUpdate value) => value.toColumns();
+  Map<String, Object?> encodeUpdate(AuthAccountUpdate value) => value.toColumns();
 }
 
-extension HippobaseAuthAccountsTableColumns on HippobaseAuthAccountsTable {
-  SqlColumn<String> get id => column<String>('id', nullable: false, databaseType: 'text');
+extension AuthAccountsTableColumns on AuthAccountsTable {
+  SqlColumn<AuthAccountId> get id =>
+      column<AuthAccountId>('id', nullable: false, databaseType: 'text');
 
   SqlColumn<String> get accountId =>
       column<String>('accountId', nullable: false, databaseType: 'text');
@@ -752,7 +750,8 @@ extension HippobaseAuthAccountsTableColumns on HippobaseAuthAccountsTable {
   SqlColumn<String> get providerId =>
       column<String>('providerId', nullable: false, databaseType: 'text');
 
-  SqlColumn<String> get userId => column<String>('userId', nullable: false, databaseType: 'text');
+  SqlColumn<AuthUserId> get userId =>
+      column<AuthUserId>('userId', nullable: false, databaseType: 'text');
 
   SqlColumn<String> get accessToken =>
       column<String>('accessToken', nullable: true, databaseType: 'text');

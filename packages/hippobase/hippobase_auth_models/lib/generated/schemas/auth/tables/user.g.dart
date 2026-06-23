@@ -1,7 +1,9 @@
 import 'package:dart_edge_core/dart_edge_core.dart';
 
-final class HippobaseAuthUserRow implements JsonEncodable {
-  const HippobaseAuthUserRow({
+extension type const AuthUserId(String value) {}
+
+final class AuthUserRow implements JsonEncodable {
+  const AuthUserRow({
     required this.id,
     required this.name,
     required this.email,
@@ -17,8 +19,8 @@ final class HippobaseAuthUserRow implements JsonEncodable {
     required this.phoneNumberVerified,
   });
 
-  factory HippobaseAuthUserRow.fromSqlRow(SqlRow row, {String prefix = ''}) => HippobaseAuthUserRow(
-    id: row.read<String>('${prefix}id'),
+  factory AuthUserRow.fromSqlRow(SqlRow row, {String prefix = ''}) => AuthUserRow(
+    id: AuthUserId(row.read<String>('${prefix}id')),
     name: row.read<String>('${prefix}name'),
     email: row.read<String>('${prefix}email'),
     emailVerified: row.read<bool>('${prefix}emailVerified'),
@@ -46,14 +48,13 @@ final class HippobaseAuthUserRow implements JsonEncodable {
     phoneNumberVerified: row.readNullable<bool>('${prefix}phoneNumberVerified'),
   );
 
-  factory HippobaseAuthUserRow.fromColumns(Map<String, Object?> columns, {String prefix = ''}) =>
-      HippobaseAuthUserRow.fromSqlRow(SqlRow(columns), prefix: prefix);
+  factory AuthUserRow.fromColumns(Map<String, Object?> columns, {String prefix = ''}) =>
+      AuthUserRow.fromSqlRow(SqlRow(columns), prefix: prefix);
 
-  factory HippobaseAuthUserRow.decode(Object? value) =>
-      HippobaseAuthUserRow.fromJson(readJsonObject(value));
+  factory AuthUserRow.decode(Object? value) => AuthUserRow.fromJson(readJsonObject(value));
 
-  factory HippobaseAuthUserRow.fromJson(Map<String, Object?> json) => HippobaseAuthUserRow(
-    id: (json['id'] as String),
+  factory AuthUserRow.fromJson(Map<String, Object?> json) => AuthUserRow(
+    id: AuthUserId((json['id'] as String)),
     name: (json['name'] as String),
     email: (json['email'] as String),
     emailVerified: (json['emailVerified'] as bool),
@@ -70,7 +71,7 @@ final class HippobaseAuthUserRow implements JsonEncodable {
         : (json['phoneNumberVerified'] as bool),
   );
 
-  static const schemaId = 'HippobaseAuthUserRow';
+  static const schemaId = 'AuthUserRow';
 
   static const schemaRef = JsonSchema.componentRef(schemaId);
 
@@ -109,7 +110,7 @@ final class HippobaseAuthUserRow implements JsonEncodable {
     additionalProperties: false,
   );
 
-  final String id;
+  final AuthUserId id;
 
   final String name;
 
@@ -135,8 +136,8 @@ final class HippobaseAuthUserRow implements JsonEncodable {
 
   final bool? phoneNumberVerified;
 
-  HippobaseAuthUserRow copyWith({
-    String? id,
+  AuthUserRow copyWith({
+    AuthUserId? id,
     String? name,
     String? email,
     bool? emailVerified,
@@ -150,7 +151,7 @@ final class HippobaseAuthUserRow implements JsonEncodable {
     SqlValue<String?>? phoneNumber,
     SqlValue<bool?>? phoneNumberVerified,
   }) {
-    return HippobaseAuthUserRow(
+    return AuthUserRow(
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
@@ -172,7 +173,7 @@ final class HippobaseAuthUserRow implements JsonEncodable {
   }
 
   Map<String, Object?> toColumns() => <String, Object?>{
-    'id': id,
+    'id': id.value,
     'name': name,
     'email': email,
     'emailVerified': emailVerified,
@@ -189,7 +190,7 @@ final class HippobaseAuthUserRow implements JsonEncodable {
 
   @override
   Map<String, Object?> toJson() => <String, Object?>{
-    'id': id,
+    'id': id.value,
     'name': name,
     'email': email,
     'emailVerified': emailVerified,
@@ -206,11 +207,11 @@ final class HippobaseAuthUserRow implements JsonEncodable {
 
   @override
   String toString() =>
-      'HippobaseAuthUserRow(id: $id, name: $name, email: $email, emailVerified: $emailVerified, image: $image, createdAt: $createdAt, updatedAt: $updatedAt, role: $role, banned: $banned, banReason: $banReason, banExpires: $banExpires, phoneNumber: $phoneNumber, phoneNumberVerified: $phoneNumberVerified)';
+      'AuthUserRow(id: $id, name: $name, email: $email, emailVerified: $emailVerified, image: $image, createdAt: $createdAt, updatedAt: $updatedAt, role: $role, banned: $banned, banReason: $banReason, banExpires: $banExpires, phoneNumber: $phoneNumber, phoneNumberVerified: $phoneNumberVerified)';
 }
 
-final class HippobaseAuthUserInsert implements JsonEncodable {
-  const HippobaseAuthUserInsert({
+final class AuthUserInsert implements JsonEncodable {
+  const AuthUserInsert({
     this.id = const SqlValue.absent(),
     required this.name,
     required this.email,
@@ -226,11 +227,12 @@ final class HippobaseAuthUserInsert implements JsonEncodable {
     required this.phoneNumberVerified,
   });
 
-  factory HippobaseAuthUserInsert.decode(Object? value) =>
-      HippobaseAuthUserInsert.fromJson(readJsonObject(value));
+  factory AuthUserInsert.decode(Object? value) => AuthUserInsert.fromJson(readJsonObject(value));
 
-  factory HippobaseAuthUserInsert.fromJson(Map<String, Object?> json) => HippobaseAuthUserInsert(
-    id: json.containsKey('id') ? SqlValue<String>((json['id'] as String)) : const SqlValue.absent(),
+  factory AuthUserInsert.fromJson(Map<String, Object?> json) => AuthUserInsert(
+    id: json.containsKey('id')
+        ? SqlValue<AuthUserId>(AuthUserId((json['id'] as String)))
+        : const SqlValue.absent(),
     name: (json['name'] as String),
     email: (json['email'] as String),
     emailVerified: (json['emailVerified'] as bool),
@@ -247,7 +249,7 @@ final class HippobaseAuthUserInsert implements JsonEncodable {
         : (json['phoneNumberVerified'] as bool),
   );
 
-  static const schemaId = 'HippobaseAuthUserInsert';
+  static const schemaId = 'AuthUserInsert';
 
   static const schemaRef = JsonSchema.componentRef(schemaId);
 
@@ -285,7 +287,7 @@ final class HippobaseAuthUserInsert implements JsonEncodable {
     additionalProperties: false,
   );
 
-  final SqlValue<String> id;
+  final SqlValue<AuthUserId> id;
 
   final String name;
 
@@ -311,8 +313,8 @@ final class HippobaseAuthUserInsert implements JsonEncodable {
 
   final bool? phoneNumberVerified;
 
-  HippobaseAuthUserInsert copyWith({
-    SqlValue<String>? id,
+  AuthUserInsert copyWith({
+    SqlValue<AuthUserId>? id,
     String? name,
     String? email,
     bool? emailVerified,
@@ -326,7 +328,7 @@ final class HippobaseAuthUserInsert implements JsonEncodable {
     SqlValue<String?>? phoneNumber,
     SqlValue<bool?>? phoneNumberVerified,
   }) {
-    return HippobaseAuthUserInsert(
+    return AuthUserInsert(
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
@@ -348,7 +350,7 @@ final class HippobaseAuthUserInsert implements JsonEncodable {
   }
 
   Map<String, Object?> toColumns() => <String, Object?>{
-    if (id.isPresent) 'id': id.value,
+    if (id.isPresent) 'id': id.value?.value,
     'name': name,
     'email': email,
     'emailVerified': emailVerified,
@@ -365,7 +367,7 @@ final class HippobaseAuthUserInsert implements JsonEncodable {
 
   @override
   Map<String, Object?> toJson() => <String, Object?>{
-    if (id.isPresent) 'id': id.value,
+    if (id.isPresent) 'id': id.value?.value,
     'name': name,
     'email': email,
     'emailVerified': emailVerified,
@@ -382,11 +384,11 @@ final class HippobaseAuthUserInsert implements JsonEncodable {
 
   @override
   String toString() =>
-      'HippobaseAuthUserInsert(id: $id, name: $name, email: $email, emailVerified: $emailVerified, image: $image, createdAt: $createdAt, updatedAt: $updatedAt, role: $role, banned: $banned, banReason: $banReason, banExpires: $banExpires, phoneNumber: $phoneNumber, phoneNumberVerified: $phoneNumberVerified)';
+      'AuthUserInsert(id: $id, name: $name, email: $email, emailVerified: $emailVerified, image: $image, createdAt: $createdAt, updatedAt: $updatedAt, role: $role, banned: $banned, banReason: $banReason, banExpires: $banExpires, phoneNumber: $phoneNumber, phoneNumberVerified: $phoneNumberVerified)';
 }
 
-final class HippobaseAuthUserUpdate implements JsonEncodable {
-  const HippobaseAuthUserUpdate({
+final class AuthUserUpdate implements JsonEncodable {
+  const AuthUserUpdate({
     this.id = const SqlValue.absent(),
     this.name = const SqlValue.absent(),
     this.email = const SqlValue.absent(),
@@ -402,11 +404,12 @@ final class HippobaseAuthUserUpdate implements JsonEncodable {
     this.phoneNumberVerified = const SqlValue.absent(),
   });
 
-  factory HippobaseAuthUserUpdate.decode(Object? value) =>
-      HippobaseAuthUserUpdate.fromJson(readJsonObject(value));
+  factory AuthUserUpdate.decode(Object? value) => AuthUserUpdate.fromJson(readJsonObject(value));
 
-  factory HippobaseAuthUserUpdate.fromJson(Map<String, Object?> json) => HippobaseAuthUserUpdate(
-    id: json.containsKey('id') ? SqlValue<String>((json['id'] as String)) : const SqlValue.absent(),
+  factory AuthUserUpdate.fromJson(Map<String, Object?> json) => AuthUserUpdate(
+    id: json.containsKey('id')
+        ? SqlValue<AuthUserId>(AuthUserId((json['id'] as String)))
+        : const SqlValue.absent(),
     name: json.containsKey('name')
         ? SqlValue<String>((json['name'] as String))
         : const SqlValue.absent(),
@@ -449,7 +452,7 @@ final class HippobaseAuthUserUpdate implements JsonEncodable {
         : const SqlValue.absent(),
   );
 
-  static const schemaId = 'HippobaseAuthUserUpdate';
+  static const schemaId = 'AuthUserUpdate';
 
   static const schemaRef = JsonSchema.componentRef(schemaId);
 
@@ -474,7 +477,7 @@ final class HippobaseAuthUserUpdate implements JsonEncodable {
     additionalProperties: false,
   );
 
-  final SqlValue<String> id;
+  final SqlValue<AuthUserId> id;
 
   final SqlValue<String> name;
 
@@ -500,8 +503,8 @@ final class HippobaseAuthUserUpdate implements JsonEncodable {
 
   final SqlValue<bool?> phoneNumberVerified;
 
-  HippobaseAuthUserUpdate copyWith({
-    SqlValue<String>? id,
+  AuthUserUpdate copyWith({
+    SqlValue<AuthUserId>? id,
     SqlValue<String>? name,
     SqlValue<String>? email,
     SqlValue<bool>? emailVerified,
@@ -515,7 +518,7 @@ final class HippobaseAuthUserUpdate implements JsonEncodable {
     SqlValue<String?>? phoneNumber,
     SqlValue<bool?>? phoneNumberVerified,
   }) {
-    return HippobaseAuthUserUpdate(
+    return AuthUserUpdate(
       id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
@@ -533,7 +536,7 @@ final class HippobaseAuthUserUpdate implements JsonEncodable {
   }
 
   Map<String, Object?> toColumns() => <String, Object?>{
-    if (id.isPresent) 'id': id.value,
+    if (id.isPresent) 'id': id.value?.value,
     if (name.isPresent) 'name': name.value,
     if (email.isPresent) 'email': email.value,
     if (emailVerified.isPresent) 'emailVerified': emailVerified.value,
@@ -550,7 +553,7 @@ final class HippobaseAuthUserUpdate implements JsonEncodable {
 
   @override
   Map<String, Object?> toJson() => <String, Object?>{
-    if (id.isPresent) 'id': id.value,
+    if (id.isPresent) 'id': id.value?.value,
     if (name.isPresent) 'name': name.value,
     if (email.isPresent) 'email': email.value,
     if (emailVerified.isPresent) 'emailVerified': emailVerified.value,
@@ -567,21 +570,20 @@ final class HippobaseAuthUserUpdate implements JsonEncodable {
 
   @override
   String toString() =>
-      'HippobaseAuthUserUpdate(id: $id, name: $name, email: $email, emailVerified: $emailVerified, image: $image, createdAt: $createdAt, updatedAt: $updatedAt, role: $role, banned: $banned, banReason: $banReason, banExpires: $banExpires, phoneNumber: $phoneNumber, phoneNumberVerified: $phoneNumberVerified)';
+      'AuthUserUpdate(id: $id, name: $name, email: $email, emailVerified: $emailVerified, image: $image, createdAt: $createdAt, updatedAt: $updatedAt, role: $role, banned: $banned, banReason: $banReason, banExpires: $banExpires, phoneNumber: $phoneNumber, phoneNumberVerified: $phoneNumberVerified)';
 }
 
-final class HippobaseAuthUsersTable
-    extends SqlTable<HippobaseAuthUserRow, HippobaseAuthUserInsert, HippobaseAuthUserUpdate> {
-  const HippobaseAuthUsersTable._() : schema = null;
+final class AuthUsersTable extends SqlTable<AuthUserRow, AuthUserInsert, AuthUserUpdate> {
+  const AuthUsersTable._() : schema = 'auth';
 
-  const HippobaseAuthUsersTable.withSchema(this.schema);
+  const AuthUsersTable.withSchema(this.schema);
 
   @override
   final String? schema;
 
-  static const table = HippobaseAuthUsersTable._();
+  static const table = AuthUsersTable._();
 
-  static final id = SqlColumn<String>(
+  static final id = SqlColumn<AuthUserId>(
     table: table,
     name: 'id',
     nullable: false,
@@ -677,7 +679,7 @@ final class HippobaseAuthUsersTable
 
   @override
   List<SqlColumn<Object?>> get columns => <SqlColumn<Object?>>[
-    column<String>('id', nullable: false, databaseType: 'text').asObjectColumn,
+    column<AuthUserId>('id', nullable: false, databaseType: 'text').asObjectColumn,
     column<String>('name', nullable: false, databaseType: 'text').asObjectColumn,
     column<String>('email', nullable: false, databaseType: 'text').asObjectColumn,
     column<bool>('emailVerified', nullable: false, databaseType: 'bool').asObjectColumn,
@@ -693,18 +695,18 @@ final class HippobaseAuthUsersTable
   ];
 
   @override
-  HippobaseAuthUserRow mapRow(SqlRow row, {String prefix = ''}) =>
-      HippobaseAuthUserRow.fromSqlRow(row, prefix: prefix);
+  AuthUserRow mapRow(SqlRow row, {String prefix = ''}) =>
+      AuthUserRow.fromSqlRow(row, prefix: prefix);
 
   @override
-  Map<String, Object?> encodeInsert(HippobaseAuthUserInsert value) => value.toColumns();
+  Map<String, Object?> encodeInsert(AuthUserInsert value) => value.toColumns();
 
   @override
-  Map<String, Object?> encodeUpdate(HippobaseAuthUserUpdate value) => value.toColumns();
+  Map<String, Object?> encodeUpdate(AuthUserUpdate value) => value.toColumns();
 }
 
-extension HippobaseAuthUsersTableColumns on HippobaseAuthUsersTable {
-  SqlColumn<String> get id => column<String>('id', nullable: false, databaseType: 'text');
+extension AuthUsersTableColumns on AuthUsersTable {
+  SqlColumn<AuthUserId> get id => column<AuthUserId>('id', nullable: false, databaseType: 'text');
 
   SqlColumn<String> get nameColumn => column<String>('name', nullable: false, databaseType: 'text');
 

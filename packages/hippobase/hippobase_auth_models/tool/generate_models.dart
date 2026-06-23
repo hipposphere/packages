@@ -16,6 +16,7 @@ Future<void> main() async {
 
   try {
     _log('Applying Hippobase auth schema.');
+    await database.execute(sql('CREATE SCHEMA IF NOT EXISTS "auth"'));
     final diff = SqlSchemaDiff.between(
       current: const SqlDatabaseSchema(tables: <SqlTableSchema>[]),
       desired: hippobaseAuthDbSchema,
@@ -26,14 +27,16 @@ Future<void> main() async {
     }
 
     _log('Introspecting database schema.');
-    final introspection = await PostgresIntrospector.fromDatabase(database).introspect();
+    final introspection = await PostgresIntrospector.fromDatabase(
+      database,
+      schemas: <String>{'auth'},
+    ).introspect();
 
     _log('Emitting Dart schema.');
     final emission = emitDartSchema(
-      _withoutDefaultSchema(introspection),
-      databaseClassName: 'HippobaseAuthDatabase',
+      introspection,
+      databaseClassName: 'AuthDatabase',
       naming: DartSchemaNaming(modelNameBuilder: _authModelName),
-      primaryKeyExtensionTypes: false,
     );
     emission.writeToDirectory('${packageRoot.path}/lib/generated');
     _log('Wrote generated schema.');
@@ -60,25 +63,13 @@ Future<void> main() async {
   }
 }
 
-IntrospectedDatabase _withoutDefaultSchema(IntrospectedDatabase database) {
-  return IntrospectedDatabase(
-    dialect: database.dialect,
-    tables: [
-      for (final table in database.tables)
-        IntrospectedTable(name: table.name, columns: table.columns, constraints: table.constraints),
-    ],
-    enums: database.enums,
-    routines: database.routines,
-  );
-}
-
 String _authModelName(DartSchemaModelNameContext context) {
   final tablePrefix = switch (context.tableName) {
-    'user' => 'HippobaseAuthUser',
-    'session' => 'HippobaseAuthSession',
-    'account' => 'HippobaseAuthAccount',
-    'verification' => 'HippobaseAuthVerification',
-    'passkey' => 'HippobaseAuthPasskey',
+    'user' => 'AuthUser',
+    'session' => 'AuthSession',
+    'account' => 'AuthAccount',
+    'verification' => 'AuthVerification',
+    'passkey' => 'AuthPasskey',
     final table => throw StateError('Unsupported Better Auth table "$table".'),
   };
   return switch (context.kind) {

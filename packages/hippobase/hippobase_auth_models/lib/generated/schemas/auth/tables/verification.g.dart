@@ -1,7 +1,9 @@
 import 'package:dart_edge_core/dart_edge_core.dart';
 
-final class HippobaseAuthVerificationRow implements JsonEncodable {
-  const HippobaseAuthVerificationRow({
+extension type const AuthVerificationId(String value) {}
+
+final class AuthVerificationRow implements JsonEncodable {
+  const AuthVerificationRow({
     required this.id,
     required this.identifier,
     required this.value,
@@ -10,47 +12,43 @@ final class HippobaseAuthVerificationRow implements JsonEncodable {
     required this.updatedAt,
   });
 
-  factory HippobaseAuthVerificationRow.fromSqlRow(SqlRow row, {String prefix = ''}) =>
-      HippobaseAuthVerificationRow(
-        id: row.read<String>('${prefix}id'),
-        identifier: row.read<String>('${prefix}identifier'),
-        value: row.read<String>('${prefix}value'),
-        expiresAt: switch (row.read<Object?>('${prefix}expiresAt')) {
-          final DateTime value => value,
-          final String value => DateTime.parse(value),
-          final value => value as DateTime,
-        },
-        createdAt: switch (row.read<Object?>('${prefix}createdAt')) {
-          final DateTime value => value,
-          final String value => DateTime.parse(value),
-          final value => value as DateTime,
-        },
-        updatedAt: switch (row.read<Object?>('${prefix}updatedAt')) {
-          final DateTime value => value,
-          final String value => DateTime.parse(value),
-          final value => value as DateTime,
-        },
-      );
+  factory AuthVerificationRow.fromSqlRow(SqlRow row, {String prefix = ''}) => AuthVerificationRow(
+    id: AuthVerificationId(row.read<String>('${prefix}id')),
+    identifier: row.read<String>('${prefix}identifier'),
+    value: row.read<String>('${prefix}value'),
+    expiresAt: switch (row.read<Object?>('${prefix}expiresAt')) {
+      final DateTime value => value,
+      final String value => DateTime.parse(value),
+      final value => value as DateTime,
+    },
+    createdAt: switch (row.read<Object?>('${prefix}createdAt')) {
+      final DateTime value => value,
+      final String value => DateTime.parse(value),
+      final value => value as DateTime,
+    },
+    updatedAt: switch (row.read<Object?>('${prefix}updatedAt')) {
+      final DateTime value => value,
+      final String value => DateTime.parse(value),
+      final value => value as DateTime,
+    },
+  );
 
-  factory HippobaseAuthVerificationRow.fromColumns(
-    Map<String, Object?> columns, {
-    String prefix = '',
-  }) => HippobaseAuthVerificationRow.fromSqlRow(SqlRow(columns), prefix: prefix);
+  factory AuthVerificationRow.fromColumns(Map<String, Object?> columns, {String prefix = ''}) =>
+      AuthVerificationRow.fromSqlRow(SqlRow(columns), prefix: prefix);
 
-  factory HippobaseAuthVerificationRow.decode(Object? value) =>
-      HippobaseAuthVerificationRow.fromJson(readJsonObject(value));
+  factory AuthVerificationRow.decode(Object? value) =>
+      AuthVerificationRow.fromJson(readJsonObject(value));
 
-  factory HippobaseAuthVerificationRow.fromJson(Map<String, Object?> json) =>
-      HippobaseAuthVerificationRow(
-        id: (json['id'] as String),
-        identifier: (json['identifier'] as String),
-        value: (json['value'] as String),
-        expiresAt: DateTime.parse((json['expiresAt'] as String)),
-        createdAt: DateTime.parse((json['createdAt'] as String)),
-        updatedAt: DateTime.parse((json['updatedAt'] as String)),
-      );
+  factory AuthVerificationRow.fromJson(Map<String, Object?> json) => AuthVerificationRow(
+    id: AuthVerificationId((json['id'] as String)),
+    identifier: (json['identifier'] as String),
+    value: (json['value'] as String),
+    expiresAt: DateTime.parse((json['expiresAt'] as String)),
+    createdAt: DateTime.parse((json['createdAt'] as String)),
+    updatedAt: DateTime.parse((json['updatedAt'] as String)),
+  );
 
-  static const schemaId = 'HippobaseAuthVerificationRow';
+  static const schemaId = 'AuthVerificationRow';
 
   static const schemaRef = JsonSchema.componentRef(schemaId);
 
@@ -68,7 +66,7 @@ final class HippobaseAuthVerificationRow implements JsonEncodable {
     additionalProperties: false,
   );
 
-  final String id;
+  final AuthVerificationId id;
 
   final String identifier;
 
@@ -80,15 +78,15 @@ final class HippobaseAuthVerificationRow implements JsonEncodable {
 
   final DateTime updatedAt;
 
-  HippobaseAuthVerificationRow copyWith({
-    String? id,
+  AuthVerificationRow copyWith({
+    AuthVerificationId? id,
     String? identifier,
     String? value,
     DateTime? expiresAt,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return HippobaseAuthVerificationRow(
+    return AuthVerificationRow(
       id: id ?? this.id,
       identifier: identifier ?? this.identifier,
       value: value ?? this.value,
@@ -99,7 +97,7 @@ final class HippobaseAuthVerificationRow implements JsonEncodable {
   }
 
   Map<String, Object?> toColumns() => <String, Object?>{
-    'id': id,
+    'id': id.value,
     'identifier': identifier,
     'value': value,
     'expiresAt': expiresAt,
@@ -109,7 +107,7 @@ final class HippobaseAuthVerificationRow implements JsonEncodable {
 
   @override
   Map<String, Object?> toJson() => <String, Object?>{
-    'id': id,
+    'id': id.value,
     'identifier': identifier,
     'value': value,
     'expiresAt': expiresAt.toIso8601String(),
@@ -119,11 +117,11 @@ final class HippobaseAuthVerificationRow implements JsonEncodable {
 
   @override
   String toString() =>
-      'HippobaseAuthVerificationRow(id: $id, identifier: $identifier, value: $value, expiresAt: $expiresAt, createdAt: $createdAt, updatedAt: $updatedAt)';
+      'AuthVerificationRow(id: $id, identifier: $identifier, value: $value, expiresAt: $expiresAt, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
-final class HippobaseAuthVerificationInsert implements JsonEncodable {
-  const HippobaseAuthVerificationInsert({
+final class AuthVerificationInsert implements JsonEncodable {
+  const AuthVerificationInsert({
     this.id = const SqlValue.absent(),
     required this.identifier,
     required this.value,
@@ -132,22 +130,21 @@ final class HippobaseAuthVerificationInsert implements JsonEncodable {
     required this.updatedAt,
   });
 
-  factory HippobaseAuthVerificationInsert.decode(Object? value) =>
-      HippobaseAuthVerificationInsert.fromJson(readJsonObject(value));
+  factory AuthVerificationInsert.decode(Object? value) =>
+      AuthVerificationInsert.fromJson(readJsonObject(value));
 
-  factory HippobaseAuthVerificationInsert.fromJson(Map<String, Object?> json) =>
-      HippobaseAuthVerificationInsert(
-        id: json.containsKey('id')
-            ? SqlValue<String>((json['id'] as String))
-            : const SqlValue.absent(),
-        identifier: (json['identifier'] as String),
-        value: (json['value'] as String),
-        expiresAt: DateTime.parse((json['expiresAt'] as String)),
-        createdAt: DateTime.parse((json['createdAt'] as String)),
-        updatedAt: DateTime.parse((json['updatedAt'] as String)),
-      );
+  factory AuthVerificationInsert.fromJson(Map<String, Object?> json) => AuthVerificationInsert(
+    id: json.containsKey('id')
+        ? SqlValue<AuthVerificationId>(AuthVerificationId((json['id'] as String)))
+        : const SqlValue.absent(),
+    identifier: (json['identifier'] as String),
+    value: (json['value'] as String),
+    expiresAt: DateTime.parse((json['expiresAt'] as String)),
+    createdAt: DateTime.parse((json['createdAt'] as String)),
+    updatedAt: DateTime.parse((json['updatedAt'] as String)),
+  );
 
-  static const schemaId = 'HippobaseAuthVerificationInsert';
+  static const schemaId = 'AuthVerificationInsert';
 
   static const schemaRef = JsonSchema.componentRef(schemaId);
 
@@ -165,7 +162,7 @@ final class HippobaseAuthVerificationInsert implements JsonEncodable {
     additionalProperties: false,
   );
 
-  final SqlValue<String> id;
+  final SqlValue<AuthVerificationId> id;
 
   final String identifier;
 
@@ -177,15 +174,15 @@ final class HippobaseAuthVerificationInsert implements JsonEncodable {
 
   final DateTime updatedAt;
 
-  HippobaseAuthVerificationInsert copyWith({
-    SqlValue<String>? id,
+  AuthVerificationInsert copyWith({
+    SqlValue<AuthVerificationId>? id,
     String? identifier,
     String? value,
     DateTime? expiresAt,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return HippobaseAuthVerificationInsert(
+    return AuthVerificationInsert(
       id: id ?? this.id,
       identifier: identifier ?? this.identifier,
       value: value ?? this.value,
@@ -196,7 +193,7 @@ final class HippobaseAuthVerificationInsert implements JsonEncodable {
   }
 
   Map<String, Object?> toColumns() => <String, Object?>{
-    if (id.isPresent) 'id': id.value,
+    if (id.isPresent) 'id': id.value?.value,
     'identifier': identifier,
     'value': value,
     'expiresAt': expiresAt,
@@ -206,7 +203,7 @@ final class HippobaseAuthVerificationInsert implements JsonEncodable {
 
   @override
   Map<String, Object?> toJson() => <String, Object?>{
-    if (id.isPresent) 'id': id.value,
+    if (id.isPresent) 'id': id.value?.value,
     'identifier': identifier,
     'value': value,
     'expiresAt': expiresAt.toIso8601String(),
@@ -216,11 +213,11 @@ final class HippobaseAuthVerificationInsert implements JsonEncodable {
 
   @override
   String toString() =>
-      'HippobaseAuthVerificationInsert(id: $id, identifier: $identifier, value: $value, expiresAt: $expiresAt, createdAt: $createdAt, updatedAt: $updatedAt)';
+      'AuthVerificationInsert(id: $id, identifier: $identifier, value: $value, expiresAt: $expiresAt, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
-final class HippobaseAuthVerificationUpdate implements JsonEncodable {
-  const HippobaseAuthVerificationUpdate({
+final class AuthVerificationUpdate implements JsonEncodable {
+  const AuthVerificationUpdate({
     this.id = const SqlValue.absent(),
     this.identifier = const SqlValue.absent(),
     this.value = const SqlValue.absent(),
@@ -229,32 +226,31 @@ final class HippobaseAuthVerificationUpdate implements JsonEncodable {
     this.updatedAt = const SqlValue.absent(),
   });
 
-  factory HippobaseAuthVerificationUpdate.decode(Object? value) =>
-      HippobaseAuthVerificationUpdate.fromJson(readJsonObject(value));
+  factory AuthVerificationUpdate.decode(Object? value) =>
+      AuthVerificationUpdate.fromJson(readJsonObject(value));
 
-  factory HippobaseAuthVerificationUpdate.fromJson(Map<String, Object?> json) =>
-      HippobaseAuthVerificationUpdate(
-        id: json.containsKey('id')
-            ? SqlValue<String>((json['id'] as String))
-            : const SqlValue.absent(),
-        identifier: json.containsKey('identifier')
-            ? SqlValue<String>((json['identifier'] as String))
-            : const SqlValue.absent(),
-        value: json.containsKey('value')
-            ? SqlValue<String>((json['value'] as String))
-            : const SqlValue.absent(),
-        expiresAt: json.containsKey('expiresAt')
-            ? SqlValue<DateTime>(DateTime.parse((json['expiresAt'] as String)))
-            : const SqlValue.absent(),
-        createdAt: json.containsKey('createdAt')
-            ? SqlValue<DateTime>(DateTime.parse((json['createdAt'] as String)))
-            : const SqlValue.absent(),
-        updatedAt: json.containsKey('updatedAt')
-            ? SqlValue<DateTime>(DateTime.parse((json['updatedAt'] as String)))
-            : const SqlValue.absent(),
-      );
+  factory AuthVerificationUpdate.fromJson(Map<String, Object?> json) => AuthVerificationUpdate(
+    id: json.containsKey('id')
+        ? SqlValue<AuthVerificationId>(AuthVerificationId((json['id'] as String)))
+        : const SqlValue.absent(),
+    identifier: json.containsKey('identifier')
+        ? SqlValue<String>((json['identifier'] as String))
+        : const SqlValue.absent(),
+    value: json.containsKey('value')
+        ? SqlValue<String>((json['value'] as String))
+        : const SqlValue.absent(),
+    expiresAt: json.containsKey('expiresAt')
+        ? SqlValue<DateTime>(DateTime.parse((json['expiresAt'] as String)))
+        : const SqlValue.absent(),
+    createdAt: json.containsKey('createdAt')
+        ? SqlValue<DateTime>(DateTime.parse((json['createdAt'] as String)))
+        : const SqlValue.absent(),
+    updatedAt: json.containsKey('updatedAt')
+        ? SqlValue<DateTime>(DateTime.parse((json['updatedAt'] as String)))
+        : const SqlValue.absent(),
+  );
 
-  static const schemaId = 'HippobaseAuthVerificationUpdate';
+  static const schemaId = 'AuthVerificationUpdate';
 
   static const schemaRef = JsonSchema.componentRef(schemaId);
 
@@ -272,7 +268,7 @@ final class HippobaseAuthVerificationUpdate implements JsonEncodable {
     additionalProperties: false,
   );
 
-  final SqlValue<String> id;
+  final SqlValue<AuthVerificationId> id;
 
   final SqlValue<String> identifier;
 
@@ -284,15 +280,15 @@ final class HippobaseAuthVerificationUpdate implements JsonEncodable {
 
   final SqlValue<DateTime> updatedAt;
 
-  HippobaseAuthVerificationUpdate copyWith({
-    SqlValue<String>? id,
+  AuthVerificationUpdate copyWith({
+    SqlValue<AuthVerificationId>? id,
     SqlValue<String>? identifier,
     SqlValue<String>? value,
     SqlValue<DateTime>? expiresAt,
     SqlValue<DateTime>? createdAt,
     SqlValue<DateTime>? updatedAt,
   }) {
-    return HippobaseAuthVerificationUpdate(
+    return AuthVerificationUpdate(
       id: id ?? this.id,
       identifier: identifier ?? this.identifier,
       value: value ?? this.value,
@@ -303,7 +299,7 @@ final class HippobaseAuthVerificationUpdate implements JsonEncodable {
   }
 
   Map<String, Object?> toColumns() => <String, Object?>{
-    if (id.isPresent) 'id': id.value,
+    if (id.isPresent) 'id': id.value?.value,
     if (identifier.isPresent) 'identifier': identifier.value,
     if (value.isPresent) 'value': value.value,
     if (expiresAt.isPresent) 'expiresAt': expiresAt.value,
@@ -313,7 +309,7 @@ final class HippobaseAuthVerificationUpdate implements JsonEncodable {
 
   @override
   Map<String, Object?> toJson() => <String, Object?>{
-    if (id.isPresent) 'id': id.value,
+    if (id.isPresent) 'id': id.value?.value,
     if (identifier.isPresent) 'identifier': identifier.value,
     if (value.isPresent) 'value': value.value,
     if (expiresAt.isPresent) 'expiresAt': expiresAt.value?.toIso8601String(),
@@ -323,26 +319,21 @@ final class HippobaseAuthVerificationUpdate implements JsonEncodable {
 
   @override
   String toString() =>
-      'HippobaseAuthVerificationUpdate(id: $id, identifier: $identifier, value: $value, expiresAt: $expiresAt, createdAt: $createdAt, updatedAt: $updatedAt)';
+      'AuthVerificationUpdate(id: $id, identifier: $identifier, value: $value, expiresAt: $expiresAt, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
-final class HippobaseAuthVerificationsTable
-    extends
-        SqlTable<
-          HippobaseAuthVerificationRow,
-          HippobaseAuthVerificationInsert,
-          HippobaseAuthVerificationUpdate
-        > {
-  const HippobaseAuthVerificationsTable._() : schema = null;
+final class AuthVerificationsTable
+    extends SqlTable<AuthVerificationRow, AuthVerificationInsert, AuthVerificationUpdate> {
+  const AuthVerificationsTable._() : schema = 'auth';
 
-  const HippobaseAuthVerificationsTable.withSchema(this.schema);
+  const AuthVerificationsTable.withSchema(this.schema);
 
   @override
   final String? schema;
 
-  static const table = HippobaseAuthVerificationsTable._();
+  static const table = AuthVerificationsTable._();
 
-  static final id = SqlColumn<String>(
+  static final id = SqlColumn<AuthVerificationId>(
     table: table,
     name: 'id',
     nullable: false,
@@ -389,7 +380,7 @@ final class HippobaseAuthVerificationsTable
 
   @override
   List<SqlColumn<Object?>> get columns => <SqlColumn<Object?>>[
-    column<String>('id', nullable: false, databaseType: 'text').asObjectColumn,
+    column<AuthVerificationId>('id', nullable: false, databaseType: 'text').asObjectColumn,
     column<String>('identifier', nullable: false, databaseType: 'text').asObjectColumn,
     column<String>('value', nullable: false, databaseType: 'text').asObjectColumn,
     column<DateTime>('expiresAt', nullable: false, databaseType: 'timestamptz').asObjectColumn,
@@ -398,18 +389,19 @@ final class HippobaseAuthVerificationsTable
   ];
 
   @override
-  HippobaseAuthVerificationRow mapRow(SqlRow row, {String prefix = ''}) =>
-      HippobaseAuthVerificationRow.fromSqlRow(row, prefix: prefix);
+  AuthVerificationRow mapRow(SqlRow row, {String prefix = ''}) =>
+      AuthVerificationRow.fromSqlRow(row, prefix: prefix);
 
   @override
-  Map<String, Object?> encodeInsert(HippobaseAuthVerificationInsert value) => value.toColumns();
+  Map<String, Object?> encodeInsert(AuthVerificationInsert value) => value.toColumns();
 
   @override
-  Map<String, Object?> encodeUpdate(HippobaseAuthVerificationUpdate value) => value.toColumns();
+  Map<String, Object?> encodeUpdate(AuthVerificationUpdate value) => value.toColumns();
 }
 
-extension HippobaseAuthVerificationsTableColumns on HippobaseAuthVerificationsTable {
-  SqlColumn<String> get id => column<String>('id', nullable: false, databaseType: 'text');
+extension AuthVerificationsTableColumns on AuthVerificationsTable {
+  SqlColumn<AuthVerificationId> get id =>
+      column<AuthVerificationId>('id', nullable: false, databaseType: 'text');
 
   SqlColumn<String> get identifier =>
       column<String>('identifier', nullable: false, databaseType: 'text');

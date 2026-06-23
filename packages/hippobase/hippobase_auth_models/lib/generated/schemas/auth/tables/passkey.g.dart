@@ -1,7 +1,10 @@
 import 'package:dart_edge_core/dart_edge_core.dart';
+import 'user.g.dart';
 
-final class HippobaseAuthPasskeyRow implements JsonEncodable {
-  const HippobaseAuthPasskeyRow({
+extension type const AuthPasskeyId(String value) {}
+
+final class AuthPasskeyRow implements JsonEncodable {
+  const AuthPasskeyRow({
     required this.id,
     required this.name,
     required this.publicKey,
@@ -15,37 +18,35 @@ final class HippobaseAuthPasskeyRow implements JsonEncodable {
     required this.aaguid,
   });
 
-  factory HippobaseAuthPasskeyRow.fromSqlRow(SqlRow row, {String prefix = ''}) =>
-      HippobaseAuthPasskeyRow(
-        id: row.read<String>('${prefix}id'),
-        name: row.readNullable<String>('${prefix}name'),
-        publicKey: row.read<String>('${prefix}publicKey'),
-        userId: row.read<String>('${prefix}userId'),
-        credentialID: row.read<String>('${prefix}credentialID'),
-        counter: row.read<int>('${prefix}counter'),
-        deviceType: row.read<String>('${prefix}deviceType'),
-        backedUp: row.read<bool>('${prefix}backedUp'),
-        transports: row.readNullable<String>('${prefix}transports'),
-        createdAt: switch (row.readNullable<Object?>('${prefix}createdAt')) {
-          null => null,
-          final DateTime value => value,
-          final String value => DateTime.parse(value),
-          final value => value as DateTime,
-        },
-        aaguid: row.readNullable<String>('${prefix}aaguid'),
-      );
+  factory AuthPasskeyRow.fromSqlRow(SqlRow row, {String prefix = ''}) => AuthPasskeyRow(
+    id: AuthPasskeyId(row.read<String>('${prefix}id')),
+    name: row.readNullable<String>('${prefix}name'),
+    publicKey: row.read<String>('${prefix}publicKey'),
+    userId: AuthUserId(row.read<String>('${prefix}userId')),
+    credentialID: row.read<String>('${prefix}credentialID'),
+    counter: row.read<int>('${prefix}counter'),
+    deviceType: row.read<String>('${prefix}deviceType'),
+    backedUp: row.read<bool>('${prefix}backedUp'),
+    transports: row.readNullable<String>('${prefix}transports'),
+    createdAt: switch (row.readNullable<Object?>('${prefix}createdAt')) {
+      null => null,
+      final DateTime value => value,
+      final String value => DateTime.parse(value),
+      final value => value as DateTime,
+    },
+    aaguid: row.readNullable<String>('${prefix}aaguid'),
+  );
 
-  factory HippobaseAuthPasskeyRow.fromColumns(Map<String, Object?> columns, {String prefix = ''}) =>
-      HippobaseAuthPasskeyRow.fromSqlRow(SqlRow(columns), prefix: prefix);
+  factory AuthPasskeyRow.fromColumns(Map<String, Object?> columns, {String prefix = ''}) =>
+      AuthPasskeyRow.fromSqlRow(SqlRow(columns), prefix: prefix);
 
-  factory HippobaseAuthPasskeyRow.decode(Object? value) =>
-      HippobaseAuthPasskeyRow.fromJson(readJsonObject(value));
+  factory AuthPasskeyRow.decode(Object? value) => AuthPasskeyRow.fromJson(readJsonObject(value));
 
-  factory HippobaseAuthPasskeyRow.fromJson(Map<String, Object?> json) => HippobaseAuthPasskeyRow(
-    id: (json['id'] as String),
+  factory AuthPasskeyRow.fromJson(Map<String, Object?> json) => AuthPasskeyRow(
+    id: AuthPasskeyId((json['id'] as String)),
     name: json['name'] == null ? null : (json['name'] as String),
     publicKey: (json['publicKey'] as String),
-    userId: (json['userId'] as String),
+    userId: AuthUserId((json['userId'] as String)),
     credentialID: (json['credentialID'] as String),
     counter: (json['counter'] as num).toInt(),
     deviceType: (json['deviceType'] as String),
@@ -55,7 +56,7 @@ final class HippobaseAuthPasskeyRow implements JsonEncodable {
     aaguid: json['aaguid'] == null ? null : (json['aaguid'] as String),
   );
 
-  static const schemaId = 'HippobaseAuthPasskeyRow';
+  static const schemaId = 'AuthPasskeyRow';
 
   static const schemaRef = JsonSchema.componentRef(schemaId);
 
@@ -90,13 +91,13 @@ final class HippobaseAuthPasskeyRow implements JsonEncodable {
     additionalProperties: false,
   );
 
-  final String id;
+  final AuthPasskeyId id;
 
   final String? name;
 
   final String publicKey;
 
-  final String userId;
+  final AuthUserId userId;
 
   final String credentialID;
 
@@ -112,11 +113,11 @@ final class HippobaseAuthPasskeyRow implements JsonEncodable {
 
   final String? aaguid;
 
-  HippobaseAuthPasskeyRow copyWith({
-    String? id,
+  AuthPasskeyRow copyWith({
+    AuthPasskeyId? id,
     SqlValue<String?>? name,
     String? publicKey,
-    String? userId,
+    AuthUserId? userId,
     String? credentialID,
     int? counter,
     String? deviceType,
@@ -125,7 +126,7 @@ final class HippobaseAuthPasskeyRow implements JsonEncodable {
     SqlValue<DateTime?>? createdAt,
     SqlValue<String?>? aaguid,
   }) {
-    return HippobaseAuthPasskeyRow(
+    return AuthPasskeyRow(
       id: id ?? this.id,
       name: name == null || !name.isPresent ? this.name : name.value,
       publicKey: publicKey ?? this.publicKey,
@@ -141,10 +142,10 @@ final class HippobaseAuthPasskeyRow implements JsonEncodable {
   }
 
   Map<String, Object?> toColumns() => <String, Object?>{
-    'id': id,
+    'id': id.value,
     'name': name,
     'publicKey': publicKey,
-    'userId': userId,
+    'userId': userId.value,
     'credentialID': credentialID,
     'counter': counter,
     'deviceType': deviceType,
@@ -156,10 +157,10 @@ final class HippobaseAuthPasskeyRow implements JsonEncodable {
 
   @override
   Map<String, Object?> toJson() => <String, Object?>{
-    'id': id,
+    'id': id.value,
     'name': name,
     'publicKey': publicKey,
-    'userId': userId,
+    'userId': userId.value,
     'credentialID': credentialID,
     'counter': counter,
     'deviceType': deviceType,
@@ -171,11 +172,11 @@ final class HippobaseAuthPasskeyRow implements JsonEncodable {
 
   @override
   String toString() =>
-      'HippobaseAuthPasskeyRow(id: $id, name: $name, publicKey: $publicKey, userId: $userId, credentialID: $credentialID, counter: $counter, deviceType: $deviceType, backedUp: $backedUp, transports: $transports, createdAt: $createdAt, aaguid: $aaguid)';
+      'AuthPasskeyRow(id: $id, name: $name, publicKey: $publicKey, userId: $userId, credentialID: $credentialID, counter: $counter, deviceType: $deviceType, backedUp: $backedUp, transports: $transports, createdAt: $createdAt, aaguid: $aaguid)';
 }
 
-final class HippobaseAuthPasskeyInsert implements JsonEncodable {
-  const HippobaseAuthPasskeyInsert({
+final class AuthPasskeyInsert implements JsonEncodable {
+  const AuthPasskeyInsert({
     this.id = const SqlValue.absent(),
     required this.name,
     required this.publicKey,
@@ -189,27 +190,26 @@ final class HippobaseAuthPasskeyInsert implements JsonEncodable {
     required this.aaguid,
   });
 
-  factory HippobaseAuthPasskeyInsert.decode(Object? value) =>
-      HippobaseAuthPasskeyInsert.fromJson(readJsonObject(value));
+  factory AuthPasskeyInsert.decode(Object? value) =>
+      AuthPasskeyInsert.fromJson(readJsonObject(value));
 
-  factory HippobaseAuthPasskeyInsert.fromJson(Map<String, Object?> json) =>
-      HippobaseAuthPasskeyInsert(
-        id: json.containsKey('id')
-            ? SqlValue<String>((json['id'] as String))
-            : const SqlValue.absent(),
-        name: json['name'] == null ? null : (json['name'] as String),
-        publicKey: (json['publicKey'] as String),
-        userId: (json['userId'] as String),
-        credentialID: (json['credentialID'] as String),
-        counter: (json['counter'] as num).toInt(),
-        deviceType: (json['deviceType'] as String),
-        backedUp: (json['backedUp'] as bool),
-        transports: json['transports'] == null ? null : (json['transports'] as String),
-        createdAt: json['createdAt'] == null ? null : DateTime.parse((json['createdAt'] as String)),
-        aaguid: json['aaguid'] == null ? null : (json['aaguid'] as String),
-      );
+  factory AuthPasskeyInsert.fromJson(Map<String, Object?> json) => AuthPasskeyInsert(
+    id: json.containsKey('id')
+        ? SqlValue<AuthPasskeyId>(AuthPasskeyId((json['id'] as String)))
+        : const SqlValue.absent(),
+    name: json['name'] == null ? null : (json['name'] as String),
+    publicKey: (json['publicKey'] as String),
+    userId: AuthUserId((json['userId'] as String)),
+    credentialID: (json['credentialID'] as String),
+    counter: (json['counter'] as num).toInt(),
+    deviceType: (json['deviceType'] as String),
+    backedUp: (json['backedUp'] as bool),
+    transports: json['transports'] == null ? null : (json['transports'] as String),
+    createdAt: json['createdAt'] == null ? null : DateTime.parse((json['createdAt'] as String)),
+    aaguid: json['aaguid'] == null ? null : (json['aaguid'] as String),
+  );
 
-  static const schemaId = 'HippobaseAuthPasskeyInsert';
+  static const schemaId = 'AuthPasskeyInsert';
 
   static const schemaRef = JsonSchema.componentRef(schemaId);
 
@@ -243,13 +243,13 @@ final class HippobaseAuthPasskeyInsert implements JsonEncodable {
     additionalProperties: false,
   );
 
-  final SqlValue<String> id;
+  final SqlValue<AuthPasskeyId> id;
 
   final String? name;
 
   final String publicKey;
 
-  final String userId;
+  final AuthUserId userId;
 
   final String credentialID;
 
@@ -265,11 +265,11 @@ final class HippobaseAuthPasskeyInsert implements JsonEncodable {
 
   final String? aaguid;
 
-  HippobaseAuthPasskeyInsert copyWith({
-    SqlValue<String>? id,
+  AuthPasskeyInsert copyWith({
+    SqlValue<AuthPasskeyId>? id,
     SqlValue<String?>? name,
     String? publicKey,
-    String? userId,
+    AuthUserId? userId,
     String? credentialID,
     int? counter,
     String? deviceType,
@@ -278,7 +278,7 @@ final class HippobaseAuthPasskeyInsert implements JsonEncodable {
     SqlValue<DateTime?>? createdAt,
     SqlValue<String?>? aaguid,
   }) {
-    return HippobaseAuthPasskeyInsert(
+    return AuthPasskeyInsert(
       id: id ?? this.id,
       name: name == null || !name.isPresent ? this.name : name.value,
       publicKey: publicKey ?? this.publicKey,
@@ -294,10 +294,10 @@ final class HippobaseAuthPasskeyInsert implements JsonEncodable {
   }
 
   Map<String, Object?> toColumns() => <String, Object?>{
-    if (id.isPresent) 'id': id.value,
+    if (id.isPresent) 'id': id.value?.value,
     'name': name,
     'publicKey': publicKey,
-    'userId': userId,
+    'userId': userId.value,
     'credentialID': credentialID,
     'counter': counter,
     'deviceType': deviceType,
@@ -309,10 +309,10 @@ final class HippobaseAuthPasskeyInsert implements JsonEncodable {
 
   @override
   Map<String, Object?> toJson() => <String, Object?>{
-    if (id.isPresent) 'id': id.value,
+    if (id.isPresent) 'id': id.value?.value,
     'name': name,
     'publicKey': publicKey,
-    'userId': userId,
+    'userId': userId.value,
     'credentialID': credentialID,
     'counter': counter,
     'deviceType': deviceType,
@@ -324,11 +324,11 @@ final class HippobaseAuthPasskeyInsert implements JsonEncodable {
 
   @override
   String toString() =>
-      'HippobaseAuthPasskeyInsert(id: $id, name: $name, publicKey: $publicKey, userId: $userId, credentialID: $credentialID, counter: $counter, deviceType: $deviceType, backedUp: $backedUp, transports: $transports, createdAt: $createdAt, aaguid: $aaguid)';
+      'AuthPasskeyInsert(id: $id, name: $name, publicKey: $publicKey, userId: $userId, credentialID: $credentialID, counter: $counter, deviceType: $deviceType, backedUp: $backedUp, transports: $transports, createdAt: $createdAt, aaguid: $aaguid)';
 }
 
-final class HippobaseAuthPasskeyUpdate implements JsonEncodable {
-  const HippobaseAuthPasskeyUpdate({
+final class AuthPasskeyUpdate implements JsonEncodable {
+  const AuthPasskeyUpdate({
     this.id = const SqlValue.absent(),
     this.name = const SqlValue.absent(),
     this.publicKey = const SqlValue.absent(),
@@ -342,49 +342,48 @@ final class HippobaseAuthPasskeyUpdate implements JsonEncodable {
     this.aaguid = const SqlValue.absent(),
   });
 
-  factory HippobaseAuthPasskeyUpdate.decode(Object? value) =>
-      HippobaseAuthPasskeyUpdate.fromJson(readJsonObject(value));
+  factory AuthPasskeyUpdate.decode(Object? value) =>
+      AuthPasskeyUpdate.fromJson(readJsonObject(value));
 
-  factory HippobaseAuthPasskeyUpdate.fromJson(Map<String, Object?> json) =>
-      HippobaseAuthPasskeyUpdate(
-        id: json.containsKey('id')
-            ? SqlValue<String>((json['id'] as String))
-            : const SqlValue.absent(),
-        name: json.containsKey('name')
-            ? SqlValue<String?>(json['name'] == null ? null : (json['name'] as String))
-            : const SqlValue.absent(),
-        publicKey: json.containsKey('publicKey')
-            ? SqlValue<String>((json['publicKey'] as String))
-            : const SqlValue.absent(),
-        userId: json.containsKey('userId')
-            ? SqlValue<String>((json['userId'] as String))
-            : const SqlValue.absent(),
-        credentialID: json.containsKey('credentialID')
-            ? SqlValue<String>((json['credentialID'] as String))
-            : const SqlValue.absent(),
-        counter: json.containsKey('counter')
-            ? SqlValue<int>((json['counter'] as num).toInt())
-            : const SqlValue.absent(),
-        deviceType: json.containsKey('deviceType')
-            ? SqlValue<String>((json['deviceType'] as String))
-            : const SqlValue.absent(),
-        backedUp: json.containsKey('backedUp')
-            ? SqlValue<bool>((json['backedUp'] as bool))
-            : const SqlValue.absent(),
-        transports: json.containsKey('transports')
-            ? SqlValue<String?>(json['transports'] == null ? null : (json['transports'] as String))
-            : const SqlValue.absent(),
-        createdAt: json.containsKey('createdAt')
-            ? SqlValue<DateTime?>(
-                json['createdAt'] == null ? null : DateTime.parse((json['createdAt'] as String)),
-              )
-            : const SqlValue.absent(),
-        aaguid: json.containsKey('aaguid')
-            ? SqlValue<String?>(json['aaguid'] == null ? null : (json['aaguid'] as String))
-            : const SqlValue.absent(),
-      );
+  factory AuthPasskeyUpdate.fromJson(Map<String, Object?> json) => AuthPasskeyUpdate(
+    id: json.containsKey('id')
+        ? SqlValue<AuthPasskeyId>(AuthPasskeyId((json['id'] as String)))
+        : const SqlValue.absent(),
+    name: json.containsKey('name')
+        ? SqlValue<String?>(json['name'] == null ? null : (json['name'] as String))
+        : const SqlValue.absent(),
+    publicKey: json.containsKey('publicKey')
+        ? SqlValue<String>((json['publicKey'] as String))
+        : const SqlValue.absent(),
+    userId: json.containsKey('userId')
+        ? SqlValue<AuthUserId>(AuthUserId((json['userId'] as String)))
+        : const SqlValue.absent(),
+    credentialID: json.containsKey('credentialID')
+        ? SqlValue<String>((json['credentialID'] as String))
+        : const SqlValue.absent(),
+    counter: json.containsKey('counter')
+        ? SqlValue<int>((json['counter'] as num).toInt())
+        : const SqlValue.absent(),
+    deviceType: json.containsKey('deviceType')
+        ? SqlValue<String>((json['deviceType'] as String))
+        : const SqlValue.absent(),
+    backedUp: json.containsKey('backedUp')
+        ? SqlValue<bool>((json['backedUp'] as bool))
+        : const SqlValue.absent(),
+    transports: json.containsKey('transports')
+        ? SqlValue<String?>(json['transports'] == null ? null : (json['transports'] as String))
+        : const SqlValue.absent(),
+    createdAt: json.containsKey('createdAt')
+        ? SqlValue<DateTime?>(
+            json['createdAt'] == null ? null : DateTime.parse((json['createdAt'] as String)),
+          )
+        : const SqlValue.absent(),
+    aaguid: json.containsKey('aaguid')
+        ? SqlValue<String?>(json['aaguid'] == null ? null : (json['aaguid'] as String))
+        : const SqlValue.absent(),
+  );
 
-  static const schemaId = 'HippobaseAuthPasskeyUpdate';
+  static const schemaId = 'AuthPasskeyUpdate';
 
   static const schemaRef = JsonSchema.componentRef(schemaId);
 
@@ -407,13 +406,13 @@ final class HippobaseAuthPasskeyUpdate implements JsonEncodable {
     additionalProperties: false,
   );
 
-  final SqlValue<String> id;
+  final SqlValue<AuthPasskeyId> id;
 
   final SqlValue<String?> name;
 
   final SqlValue<String> publicKey;
 
-  final SqlValue<String> userId;
+  final SqlValue<AuthUserId> userId;
 
   final SqlValue<String> credentialID;
 
@@ -429,11 +428,11 @@ final class HippobaseAuthPasskeyUpdate implements JsonEncodable {
 
   final SqlValue<String?> aaguid;
 
-  HippobaseAuthPasskeyUpdate copyWith({
-    SqlValue<String>? id,
+  AuthPasskeyUpdate copyWith({
+    SqlValue<AuthPasskeyId>? id,
     SqlValue<String?>? name,
     SqlValue<String>? publicKey,
-    SqlValue<String>? userId,
+    SqlValue<AuthUserId>? userId,
     SqlValue<String>? credentialID,
     SqlValue<int>? counter,
     SqlValue<String>? deviceType,
@@ -442,7 +441,7 @@ final class HippobaseAuthPasskeyUpdate implements JsonEncodable {
     SqlValue<DateTime?>? createdAt,
     SqlValue<String?>? aaguid,
   }) {
-    return HippobaseAuthPasskeyUpdate(
+    return AuthPasskeyUpdate(
       id: id ?? this.id,
       name: name ?? this.name,
       publicKey: publicKey ?? this.publicKey,
@@ -458,10 +457,10 @@ final class HippobaseAuthPasskeyUpdate implements JsonEncodable {
   }
 
   Map<String, Object?> toColumns() => <String, Object?>{
-    if (id.isPresent) 'id': id.value,
+    if (id.isPresent) 'id': id.value?.value,
     if (name.isPresent) 'name': name.value,
     if (publicKey.isPresent) 'publicKey': publicKey.value,
-    if (userId.isPresent) 'userId': userId.value,
+    if (userId.isPresent) 'userId': userId.value?.value,
     if (credentialID.isPresent) 'credentialID': credentialID.value,
     if (counter.isPresent) 'counter': counter.value,
     if (deviceType.isPresent) 'deviceType': deviceType.value,
@@ -473,10 +472,10 @@ final class HippobaseAuthPasskeyUpdate implements JsonEncodable {
 
   @override
   Map<String, Object?> toJson() => <String, Object?>{
-    if (id.isPresent) 'id': id.value,
+    if (id.isPresent) 'id': id.value?.value,
     if (name.isPresent) 'name': name.value,
     if (publicKey.isPresent) 'publicKey': publicKey.value,
-    if (userId.isPresent) 'userId': userId.value,
+    if (userId.isPresent) 'userId': userId.value?.value,
     if (credentialID.isPresent) 'credentialID': credentialID.value,
     if (counter.isPresent) 'counter': counter.value,
     if (deviceType.isPresent) 'deviceType': deviceType.value,
@@ -488,22 +487,21 @@ final class HippobaseAuthPasskeyUpdate implements JsonEncodable {
 
   @override
   String toString() =>
-      'HippobaseAuthPasskeyUpdate(id: $id, name: $name, publicKey: $publicKey, userId: $userId, credentialID: $credentialID, counter: $counter, deviceType: $deviceType, backedUp: $backedUp, transports: $transports, createdAt: $createdAt, aaguid: $aaguid)';
+      'AuthPasskeyUpdate(id: $id, name: $name, publicKey: $publicKey, userId: $userId, credentialID: $credentialID, counter: $counter, deviceType: $deviceType, backedUp: $backedUp, transports: $transports, createdAt: $createdAt, aaguid: $aaguid)';
 }
 
-final class HippobaseAuthPasskeysTable
-    extends
-        SqlTable<HippobaseAuthPasskeyRow, HippobaseAuthPasskeyInsert, HippobaseAuthPasskeyUpdate> {
-  const HippobaseAuthPasskeysTable._() : schema = null;
+final class AuthPasskeysTable
+    extends SqlTable<AuthPasskeyRow, AuthPasskeyInsert, AuthPasskeyUpdate> {
+  const AuthPasskeysTable._() : schema = 'auth';
 
-  const HippobaseAuthPasskeysTable.withSchema(this.schema);
+  const AuthPasskeysTable.withSchema(this.schema);
 
   @override
   final String? schema;
 
-  static const table = HippobaseAuthPasskeysTable._();
+  static const table = AuthPasskeysTable._();
 
-  static final id = SqlColumn<String>(
+  static final id = SqlColumn<AuthPasskeyId>(
     table: table,
     name: 'id',
     nullable: false,
@@ -524,7 +522,7 @@ final class HippobaseAuthPasskeysTable
     databaseType: 'text',
   );
 
-  static final userId = SqlColumn<String>(
+  static final userId = SqlColumn<AuthUserId>(
     table: table,
     name: 'userId',
     nullable: false,
@@ -585,10 +583,10 @@ final class HippobaseAuthPasskeysTable
 
   @override
   List<SqlColumn<Object?>> get columns => <SqlColumn<Object?>>[
-    column<String>('id', nullable: false, databaseType: 'text').asObjectColumn,
+    column<AuthPasskeyId>('id', nullable: false, databaseType: 'text').asObjectColumn,
     column<String>('name', nullable: true, databaseType: 'text').asObjectColumn,
     column<String>('publicKey', nullable: false, databaseType: 'text').asObjectColumn,
-    column<String>('userId', nullable: false, databaseType: 'text').asObjectColumn,
+    column<AuthUserId>('userId', nullable: false, databaseType: 'text').asObjectColumn,
     column<String>('credentialID', nullable: false, databaseType: 'text').asObjectColumn,
     column<int>('counter', nullable: false, databaseType: 'int4').asObjectColumn,
     column<String>('deviceType', nullable: false, databaseType: 'text').asObjectColumn,
@@ -599,25 +597,27 @@ final class HippobaseAuthPasskeysTable
   ];
 
   @override
-  HippobaseAuthPasskeyRow mapRow(SqlRow row, {String prefix = ''}) =>
-      HippobaseAuthPasskeyRow.fromSqlRow(row, prefix: prefix);
+  AuthPasskeyRow mapRow(SqlRow row, {String prefix = ''}) =>
+      AuthPasskeyRow.fromSqlRow(row, prefix: prefix);
 
   @override
-  Map<String, Object?> encodeInsert(HippobaseAuthPasskeyInsert value) => value.toColumns();
+  Map<String, Object?> encodeInsert(AuthPasskeyInsert value) => value.toColumns();
 
   @override
-  Map<String, Object?> encodeUpdate(HippobaseAuthPasskeyUpdate value) => value.toColumns();
+  Map<String, Object?> encodeUpdate(AuthPasskeyUpdate value) => value.toColumns();
 }
 
-extension HippobaseAuthPasskeysTableColumns on HippobaseAuthPasskeysTable {
-  SqlColumn<String> get id => column<String>('id', nullable: false, databaseType: 'text');
+extension AuthPasskeysTableColumns on AuthPasskeysTable {
+  SqlColumn<AuthPasskeyId> get id =>
+      column<AuthPasskeyId>('id', nullable: false, databaseType: 'text');
 
   SqlColumn<String> get nameColumn => column<String>('name', nullable: true, databaseType: 'text');
 
   SqlColumn<String> get publicKey =>
       column<String>('publicKey', nullable: false, databaseType: 'text');
 
-  SqlColumn<String> get userId => column<String>('userId', nullable: false, databaseType: 'text');
+  SqlColumn<AuthUserId> get userId =>
+      column<AuthUserId>('userId', nullable: false, databaseType: 'text');
 
   SqlColumn<String> get credentialID =>
       column<String>('credentialID', nullable: false, databaseType: 'text');

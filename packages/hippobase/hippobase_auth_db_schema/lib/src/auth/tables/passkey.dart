@@ -1,6 +1,7 @@
 import 'package:dart_edge_sql_migrator/dart_edge_sql_migrator.dart';
 
 const SqlTableSchema betterAuthPasskeyTable = SqlTableSchema(
+  schema: 'auth',
   name: 'passkey',
   columns: <SqlColumnSchema>[
     SqlColumnSchema(name: 'id', type: 'TEXT', nullable: false, primaryKey: true),
@@ -19,6 +20,7 @@ const SqlTableSchema betterAuthPasskeyTable = SqlTableSchema(
     SqlForeignKeyConstraintSchema(
       name: 'passkey_user_id_fkey',
       columns: <String>['userId'],
+      referencesSchema: 'auth',
       referencesTable: 'user',
       referencesColumns: <String>['id'],
       onDelete: SqlForeignKeyAction.cascade,

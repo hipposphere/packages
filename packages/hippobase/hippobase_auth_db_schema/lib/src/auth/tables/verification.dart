@@ -1,6 +1,7 @@
 import 'package:dart_edge_sql_migrator/dart_edge_sql_migrator.dart';
 
 const SqlTableSchema betterAuthVerificationTable = SqlTableSchema(
+  schema: 'auth',
   name: 'verification',
   columns: <SqlColumnSchema>[
     SqlColumnSchema(name: 'id', type: 'TEXT', nullable: false, primaryKey: true),

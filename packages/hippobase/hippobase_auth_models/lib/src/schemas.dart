@@ -1,7 +1,7 @@
 import 'package:dart_edge_core/dart_edge_core.dart';
 
-import '../generated/hippobase_auth_database.g.dart';
+import '../generated/auth_database.g.dart';
 
-const hippobaseAuthModelsSchemas = <JsonSchema>[...HippobaseAuthDatabase.schemas];
+const hippobaseAuthModelsSchemas = <JsonSchema>[...AuthDatabase.schemas];
 
 const hippobaseAuthJsonSchemas = JsonSchemaRegistry(schemas: hippobaseAuthModelsSchemas);

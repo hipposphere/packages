@@ -12,6 +12,7 @@ void main() {
       'verification',
       'passkey',
     ]);
+    expect(hippobaseAuthDbSchemaTables.map((table) => table.schema), everyElement('auth'));
   });
 
   test('renders cascade foreign keys for user-owned tables', () {
@@ -26,7 +27,7 @@ void main() {
             .join('\n');
 
     expect(statements, contains('CONSTRAINT "session_user_id_fkey"'));
-    expect(statements, contains('REFERENCES "user" ("id") ON DELETE CASCADE'));
+    expect(statements, contains('REFERENCES "auth"."user" ("id") ON DELETE CASCADE'));
     expect(statements, contains('CONSTRAINT "account_user_id_fkey"'));
     expect(statements, contains('CONSTRAINT "passkey_user_id_fkey"'));
   });

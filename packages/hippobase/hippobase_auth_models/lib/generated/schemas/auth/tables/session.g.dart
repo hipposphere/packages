@@ -1,7 +1,10 @@
 import 'package:dart_edge_core/dart_edge_core.dart';
+import 'user.g.dart';
 
-final class HippobaseAuthSessionRow implements JsonEncodable {
-  const HippobaseAuthSessionRow({
+extension type const AuthSessionId(String value) {}
+
+final class AuthSessionRow implements JsonEncodable {
+  const AuthSessionRow({
     required this.id,
     required this.expiresAt,
     required this.token,
@@ -13,50 +16,48 @@ final class HippobaseAuthSessionRow implements JsonEncodable {
     required this.impersonatedBy,
   });
 
-  factory HippobaseAuthSessionRow.fromSqlRow(SqlRow row, {String prefix = ''}) =>
-      HippobaseAuthSessionRow(
-        id: row.read<String>('${prefix}id'),
-        expiresAt: switch (row.read<Object?>('${prefix}expiresAt')) {
-          final DateTime value => value,
-          final String value => DateTime.parse(value),
-          final value => value as DateTime,
-        },
-        token: row.read<String>('${prefix}token'),
-        createdAt: switch (row.read<Object?>('${prefix}createdAt')) {
-          final DateTime value => value,
-          final String value => DateTime.parse(value),
-          final value => value as DateTime,
-        },
-        updatedAt: switch (row.read<Object?>('${prefix}updatedAt')) {
-          final DateTime value => value,
-          final String value => DateTime.parse(value),
-          final value => value as DateTime,
-        },
-        ipAddress: row.readNullable<String>('${prefix}ipAddress'),
-        userAgent: row.readNullable<String>('${prefix}userAgent'),
-        userId: row.read<String>('${prefix}userId'),
-        impersonatedBy: row.readNullable<String>('${prefix}impersonatedBy'),
-      );
+  factory AuthSessionRow.fromSqlRow(SqlRow row, {String prefix = ''}) => AuthSessionRow(
+    id: AuthSessionId(row.read<String>('${prefix}id')),
+    expiresAt: switch (row.read<Object?>('${prefix}expiresAt')) {
+      final DateTime value => value,
+      final String value => DateTime.parse(value),
+      final value => value as DateTime,
+    },
+    token: row.read<String>('${prefix}token'),
+    createdAt: switch (row.read<Object?>('${prefix}createdAt')) {
+      final DateTime value => value,
+      final String value => DateTime.parse(value),
+      final value => value as DateTime,
+    },
+    updatedAt: switch (row.read<Object?>('${prefix}updatedAt')) {
+      final DateTime value => value,
+      final String value => DateTime.parse(value),
+      final value => value as DateTime,
+    },
+    ipAddress: row.readNullable<String>('${prefix}ipAddress'),
+    userAgent: row.readNullable<String>('${prefix}userAgent'),
+    userId: AuthUserId(row.read<String>('${prefix}userId')),
+    impersonatedBy: row.readNullable<String>('${prefix}impersonatedBy'),
+  );
 
-  factory HippobaseAuthSessionRow.fromColumns(Map<String, Object?> columns, {String prefix = ''}) =>
-      HippobaseAuthSessionRow.fromSqlRow(SqlRow(columns), prefix: prefix);
+  factory AuthSessionRow.fromColumns(Map<String, Object?> columns, {String prefix = ''}) =>
+      AuthSessionRow.fromSqlRow(SqlRow(columns), prefix: prefix);
 
-  factory HippobaseAuthSessionRow.decode(Object? value) =>
-      HippobaseAuthSessionRow.fromJson(readJsonObject(value));
+  factory AuthSessionRow.decode(Object? value) => AuthSessionRow.fromJson(readJsonObject(value));
 
-  factory HippobaseAuthSessionRow.fromJson(Map<String, Object?> json) => HippobaseAuthSessionRow(
-    id: (json['id'] as String),
+  factory AuthSessionRow.fromJson(Map<String, Object?> json) => AuthSessionRow(
+    id: AuthSessionId((json['id'] as String)),
     expiresAt: DateTime.parse((json['expiresAt'] as String)),
     token: (json['token'] as String),
     createdAt: DateTime.parse((json['createdAt'] as String)),
     updatedAt: DateTime.parse((json['updatedAt'] as String)),
     ipAddress: json['ipAddress'] == null ? null : (json['ipAddress'] as String),
     userAgent: json['userAgent'] == null ? null : (json['userAgent'] as String),
-    userId: (json['userId'] as String),
+    userId: AuthUserId((json['userId'] as String)),
     impersonatedBy: json['impersonatedBy'] == null ? null : (json['impersonatedBy'] as String),
   );
 
-  static const schemaId = 'HippobaseAuthSessionRow';
+  static const schemaId = 'AuthSessionRow';
 
   static const schemaRef = JsonSchema.componentRef(schemaId);
 
@@ -87,7 +88,7 @@ final class HippobaseAuthSessionRow implements JsonEncodable {
     additionalProperties: false,
   );
 
-  final String id;
+  final AuthSessionId id;
 
   final DateTime expiresAt;
 
@@ -101,22 +102,22 @@ final class HippobaseAuthSessionRow implements JsonEncodable {
 
   final String? userAgent;
 
-  final String userId;
+  final AuthUserId userId;
 
   final String? impersonatedBy;
 
-  HippobaseAuthSessionRow copyWith({
-    String? id,
+  AuthSessionRow copyWith({
+    AuthSessionId? id,
     DateTime? expiresAt,
     String? token,
     DateTime? createdAt,
     DateTime? updatedAt,
     SqlValue<String?>? ipAddress,
     SqlValue<String?>? userAgent,
-    String? userId,
+    AuthUserId? userId,
     SqlValue<String?>? impersonatedBy,
   }) {
-    return HippobaseAuthSessionRow(
+    return AuthSessionRow(
       id: id ?? this.id,
       expiresAt: expiresAt ?? this.expiresAt,
       token: token ?? this.token,
@@ -132,37 +133,37 @@ final class HippobaseAuthSessionRow implements JsonEncodable {
   }
 
   Map<String, Object?> toColumns() => <String, Object?>{
-    'id': id,
+    'id': id.value,
     'expiresAt': expiresAt,
     'token': token,
     'createdAt': createdAt,
     'updatedAt': updatedAt,
     'ipAddress': ipAddress,
     'userAgent': userAgent,
-    'userId': userId,
+    'userId': userId.value,
     'impersonatedBy': impersonatedBy,
   };
 
   @override
   Map<String, Object?> toJson() => <String, Object?>{
-    'id': id,
+    'id': id.value,
     'expiresAt': expiresAt.toIso8601String(),
     'token': token,
     'createdAt': createdAt.toIso8601String(),
     'updatedAt': updatedAt.toIso8601String(),
     'ipAddress': ipAddress,
     'userAgent': userAgent,
-    'userId': userId,
+    'userId': userId.value,
     'impersonatedBy': impersonatedBy,
   };
 
   @override
   String toString() =>
-      'HippobaseAuthSessionRow(id: $id, expiresAt: $expiresAt, token: $token, createdAt: $createdAt, updatedAt: $updatedAt, ipAddress: $ipAddress, userAgent: $userAgent, userId: $userId, impersonatedBy: $impersonatedBy)';
+      'AuthSessionRow(id: $id, expiresAt: $expiresAt, token: $token, createdAt: $createdAt, updatedAt: $updatedAt, ipAddress: $ipAddress, userAgent: $userAgent, userId: $userId, impersonatedBy: $impersonatedBy)';
 }
 
-final class HippobaseAuthSessionInsert implements JsonEncodable {
-  const HippobaseAuthSessionInsert({
+final class AuthSessionInsert implements JsonEncodable {
+  const AuthSessionInsert({
     this.id = const SqlValue.absent(),
     required this.expiresAt,
     required this.token,
@@ -174,25 +175,24 @@ final class HippobaseAuthSessionInsert implements JsonEncodable {
     required this.impersonatedBy,
   });
 
-  factory HippobaseAuthSessionInsert.decode(Object? value) =>
-      HippobaseAuthSessionInsert.fromJson(readJsonObject(value));
+  factory AuthSessionInsert.decode(Object? value) =>
+      AuthSessionInsert.fromJson(readJsonObject(value));
 
-  factory HippobaseAuthSessionInsert.fromJson(Map<String, Object?> json) =>
-      HippobaseAuthSessionInsert(
-        id: json.containsKey('id')
-            ? SqlValue<String>((json['id'] as String))
-            : const SqlValue.absent(),
-        expiresAt: DateTime.parse((json['expiresAt'] as String)),
-        token: (json['token'] as String),
-        createdAt: DateTime.parse((json['createdAt'] as String)),
-        updatedAt: DateTime.parse((json['updatedAt'] as String)),
-        ipAddress: json['ipAddress'] == null ? null : (json['ipAddress'] as String),
-        userAgent: json['userAgent'] == null ? null : (json['userAgent'] as String),
-        userId: (json['userId'] as String),
-        impersonatedBy: json['impersonatedBy'] == null ? null : (json['impersonatedBy'] as String),
-      );
+  factory AuthSessionInsert.fromJson(Map<String, Object?> json) => AuthSessionInsert(
+    id: json.containsKey('id')
+        ? SqlValue<AuthSessionId>(AuthSessionId((json['id'] as String)))
+        : const SqlValue.absent(),
+    expiresAt: DateTime.parse((json['expiresAt'] as String)),
+    token: (json['token'] as String),
+    createdAt: DateTime.parse((json['createdAt'] as String)),
+    updatedAt: DateTime.parse((json['updatedAt'] as String)),
+    ipAddress: json['ipAddress'] == null ? null : (json['ipAddress'] as String),
+    userAgent: json['userAgent'] == null ? null : (json['userAgent'] as String),
+    userId: AuthUserId((json['userId'] as String)),
+    impersonatedBy: json['impersonatedBy'] == null ? null : (json['impersonatedBy'] as String),
+  );
 
-  static const schemaId = 'HippobaseAuthSessionInsert';
+  static const schemaId = 'AuthSessionInsert';
 
   static const schemaRef = JsonSchema.componentRef(schemaId);
 
@@ -222,7 +222,7 @@ final class HippobaseAuthSessionInsert implements JsonEncodable {
     additionalProperties: false,
   );
 
-  final SqlValue<String> id;
+  final SqlValue<AuthSessionId> id;
 
   final DateTime expiresAt;
 
@@ -236,22 +236,22 @@ final class HippobaseAuthSessionInsert implements JsonEncodable {
 
   final String? userAgent;
 
-  final String userId;
+  final AuthUserId userId;
 
   final String? impersonatedBy;
 
-  HippobaseAuthSessionInsert copyWith({
-    SqlValue<String>? id,
+  AuthSessionInsert copyWith({
+    SqlValue<AuthSessionId>? id,
     DateTime? expiresAt,
     String? token,
     DateTime? createdAt,
     DateTime? updatedAt,
     SqlValue<String?>? ipAddress,
     SqlValue<String?>? userAgent,
-    String? userId,
+    AuthUserId? userId,
     SqlValue<String?>? impersonatedBy,
   }) {
-    return HippobaseAuthSessionInsert(
+    return AuthSessionInsert(
       id: id ?? this.id,
       expiresAt: expiresAt ?? this.expiresAt,
       token: token ?? this.token,
@@ -267,37 +267,37 @@ final class HippobaseAuthSessionInsert implements JsonEncodable {
   }
 
   Map<String, Object?> toColumns() => <String, Object?>{
-    if (id.isPresent) 'id': id.value,
+    if (id.isPresent) 'id': id.value?.value,
     'expiresAt': expiresAt,
     'token': token,
     'createdAt': createdAt,
     'updatedAt': updatedAt,
     'ipAddress': ipAddress,
     'userAgent': userAgent,
-    'userId': userId,
+    'userId': userId.value,
     'impersonatedBy': impersonatedBy,
   };
 
   @override
   Map<String, Object?> toJson() => <String, Object?>{
-    if (id.isPresent) 'id': id.value,
+    if (id.isPresent) 'id': id.value?.value,
     'expiresAt': expiresAt.toIso8601String(),
     'token': token,
     'createdAt': createdAt.toIso8601String(),
     'updatedAt': updatedAt.toIso8601String(),
     'ipAddress': ipAddress,
     'userAgent': userAgent,
-    'userId': userId,
+    'userId': userId.value,
     'impersonatedBy': impersonatedBy,
   };
 
   @override
   String toString() =>
-      'HippobaseAuthSessionInsert(id: $id, expiresAt: $expiresAt, token: $token, createdAt: $createdAt, updatedAt: $updatedAt, ipAddress: $ipAddress, userAgent: $userAgent, userId: $userId, impersonatedBy: $impersonatedBy)';
+      'AuthSessionInsert(id: $id, expiresAt: $expiresAt, token: $token, createdAt: $createdAt, updatedAt: $updatedAt, ipAddress: $ipAddress, userAgent: $userAgent, userId: $userId, impersonatedBy: $impersonatedBy)';
 }
 
-final class HippobaseAuthSessionUpdate implements JsonEncodable {
-  const HippobaseAuthSessionUpdate({
+final class AuthSessionUpdate implements JsonEncodable {
+  const AuthSessionUpdate({
     this.id = const SqlValue.absent(),
     this.expiresAt = const SqlValue.absent(),
     this.token = const SqlValue.absent(),
@@ -309,43 +309,42 @@ final class HippobaseAuthSessionUpdate implements JsonEncodable {
     this.impersonatedBy = const SqlValue.absent(),
   });
 
-  factory HippobaseAuthSessionUpdate.decode(Object? value) =>
-      HippobaseAuthSessionUpdate.fromJson(readJsonObject(value));
+  factory AuthSessionUpdate.decode(Object? value) =>
+      AuthSessionUpdate.fromJson(readJsonObject(value));
 
-  factory HippobaseAuthSessionUpdate.fromJson(Map<String, Object?> json) =>
-      HippobaseAuthSessionUpdate(
-        id: json.containsKey('id')
-            ? SqlValue<String>((json['id'] as String))
-            : const SqlValue.absent(),
-        expiresAt: json.containsKey('expiresAt')
-            ? SqlValue<DateTime>(DateTime.parse((json['expiresAt'] as String)))
-            : const SqlValue.absent(),
-        token: json.containsKey('token')
-            ? SqlValue<String>((json['token'] as String))
-            : const SqlValue.absent(),
-        createdAt: json.containsKey('createdAt')
-            ? SqlValue<DateTime>(DateTime.parse((json['createdAt'] as String)))
-            : const SqlValue.absent(),
-        updatedAt: json.containsKey('updatedAt')
-            ? SqlValue<DateTime>(DateTime.parse((json['updatedAt'] as String)))
-            : const SqlValue.absent(),
-        ipAddress: json.containsKey('ipAddress')
-            ? SqlValue<String?>(json['ipAddress'] == null ? null : (json['ipAddress'] as String))
-            : const SqlValue.absent(),
-        userAgent: json.containsKey('userAgent')
-            ? SqlValue<String?>(json['userAgent'] == null ? null : (json['userAgent'] as String))
-            : const SqlValue.absent(),
-        userId: json.containsKey('userId')
-            ? SqlValue<String>((json['userId'] as String))
-            : const SqlValue.absent(),
-        impersonatedBy: json.containsKey('impersonatedBy')
-            ? SqlValue<String?>(
-                json['impersonatedBy'] == null ? null : (json['impersonatedBy'] as String),
-              )
-            : const SqlValue.absent(),
-      );
+  factory AuthSessionUpdate.fromJson(Map<String, Object?> json) => AuthSessionUpdate(
+    id: json.containsKey('id')
+        ? SqlValue<AuthSessionId>(AuthSessionId((json['id'] as String)))
+        : const SqlValue.absent(),
+    expiresAt: json.containsKey('expiresAt')
+        ? SqlValue<DateTime>(DateTime.parse((json['expiresAt'] as String)))
+        : const SqlValue.absent(),
+    token: json.containsKey('token')
+        ? SqlValue<String>((json['token'] as String))
+        : const SqlValue.absent(),
+    createdAt: json.containsKey('createdAt')
+        ? SqlValue<DateTime>(DateTime.parse((json['createdAt'] as String)))
+        : const SqlValue.absent(),
+    updatedAt: json.containsKey('updatedAt')
+        ? SqlValue<DateTime>(DateTime.parse((json['updatedAt'] as String)))
+        : const SqlValue.absent(),
+    ipAddress: json.containsKey('ipAddress')
+        ? SqlValue<String?>(json['ipAddress'] == null ? null : (json['ipAddress'] as String))
+        : const SqlValue.absent(),
+    userAgent: json.containsKey('userAgent')
+        ? SqlValue<String?>(json['userAgent'] == null ? null : (json['userAgent'] as String))
+        : const SqlValue.absent(),
+    userId: json.containsKey('userId')
+        ? SqlValue<AuthUserId>(AuthUserId((json['userId'] as String)))
+        : const SqlValue.absent(),
+    impersonatedBy: json.containsKey('impersonatedBy')
+        ? SqlValue<String?>(
+            json['impersonatedBy'] == null ? null : (json['impersonatedBy'] as String),
+          )
+        : const SqlValue.absent(),
+  );
 
-  static const schemaId = 'HippobaseAuthSessionUpdate';
+  static const schemaId = 'AuthSessionUpdate';
 
   static const schemaRef = JsonSchema.componentRef(schemaId);
 
@@ -366,7 +365,7 @@ final class HippobaseAuthSessionUpdate implements JsonEncodable {
     additionalProperties: false,
   );
 
-  final SqlValue<String> id;
+  final SqlValue<AuthSessionId> id;
 
   final SqlValue<DateTime> expiresAt;
 
@@ -380,22 +379,22 @@ final class HippobaseAuthSessionUpdate implements JsonEncodable {
 
   final SqlValue<String?> userAgent;
 
-  final SqlValue<String> userId;
+  final SqlValue<AuthUserId> userId;
 
   final SqlValue<String?> impersonatedBy;
 
-  HippobaseAuthSessionUpdate copyWith({
-    SqlValue<String>? id,
+  AuthSessionUpdate copyWith({
+    SqlValue<AuthSessionId>? id,
     SqlValue<DateTime>? expiresAt,
     SqlValue<String>? token,
     SqlValue<DateTime>? createdAt,
     SqlValue<DateTime>? updatedAt,
     SqlValue<String?>? ipAddress,
     SqlValue<String?>? userAgent,
-    SqlValue<String>? userId,
+    SqlValue<AuthUserId>? userId,
     SqlValue<String?>? impersonatedBy,
   }) {
-    return HippobaseAuthSessionUpdate(
+    return AuthSessionUpdate(
       id: id ?? this.id,
       expiresAt: expiresAt ?? this.expiresAt,
       token: token ?? this.token,
@@ -409,48 +408,47 @@ final class HippobaseAuthSessionUpdate implements JsonEncodable {
   }
 
   Map<String, Object?> toColumns() => <String, Object?>{
-    if (id.isPresent) 'id': id.value,
+    if (id.isPresent) 'id': id.value?.value,
     if (expiresAt.isPresent) 'expiresAt': expiresAt.value,
     if (token.isPresent) 'token': token.value,
     if (createdAt.isPresent) 'createdAt': createdAt.value,
     if (updatedAt.isPresent) 'updatedAt': updatedAt.value,
     if (ipAddress.isPresent) 'ipAddress': ipAddress.value,
     if (userAgent.isPresent) 'userAgent': userAgent.value,
-    if (userId.isPresent) 'userId': userId.value,
+    if (userId.isPresent) 'userId': userId.value?.value,
     if (impersonatedBy.isPresent) 'impersonatedBy': impersonatedBy.value,
   };
 
   @override
   Map<String, Object?> toJson() => <String, Object?>{
-    if (id.isPresent) 'id': id.value,
+    if (id.isPresent) 'id': id.value?.value,
     if (expiresAt.isPresent) 'expiresAt': expiresAt.value?.toIso8601String(),
     if (token.isPresent) 'token': token.value,
     if (createdAt.isPresent) 'createdAt': createdAt.value?.toIso8601String(),
     if (updatedAt.isPresent) 'updatedAt': updatedAt.value?.toIso8601String(),
     if (ipAddress.isPresent) 'ipAddress': ipAddress.value,
     if (userAgent.isPresent) 'userAgent': userAgent.value,
-    if (userId.isPresent) 'userId': userId.value,
+    if (userId.isPresent) 'userId': userId.value?.value,
     if (impersonatedBy.isPresent) 'impersonatedBy': impersonatedBy.value,
   };
 
   @override
   String toString() =>
-      'HippobaseAuthSessionUpdate(id: $id, expiresAt: $expiresAt, token: $token, createdAt: $createdAt, updatedAt: $updatedAt, ipAddress: $ipAddress, userAgent: $userAgent, userId: $userId, impersonatedBy: $impersonatedBy)';
+      'AuthSessionUpdate(id: $id, expiresAt: $expiresAt, token: $token, createdAt: $createdAt, updatedAt: $updatedAt, ipAddress: $ipAddress, userAgent: $userAgent, userId: $userId, impersonatedBy: $impersonatedBy)';
 }
 
-final class HippobaseAuthSessionsTable
-    extends
-        SqlTable<HippobaseAuthSessionRow, HippobaseAuthSessionInsert, HippobaseAuthSessionUpdate> {
-  const HippobaseAuthSessionsTable._() : schema = null;
+final class AuthSessionsTable
+    extends SqlTable<AuthSessionRow, AuthSessionInsert, AuthSessionUpdate> {
+  const AuthSessionsTable._() : schema = 'auth';
 
-  const HippobaseAuthSessionsTable.withSchema(this.schema);
+  const AuthSessionsTable.withSchema(this.schema);
 
   @override
   final String? schema;
 
-  static const table = HippobaseAuthSessionsTable._();
+  static const table = AuthSessionsTable._();
 
-  static final id = SqlColumn<String>(
+  static final id = SqlColumn<AuthSessionId>(
     table: table,
     name: 'id',
     nullable: false,
@@ -499,7 +497,7 @@ final class HippobaseAuthSessionsTable
     databaseType: 'text',
   );
 
-  static final userId = SqlColumn<String>(
+  static final userId = SqlColumn<AuthUserId>(
     table: table,
     name: 'userId',
     nullable: false,
@@ -518,30 +516,31 @@ final class HippobaseAuthSessionsTable
 
   @override
   List<SqlColumn<Object?>> get columns => <SqlColumn<Object?>>[
-    column<String>('id', nullable: false, databaseType: 'text').asObjectColumn,
+    column<AuthSessionId>('id', nullable: false, databaseType: 'text').asObjectColumn,
     column<DateTime>('expiresAt', nullable: false, databaseType: 'timestamptz').asObjectColumn,
     column<String>('token', nullable: false, databaseType: 'text').asObjectColumn,
     column<DateTime>('createdAt', nullable: false, databaseType: 'timestamptz').asObjectColumn,
     column<DateTime>('updatedAt', nullable: false, databaseType: 'timestamptz').asObjectColumn,
     column<String>('ipAddress', nullable: true, databaseType: 'text').asObjectColumn,
     column<String>('userAgent', nullable: true, databaseType: 'text').asObjectColumn,
-    column<String>('userId', nullable: false, databaseType: 'text').asObjectColumn,
+    column<AuthUserId>('userId', nullable: false, databaseType: 'text').asObjectColumn,
     column<String>('impersonatedBy', nullable: true, databaseType: 'text').asObjectColumn,
   ];
 
   @override
-  HippobaseAuthSessionRow mapRow(SqlRow row, {String prefix = ''}) =>
-      HippobaseAuthSessionRow.fromSqlRow(row, prefix: prefix);
+  AuthSessionRow mapRow(SqlRow row, {String prefix = ''}) =>
+      AuthSessionRow.fromSqlRow(row, prefix: prefix);
 
   @override
-  Map<String, Object?> encodeInsert(HippobaseAuthSessionInsert value) => value.toColumns();
+  Map<String, Object?> encodeInsert(AuthSessionInsert value) => value.toColumns();
 
   @override
-  Map<String, Object?> encodeUpdate(HippobaseAuthSessionUpdate value) => value.toColumns();
+  Map<String, Object?> encodeUpdate(AuthSessionUpdate value) => value.toColumns();
 }
 
-extension HippobaseAuthSessionsTableColumns on HippobaseAuthSessionsTable {
-  SqlColumn<String> get id => column<String>('id', nullable: false, databaseType: 'text');
+extension AuthSessionsTableColumns on AuthSessionsTable {
+  SqlColumn<AuthSessionId> get id =>
+      column<AuthSessionId>('id', nullable: false, databaseType: 'text');
 
   SqlColumn<DateTime> get expiresAt =>
       column<DateTime>('expiresAt', nullable: false, databaseType: 'timestamptz');
@@ -560,7 +559,8 @@ extension HippobaseAuthSessionsTableColumns on HippobaseAuthSessionsTable {
   SqlColumn<String> get userAgent =>
       column<String>('userAgent', nullable: true, databaseType: 'text');
 
-  SqlColumn<String> get userId => column<String>('userId', nullable: false, databaseType: 'text');
+  SqlColumn<AuthUserId> get userId =>
+      column<AuthUserId>('userId', nullable: false, databaseType: 'text');
 
   SqlColumn<String> get impersonatedBy =>
       column<String>('impersonatedBy', nullable: true, databaseType: 'text');
