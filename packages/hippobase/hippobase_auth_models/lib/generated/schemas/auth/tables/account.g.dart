@@ -1,7 +1,9 @@
 import 'package:dart_edge_core/dart_edge_core.dart';
 import 'user.g.dart';
 
-extension type const AuthAccountId(String value) {}
+extension type const AuthAccountId(String value) {
+  static const JsonSchema schema = .string(dartType: .value('AuthAccountId'));
+}
 
 final class AuthAccountRow implements JsonEncodable {
   const AuthAccountRow({
@@ -20,52 +22,64 @@ final class AuthAccountRow implements JsonEncodable {
     required this.updatedAt,
   });
 
-  factory AuthAccountRow.fromSqlRow(SqlRow row, {String prefix = ''}) => AuthAccountRow(
-    id: AuthAccountId(row.read<String>('${prefix}id')),
-    accountId: row.read<String>('${prefix}accountId'),
-    providerId: row.read<String>('${prefix}providerId'),
-    userId: AuthUserId(row.read<String>('${prefix}userId')),
-    accessToken: row.readNullable<String>('${prefix}accessToken'),
-    refreshToken: row.readNullable<String>('${prefix}refreshToken'),
-    idToken: row.readNullable<String>('${prefix}idToken'),
-    accessTokenExpiresAt: switch (row.readNullable<Object?>('${prefix}accessTokenExpiresAt')) {
-      null => null,
-      final DateTime value => value,
-      final String value => DateTime.parse(value),
-      final value => value as DateTime,
-    },
-    refreshTokenExpiresAt: switch (row.readNullable<Object?>('${prefix}refreshTokenExpiresAt')) {
-      null => null,
-      final DateTime value => value,
-      final String value => DateTime.parse(value),
-      final value => value as DateTime,
-    },
-    scope: row.readNullable<String>('${prefix}scope'),
-    password: row.readNullable<String>('${prefix}password'),
-    createdAt: switch (row.read<Object?>('${prefix}createdAt')) {
-      final DateTime value => value,
-      final String value => DateTime.parse(value),
-      final value => value as DateTime,
-    },
-    updatedAt: switch (row.read<Object?>('${prefix}updatedAt')) {
-      final DateTime value => value,
-      final String value => DateTime.parse(value),
-      final value => value as DateTime,
-    },
-  );
+  factory AuthAccountRow.fromSqlRow(SqlRow row, {String prefix = ''}) =>
+      AuthAccountRow(
+        id: AuthAccountId(row.read<String>('${prefix}id')),
+        accountId: row.read<String>('${prefix}accountId'),
+        providerId: row.read<String>('${prefix}providerId'),
+        userId: AuthUserId(row.read<String>('${prefix}userId')),
+        accessToken: row.readNullable<String>('${prefix}accessToken'),
+        refreshToken: row.readNullable<String>('${prefix}refreshToken'),
+        idToken: row.readNullable<String>('${prefix}idToken'),
+        accessTokenExpiresAt: switch (row.readNullable<Object?>(
+          '${prefix}accessTokenExpiresAt',
+        )) {
+          null => null,
+          final DateTime value => value,
+          final String value => DateTime.parse(value),
+          final value => value as DateTime,
+        },
+        refreshTokenExpiresAt: switch (row.readNullable<Object?>(
+          '${prefix}refreshTokenExpiresAt',
+        )) {
+          null => null,
+          final DateTime value => value,
+          final String value => DateTime.parse(value),
+          final value => value as DateTime,
+        },
+        scope: row.readNullable<String>('${prefix}scope'),
+        password: row.readNullable<String>('${prefix}password'),
+        createdAt: switch (row.read<Object?>('${prefix}createdAt')) {
+          final DateTime value => value,
+          final String value => DateTime.parse(value),
+          final value => value as DateTime,
+        },
+        updatedAt: switch (row.read<Object?>('${prefix}updatedAt')) {
+          final DateTime value => value,
+          final String value => DateTime.parse(value),
+          final value => value as DateTime,
+        },
+      );
 
-  factory AuthAccountRow.fromColumns(Map<String, Object?> columns, {String prefix = ''}) =>
-      AuthAccountRow.fromSqlRow(SqlRow(columns), prefix: prefix);
+  factory AuthAccountRow.fromColumns(
+    Map<String, Object?> columns, {
+    String prefix = '',
+  }) => AuthAccountRow.fromSqlRow(SqlRow(columns), prefix: prefix);
 
-  factory AuthAccountRow.decode(Object? value) => AuthAccountRow.fromJson(readJsonObject(value));
+  factory AuthAccountRow.decode(Object? value) =>
+      AuthAccountRow.fromJson(readJsonObject(value));
 
   factory AuthAccountRow.fromJson(Map<String, Object?> json) => AuthAccountRow(
     id: AuthAccountId((json['id'] as String)),
     accountId: (json['accountId'] as String),
     providerId: (json['providerId'] as String),
     userId: AuthUserId((json['userId'] as String)),
-    accessToken: json['accessToken'] == null ? null : (json['accessToken'] as String),
-    refreshToken: json['refreshToken'] == null ? null : (json['refreshToken'] as String),
+    accessToken: json['accessToken'] == null
+        ? null
+        : (json['accessToken'] as String),
+    refreshToken: json['refreshToken'] == null
+        ? null
+        : (json['refreshToken'] as String),
     idToken: json['idToken'] == null ? null : (json['idToken'] as String),
     accessTokenExpiresAt: json['accessTokenExpiresAt'] == null
         ? null
@@ -86,15 +100,21 @@ final class AuthAccountRow implements JsonEncodable {
   static const jsonSchema = JsonSchema.object(
     id: schemaId,
     properties: <String, JsonSchema>{
-      'id': JsonSchema.string(),
+      'id': AuthAccountId.schema,
       'accountId': JsonSchema.string(),
       'providerId': JsonSchema.string(),
-      'userId': JsonSchema.string(),
+      'userId': AuthUserId.schema,
       'accessToken': JsonSchema.string(nullable: true),
       'refreshToken': JsonSchema.string(nullable: true),
       'idToken': JsonSchema.string(nullable: true),
-      'accessTokenExpiresAt': JsonSchema.string(nullable: true, format: 'date-time'),
-      'refreshTokenExpiresAt': JsonSchema.string(nullable: true, format: 'date-time'),
+      'accessTokenExpiresAt': JsonSchema.string(
+        nullable: true,
+        format: 'date-time',
+      ),
+      'refreshTokenExpiresAt': JsonSchema.string(
+        nullable: true,
+        format: 'date-time',
+      ),
       'scope': JsonSchema.string(nullable: true),
       'password': JsonSchema.string(nullable: true),
       'createdAt': JsonSchema.string(format: 'date-time'),
@@ -170,15 +190,21 @@ final class AuthAccountRow implements JsonEncodable {
       refreshToken: refreshToken == null || !refreshToken.isPresent
           ? this.refreshToken
           : refreshToken.value,
-      idToken: idToken == null || !idToken.isPresent ? this.idToken : idToken.value,
-      accessTokenExpiresAt: accessTokenExpiresAt == null || !accessTokenExpiresAt.isPresent
+      idToken: idToken == null || !idToken.isPresent
+          ? this.idToken
+          : idToken.value,
+      accessTokenExpiresAt:
+          accessTokenExpiresAt == null || !accessTokenExpiresAt.isPresent
           ? this.accessTokenExpiresAt
           : accessTokenExpiresAt.value,
-      refreshTokenExpiresAt: refreshTokenExpiresAt == null || !refreshTokenExpiresAt.isPresent
+      refreshTokenExpiresAt:
+          refreshTokenExpiresAt == null || !refreshTokenExpiresAt.isPresent
           ? this.refreshTokenExpiresAt
           : refreshTokenExpiresAt.value,
       scope: scope == null || !scope.isPresent ? this.scope : scope.value,
-      password: password == null || !password.isPresent ? this.password : password.value,
+      password: password == null || !password.isPresent
+          ? this.password
+          : password.value,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -242,27 +268,34 @@ final class AuthAccountInsert implements JsonEncodable {
   factory AuthAccountInsert.decode(Object? value) =>
       AuthAccountInsert.fromJson(readJsonObject(value));
 
-  factory AuthAccountInsert.fromJson(Map<String, Object?> json) => AuthAccountInsert(
-    id: json.containsKey('id')
-        ? SqlValue<AuthAccountId>(AuthAccountId((json['id'] as String)))
-        : const SqlValue.absent(),
-    accountId: (json['accountId'] as String),
-    providerId: (json['providerId'] as String),
-    userId: AuthUserId((json['userId'] as String)),
-    accessToken: json['accessToken'] == null ? null : (json['accessToken'] as String),
-    refreshToken: json['refreshToken'] == null ? null : (json['refreshToken'] as String),
-    idToken: json['idToken'] == null ? null : (json['idToken'] as String),
-    accessTokenExpiresAt: json['accessTokenExpiresAt'] == null
-        ? null
-        : DateTime.parse((json['accessTokenExpiresAt'] as String)),
-    refreshTokenExpiresAt: json['refreshTokenExpiresAt'] == null
-        ? null
-        : DateTime.parse((json['refreshTokenExpiresAt'] as String)),
-    scope: json['scope'] == null ? null : (json['scope'] as String),
-    password: json['password'] == null ? null : (json['password'] as String),
-    createdAt: DateTime.parse((json['createdAt'] as String)),
-    updatedAt: DateTime.parse((json['updatedAt'] as String)),
-  );
+  factory AuthAccountInsert.fromJson(Map<String, Object?> json) =>
+      AuthAccountInsert(
+        id: json.containsKey('id')
+            ? SqlValue<AuthAccountId>(AuthAccountId((json['id'] as String)))
+            : const SqlValue.absent(),
+        accountId: (json['accountId'] as String),
+        providerId: (json['providerId'] as String),
+        userId: AuthUserId((json['userId'] as String)),
+        accessToken: json['accessToken'] == null
+            ? null
+            : (json['accessToken'] as String),
+        refreshToken: json['refreshToken'] == null
+            ? null
+            : (json['refreshToken'] as String),
+        idToken: json['idToken'] == null ? null : (json['idToken'] as String),
+        accessTokenExpiresAt: json['accessTokenExpiresAt'] == null
+            ? null
+            : DateTime.parse((json['accessTokenExpiresAt'] as String)),
+        refreshTokenExpiresAt: json['refreshTokenExpiresAt'] == null
+            ? null
+            : DateTime.parse((json['refreshTokenExpiresAt'] as String)),
+        scope: json['scope'] == null ? null : (json['scope'] as String),
+        password: json['password'] == null
+            ? null
+            : (json['password'] as String),
+        createdAt: DateTime.parse((json['createdAt'] as String)),
+        updatedAt: DateTime.parse((json['updatedAt'] as String)),
+      );
 
   static const schemaId = 'AuthAccountInsert';
 
@@ -271,15 +304,21 @@ final class AuthAccountInsert implements JsonEncodable {
   static const jsonSchema = JsonSchema.object(
     id: schemaId,
     properties: <String, JsonSchema>{
-      'id': JsonSchema.string(),
+      'id': AuthAccountId.schema,
       'accountId': JsonSchema.string(),
       'providerId': JsonSchema.string(),
-      'userId': JsonSchema.string(),
+      'userId': AuthUserId.schema,
       'accessToken': JsonSchema.string(nullable: true),
       'refreshToken': JsonSchema.string(nullable: true),
       'idToken': JsonSchema.string(nullable: true),
-      'accessTokenExpiresAt': JsonSchema.string(nullable: true, format: 'date-time'),
-      'refreshTokenExpiresAt': JsonSchema.string(nullable: true, format: 'date-time'),
+      'accessTokenExpiresAt': JsonSchema.string(
+        nullable: true,
+        format: 'date-time',
+      ),
+      'refreshTokenExpiresAt': JsonSchema.string(
+        nullable: true,
+        format: 'date-time',
+      ),
       'scope': JsonSchema.string(nullable: true),
       'password': JsonSchema.string(nullable: true),
       'createdAt': JsonSchema.string(format: 'date-time'),
@@ -354,15 +393,21 @@ final class AuthAccountInsert implements JsonEncodable {
       refreshToken: refreshToken == null || !refreshToken.isPresent
           ? this.refreshToken
           : refreshToken.value,
-      idToken: idToken == null || !idToken.isPresent ? this.idToken : idToken.value,
-      accessTokenExpiresAt: accessTokenExpiresAt == null || !accessTokenExpiresAt.isPresent
+      idToken: idToken == null || !idToken.isPresent
+          ? this.idToken
+          : idToken.value,
+      accessTokenExpiresAt:
+          accessTokenExpiresAt == null || !accessTokenExpiresAt.isPresent
           ? this.accessTokenExpiresAt
           : accessTokenExpiresAt.value,
-      refreshTokenExpiresAt: refreshTokenExpiresAt == null || !refreshTokenExpiresAt.isPresent
+      refreshTokenExpiresAt:
+          refreshTokenExpiresAt == null || !refreshTokenExpiresAt.isPresent
           ? this.refreshTokenExpiresAt
           : refreshTokenExpiresAt.value,
       scope: scope == null || !scope.isPresent ? this.scope : scope.value,
-      password: password == null || !password.isPresent ? this.password : password.value,
+      password: password == null || !password.isPresent
+          ? this.password
+          : password.value,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -426,55 +471,70 @@ final class AuthAccountUpdate implements JsonEncodable {
   factory AuthAccountUpdate.decode(Object? value) =>
       AuthAccountUpdate.fromJson(readJsonObject(value));
 
-  factory AuthAccountUpdate.fromJson(Map<String, Object?> json) => AuthAccountUpdate(
-    id: json.containsKey('id')
-        ? SqlValue<AuthAccountId>(AuthAccountId((json['id'] as String)))
-        : const SqlValue.absent(),
-    accountId: json.containsKey('accountId')
-        ? SqlValue<String>((json['accountId'] as String))
-        : const SqlValue.absent(),
-    providerId: json.containsKey('providerId')
-        ? SqlValue<String>((json['providerId'] as String))
-        : const SqlValue.absent(),
-    userId: json.containsKey('userId')
-        ? SqlValue<AuthUserId>(AuthUserId((json['userId'] as String)))
-        : const SqlValue.absent(),
-    accessToken: json.containsKey('accessToken')
-        ? SqlValue<String?>(json['accessToken'] == null ? null : (json['accessToken'] as String))
-        : const SqlValue.absent(),
-    refreshToken: json.containsKey('refreshToken')
-        ? SqlValue<String?>(json['refreshToken'] == null ? null : (json['refreshToken'] as String))
-        : const SqlValue.absent(),
-    idToken: json.containsKey('idToken')
-        ? SqlValue<String?>(json['idToken'] == null ? null : (json['idToken'] as String))
-        : const SqlValue.absent(),
-    accessTokenExpiresAt: json.containsKey('accessTokenExpiresAt')
-        ? SqlValue<DateTime?>(
-            json['accessTokenExpiresAt'] == null
-                ? null
-                : DateTime.parse((json['accessTokenExpiresAt'] as String)),
-          )
-        : const SqlValue.absent(),
-    refreshTokenExpiresAt: json.containsKey('refreshTokenExpiresAt')
-        ? SqlValue<DateTime?>(
-            json['refreshTokenExpiresAt'] == null
-                ? null
-                : DateTime.parse((json['refreshTokenExpiresAt'] as String)),
-          )
-        : const SqlValue.absent(),
-    scope: json.containsKey('scope')
-        ? SqlValue<String?>(json['scope'] == null ? null : (json['scope'] as String))
-        : const SqlValue.absent(),
-    password: json.containsKey('password')
-        ? SqlValue<String?>(json['password'] == null ? null : (json['password'] as String))
-        : const SqlValue.absent(),
-    createdAt: json.containsKey('createdAt')
-        ? SqlValue<DateTime>(DateTime.parse((json['createdAt'] as String)))
-        : const SqlValue.absent(),
-    updatedAt: json.containsKey('updatedAt')
-        ? SqlValue<DateTime>(DateTime.parse((json['updatedAt'] as String)))
-        : const SqlValue.absent(),
-  );
+  factory AuthAccountUpdate.fromJson(Map<String, Object?> json) =>
+      AuthAccountUpdate(
+        id: json.containsKey('id')
+            ? SqlValue<AuthAccountId>(AuthAccountId((json['id'] as String)))
+            : const SqlValue.absent(),
+        accountId: json.containsKey('accountId')
+            ? SqlValue<String>((json['accountId'] as String))
+            : const SqlValue.absent(),
+        providerId: json.containsKey('providerId')
+            ? SqlValue<String>((json['providerId'] as String))
+            : const SqlValue.absent(),
+        userId: json.containsKey('userId')
+            ? SqlValue<AuthUserId>(AuthUserId((json['userId'] as String)))
+            : const SqlValue.absent(),
+        accessToken: json.containsKey('accessToken')
+            ? SqlValue<String?>(
+                json['accessToken'] == null
+                    ? null
+                    : (json['accessToken'] as String),
+              )
+            : const SqlValue.absent(),
+        refreshToken: json.containsKey('refreshToken')
+            ? SqlValue<String?>(
+                json['refreshToken'] == null
+                    ? null
+                    : (json['refreshToken'] as String),
+              )
+            : const SqlValue.absent(),
+        idToken: json.containsKey('idToken')
+            ? SqlValue<String?>(
+                json['idToken'] == null ? null : (json['idToken'] as String),
+              )
+            : const SqlValue.absent(),
+        accessTokenExpiresAt: json.containsKey('accessTokenExpiresAt')
+            ? SqlValue<DateTime?>(
+                json['accessTokenExpiresAt'] == null
+                    ? null
+                    : DateTime.parse((json['accessTokenExpiresAt'] as String)),
+              )
+            : const SqlValue.absent(),
+        refreshTokenExpiresAt: json.containsKey('refreshTokenExpiresAt')
+            ? SqlValue<DateTime?>(
+                json['refreshTokenExpiresAt'] == null
+                    ? null
+                    : DateTime.parse((json['refreshTokenExpiresAt'] as String)),
+              )
+            : const SqlValue.absent(),
+        scope: json.containsKey('scope')
+            ? SqlValue<String?>(
+                json['scope'] == null ? null : (json['scope'] as String),
+              )
+            : const SqlValue.absent(),
+        password: json.containsKey('password')
+            ? SqlValue<String?>(
+                json['password'] == null ? null : (json['password'] as String),
+              )
+            : const SqlValue.absent(),
+        createdAt: json.containsKey('createdAt')
+            ? SqlValue<DateTime>(DateTime.parse((json['createdAt'] as String)))
+            : const SqlValue.absent(),
+        updatedAt: json.containsKey('updatedAt')
+            ? SqlValue<DateTime>(DateTime.parse((json['updatedAt'] as String)))
+            : const SqlValue.absent(),
+      );
 
   static const schemaId = 'AuthAccountUpdate';
 
@@ -483,15 +543,21 @@ final class AuthAccountUpdate implements JsonEncodable {
   static const jsonSchema = JsonSchema.object(
     id: schemaId,
     properties: <String, JsonSchema>{
-      'id': JsonSchema.string(),
+      'id': AuthAccountId.schema,
       'accountId': JsonSchema.string(),
       'providerId': JsonSchema.string(),
-      'userId': JsonSchema.string(),
+      'userId': AuthUserId.schema,
       'accessToken': JsonSchema.string(nullable: true),
       'refreshToken': JsonSchema.string(nullable: true),
       'idToken': JsonSchema.string(nullable: true),
-      'accessTokenExpiresAt': JsonSchema.string(nullable: true, format: 'date-time'),
-      'refreshTokenExpiresAt': JsonSchema.string(nullable: true, format: 'date-time'),
+      'accessTokenExpiresAt': JsonSchema.string(
+        nullable: true,
+        format: 'date-time',
+      ),
+      'refreshTokenExpiresAt': JsonSchema.string(
+        nullable: true,
+        format: 'date-time',
+      ),
       'scope': JsonSchema.string(nullable: true),
       'password': JsonSchema.string(nullable: true),
       'createdAt': JsonSchema.string(format: 'date-time'),
@@ -551,7 +617,8 @@ final class AuthAccountUpdate implements JsonEncodable {
       refreshToken: refreshToken ?? this.refreshToken,
       idToken: idToken ?? this.idToken,
       accessTokenExpiresAt: accessTokenExpiresAt ?? this.accessTokenExpiresAt,
-      refreshTokenExpiresAt: refreshTokenExpiresAt ?? this.refreshTokenExpiresAt,
+      refreshTokenExpiresAt:
+          refreshTokenExpiresAt ?? this.refreshTokenExpiresAt,
       scope: scope ?? this.scope,
       password: password ?? this.password,
       createdAt: createdAt ?? this.createdAt,
@@ -567,8 +634,10 @@ final class AuthAccountUpdate implements JsonEncodable {
     if (accessToken.isPresent) 'accessToken': accessToken.value,
     if (refreshToken.isPresent) 'refreshToken': refreshToken.value,
     if (idToken.isPresent) 'idToken': idToken.value,
-    if (accessTokenExpiresAt.isPresent) 'accessTokenExpiresAt': accessTokenExpiresAt.value,
-    if (refreshTokenExpiresAt.isPresent) 'refreshTokenExpiresAt': refreshTokenExpiresAt.value,
+    if (accessTokenExpiresAt.isPresent)
+      'accessTokenExpiresAt': accessTokenExpiresAt.value,
+    if (refreshTokenExpiresAt.isPresent)
+      'refreshTokenExpiresAt': refreshTokenExpiresAt.value,
     if (scope.isPresent) 'scope': scope.value,
     if (password.isPresent) 'password': password.value,
     if (createdAt.isPresent) 'createdAt': createdAt.value,
@@ -706,13 +775,41 @@ final class AuthAccountsTable
 
   @override
   List<SqlColumn<Object?>> get columns => <SqlColumn<Object?>>[
-    column<AuthAccountId>('id', nullable: false, databaseType: 'text').asObjectColumn,
-    column<String>('accountId', nullable: false, databaseType: 'text').asObjectColumn,
-    column<String>('providerId', nullable: false, databaseType: 'text').asObjectColumn,
-    column<AuthUserId>('userId', nullable: false, databaseType: 'text').asObjectColumn,
-    column<String>('accessToken', nullable: true, databaseType: 'text').asObjectColumn,
-    column<String>('refreshToken', nullable: true, databaseType: 'text').asObjectColumn,
-    column<String>('idToken', nullable: true, databaseType: 'text').asObjectColumn,
+    column<AuthAccountId>(
+      'id',
+      nullable: false,
+      databaseType: 'text',
+    ).asObjectColumn,
+    column<String>(
+      'accountId',
+      nullable: false,
+      databaseType: 'text',
+    ).asObjectColumn,
+    column<String>(
+      'providerId',
+      nullable: false,
+      databaseType: 'text',
+    ).asObjectColumn,
+    column<AuthUserId>(
+      'userId',
+      nullable: false,
+      databaseType: 'text',
+    ).asObjectColumn,
+    column<String>(
+      'accessToken',
+      nullable: true,
+      databaseType: 'text',
+    ).asObjectColumn,
+    column<String>(
+      'refreshToken',
+      nullable: true,
+      databaseType: 'text',
+    ).asObjectColumn,
+    column<String>(
+      'idToken',
+      nullable: true,
+      databaseType: 'text',
+    ).asObjectColumn,
     column<DateTime>(
       'accessTokenExpiresAt',
       nullable: true,
@@ -723,10 +820,26 @@ final class AuthAccountsTable
       nullable: true,
       databaseType: 'timestamptz',
     ).asObjectColumn,
-    column<String>('scope', nullable: true, databaseType: 'text').asObjectColumn,
-    column<String>('password', nullable: true, databaseType: 'text').asObjectColumn,
-    column<DateTime>('createdAt', nullable: false, databaseType: 'timestamptz').asObjectColumn,
-    column<DateTime>('updatedAt', nullable: false, databaseType: 'timestamptz').asObjectColumn,
+    column<String>(
+      'scope',
+      nullable: true,
+      databaseType: 'text',
+    ).asObjectColumn,
+    column<String>(
+      'password',
+      nullable: true,
+      databaseType: 'text',
+    ).asObjectColumn,
+    column<DateTime>(
+      'createdAt',
+      nullable: false,
+      databaseType: 'timestamptz',
+    ).asObjectColumn,
+    column<DateTime>(
+      'updatedAt',
+      nullable: false,
+      databaseType: 'timestamptz',
+    ).asObjectColumn,
   ];
 
   @override
@@ -734,10 +847,12 @@ final class AuthAccountsTable
       AuthAccountRow.fromSqlRow(row, prefix: prefix);
 
   @override
-  Map<String, Object?> encodeInsert(AuthAccountInsert value) => value.toColumns();
+  Map<String, Object?> encodeInsert(AuthAccountInsert value) =>
+      value.toColumns();
 
   @override
-  Map<String, Object?> encodeUpdate(AuthAccountUpdate value) => value.toColumns();
+  Map<String, Object?> encodeUpdate(AuthAccountUpdate value) =>
+      value.toColumns();
 }
 
 extension AuthAccountsTableColumns on AuthAccountsTable {
@@ -759,22 +874,36 @@ extension AuthAccountsTableColumns on AuthAccountsTable {
   SqlColumn<String> get refreshToken =>
       column<String>('refreshToken', nullable: true, databaseType: 'text');
 
-  SqlColumn<String> get idToken => column<String>('idToken', nullable: true, databaseType: 'text');
+  SqlColumn<String> get idToken =>
+      column<String>('idToken', nullable: true, databaseType: 'text');
 
-  SqlColumn<DateTime> get accessTokenExpiresAt =>
-      column<DateTime>('accessTokenExpiresAt', nullable: true, databaseType: 'timestamptz');
+  SqlColumn<DateTime> get accessTokenExpiresAt => column<DateTime>(
+    'accessTokenExpiresAt',
+    nullable: true,
+    databaseType: 'timestamptz',
+  );
 
-  SqlColumn<DateTime> get refreshTokenExpiresAt =>
-      column<DateTime>('refreshTokenExpiresAt', nullable: true, databaseType: 'timestamptz');
+  SqlColumn<DateTime> get refreshTokenExpiresAt => column<DateTime>(
+    'refreshTokenExpiresAt',
+    nullable: true,
+    databaseType: 'timestamptz',
+  );
 
-  SqlColumn<String> get scope => column<String>('scope', nullable: true, databaseType: 'text');
+  SqlColumn<String> get scope =>
+      column<String>('scope', nullable: true, databaseType: 'text');
 
   SqlColumn<String> get password =>
       column<String>('password', nullable: true, databaseType: 'text');
 
-  SqlColumn<DateTime> get createdAt =>
-      column<DateTime>('createdAt', nullable: false, databaseType: 'timestamptz');
+  SqlColumn<DateTime> get createdAt => column<DateTime>(
+    'createdAt',
+    nullable: false,
+    databaseType: 'timestamptz',
+  );
 
-  SqlColumn<DateTime> get updatedAt =>
-      column<DateTime>('updatedAt', nullable: false, databaseType: 'timestamptz');
+  SqlColumn<DateTime> get updatedAt => column<DateTime>(
+    'updatedAt',
+    nullable: false,
+    databaseType: 'timestamptz',
+  );
 }

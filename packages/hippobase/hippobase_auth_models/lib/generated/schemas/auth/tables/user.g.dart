@@ -1,6 +1,8 @@
 import 'package:dart_edge_core/dart_edge_core.dart';
 
-extension type const AuthUserId(String value) {}
+extension type const AuthUserId(String value) {
+  static const JsonSchema schema = .string(dartType: .value('AuthUserId'));
+}
 
 final class AuthUserRow implements JsonEncodable {
   const AuthUserRow({
@@ -19,39 +21,45 @@ final class AuthUserRow implements JsonEncodable {
     required this.phoneNumberVerified,
   });
 
-  factory AuthUserRow.fromSqlRow(SqlRow row, {String prefix = ''}) => AuthUserRow(
-    id: AuthUserId(row.read<String>('${prefix}id')),
-    name: row.read<String>('${prefix}name'),
-    email: row.read<String>('${prefix}email'),
-    emailVerified: row.read<bool>('${prefix}emailVerified'),
-    image: row.readNullable<String>('${prefix}image'),
-    createdAt: switch (row.read<Object?>('${prefix}createdAt')) {
-      final DateTime value => value,
-      final String value => DateTime.parse(value),
-      final value => value as DateTime,
-    },
-    updatedAt: switch (row.read<Object?>('${prefix}updatedAt')) {
-      final DateTime value => value,
-      final String value => DateTime.parse(value),
-      final value => value as DateTime,
-    },
-    role: row.readNullable<String>('${prefix}role'),
-    banned: row.readNullable<bool>('${prefix}banned'),
-    banReason: row.readNullable<String>('${prefix}banReason'),
-    banExpires: switch (row.readNullable<Object?>('${prefix}banExpires')) {
-      null => null,
-      final DateTime value => value,
-      final String value => DateTime.parse(value),
-      final value => value as DateTime,
-    },
-    phoneNumber: row.readNullable<String>('${prefix}phoneNumber'),
-    phoneNumberVerified: row.readNullable<bool>('${prefix}phoneNumberVerified'),
-  );
+  factory AuthUserRow.fromSqlRow(SqlRow row, {String prefix = ''}) =>
+      AuthUserRow(
+        id: AuthUserId(row.read<String>('${prefix}id')),
+        name: row.read<String>('${prefix}name'),
+        email: row.read<String>('${prefix}email'),
+        emailVerified: row.read<bool>('${prefix}emailVerified'),
+        image: row.readNullable<String>('${prefix}image'),
+        createdAt: switch (row.read<Object?>('${prefix}createdAt')) {
+          final DateTime value => value,
+          final String value => DateTime.parse(value),
+          final value => value as DateTime,
+        },
+        updatedAt: switch (row.read<Object?>('${prefix}updatedAt')) {
+          final DateTime value => value,
+          final String value => DateTime.parse(value),
+          final value => value as DateTime,
+        },
+        role: row.readNullable<String>('${prefix}role'),
+        banned: row.readNullable<bool>('${prefix}banned'),
+        banReason: row.readNullable<String>('${prefix}banReason'),
+        banExpires: switch (row.readNullable<Object?>('${prefix}banExpires')) {
+          null => null,
+          final DateTime value => value,
+          final String value => DateTime.parse(value),
+          final value => value as DateTime,
+        },
+        phoneNumber: row.readNullable<String>('${prefix}phoneNumber'),
+        phoneNumberVerified: row.readNullable<bool>(
+          '${prefix}phoneNumberVerified',
+        ),
+      );
 
-  factory AuthUserRow.fromColumns(Map<String, Object?> columns, {String prefix = ''}) =>
-      AuthUserRow.fromSqlRow(SqlRow(columns), prefix: prefix);
+  factory AuthUserRow.fromColumns(
+    Map<String, Object?> columns, {
+    String prefix = '',
+  }) => AuthUserRow.fromSqlRow(SqlRow(columns), prefix: prefix);
 
-  factory AuthUserRow.decode(Object? value) => AuthUserRow.fromJson(readJsonObject(value));
+  factory AuthUserRow.decode(Object? value) =>
+      AuthUserRow.fromJson(readJsonObject(value));
 
   factory AuthUserRow.fromJson(Map<String, Object?> json) => AuthUserRow(
     id: AuthUserId((json['id'] as String)),
@@ -64,8 +72,12 @@ final class AuthUserRow implements JsonEncodable {
     role: json['role'] == null ? null : (json['role'] as String),
     banned: json['banned'] == null ? null : (json['banned'] as bool),
     banReason: json['banReason'] == null ? null : (json['banReason'] as String),
-    banExpires: json['banExpires'] == null ? null : DateTime.parse((json['banExpires'] as String)),
-    phoneNumber: json['phoneNumber'] == null ? null : (json['phoneNumber'] as String),
+    banExpires: json['banExpires'] == null
+        ? null
+        : DateTime.parse((json['banExpires'] as String)),
+    phoneNumber: json['phoneNumber'] == null
+        ? null
+        : (json['phoneNumber'] as String),
     phoneNumberVerified: json['phoneNumberVerified'] == null
         ? null
         : (json['phoneNumberVerified'] as bool),
@@ -78,7 +90,7 @@ final class AuthUserRow implements JsonEncodable {
   static const jsonSchema = JsonSchema.object(
     id: schemaId,
     properties: <String, JsonSchema>{
-      'id': JsonSchema.string(),
+      'id': AuthUserId.schema,
       'name': JsonSchema.string(),
       'email': JsonSchema.string(),
       'emailVerified': JsonSchema.boolean(),
@@ -161,12 +173,17 @@ final class AuthUserRow implements JsonEncodable {
       updatedAt: updatedAt ?? this.updatedAt,
       role: role == null || !role.isPresent ? this.role : role.value,
       banned: banned == null || !banned.isPresent ? this.banned : banned.value,
-      banReason: banReason == null || !banReason.isPresent ? this.banReason : banReason.value,
-      banExpires: banExpires == null || !banExpires.isPresent ? this.banExpires : banExpires.value,
+      banReason: banReason == null || !banReason.isPresent
+          ? this.banReason
+          : banReason.value,
+      banExpires: banExpires == null || !banExpires.isPresent
+          ? this.banExpires
+          : banExpires.value,
       phoneNumber: phoneNumber == null || !phoneNumber.isPresent
           ? this.phoneNumber
           : phoneNumber.value,
-      phoneNumberVerified: phoneNumberVerified == null || !phoneNumberVerified.isPresent
+      phoneNumberVerified:
+          phoneNumberVerified == null || !phoneNumberVerified.isPresent
           ? this.phoneNumberVerified
           : phoneNumberVerified.value,
     );
@@ -227,7 +244,8 @@ final class AuthUserInsert implements JsonEncodable {
     required this.phoneNumberVerified,
   });
 
-  factory AuthUserInsert.decode(Object? value) => AuthUserInsert.fromJson(readJsonObject(value));
+  factory AuthUserInsert.decode(Object? value) =>
+      AuthUserInsert.fromJson(readJsonObject(value));
 
   factory AuthUserInsert.fromJson(Map<String, Object?> json) => AuthUserInsert(
     id: json.containsKey('id')
@@ -242,8 +260,12 @@ final class AuthUserInsert implements JsonEncodable {
     role: json['role'] == null ? null : (json['role'] as String),
     banned: json['banned'] == null ? null : (json['banned'] as bool),
     banReason: json['banReason'] == null ? null : (json['banReason'] as String),
-    banExpires: json['banExpires'] == null ? null : DateTime.parse((json['banExpires'] as String)),
-    phoneNumber: json['phoneNumber'] == null ? null : (json['phoneNumber'] as String),
+    banExpires: json['banExpires'] == null
+        ? null
+        : DateTime.parse((json['banExpires'] as String)),
+    phoneNumber: json['phoneNumber'] == null
+        ? null
+        : (json['phoneNumber'] as String),
     phoneNumberVerified: json['phoneNumberVerified'] == null
         ? null
         : (json['phoneNumberVerified'] as bool),
@@ -256,7 +278,7 @@ final class AuthUserInsert implements JsonEncodable {
   static const jsonSchema = JsonSchema.object(
     id: schemaId,
     properties: <String, JsonSchema>{
-      'id': JsonSchema.string(),
+      'id': AuthUserId.schema,
       'name': JsonSchema.string(),
       'email': JsonSchema.string(),
       'emailVerified': JsonSchema.boolean(),
@@ -338,12 +360,17 @@ final class AuthUserInsert implements JsonEncodable {
       updatedAt: updatedAt ?? this.updatedAt,
       role: role == null || !role.isPresent ? this.role : role.value,
       banned: banned == null || !banned.isPresent ? this.banned : banned.value,
-      banReason: banReason == null || !banReason.isPresent ? this.banReason : banReason.value,
-      banExpires: banExpires == null || !banExpires.isPresent ? this.banExpires : banExpires.value,
+      banReason: banReason == null || !banReason.isPresent
+          ? this.banReason
+          : banReason.value,
+      banExpires: banExpires == null || !banExpires.isPresent
+          ? this.banExpires
+          : banExpires.value,
       phoneNumber: phoneNumber == null || !phoneNumber.isPresent
           ? this.phoneNumber
           : phoneNumber.value,
-      phoneNumberVerified: phoneNumberVerified == null || !phoneNumberVerified.isPresent
+      phoneNumberVerified:
+          phoneNumberVerified == null || !phoneNumberVerified.isPresent
           ? this.phoneNumberVerified
           : phoneNumberVerified.value,
     );
@@ -404,7 +431,8 @@ final class AuthUserUpdate implements JsonEncodable {
     this.phoneNumberVerified = const SqlValue.absent(),
   });
 
-  factory AuthUserUpdate.decode(Object? value) => AuthUserUpdate.fromJson(readJsonObject(value));
+  factory AuthUserUpdate.decode(Object? value) =>
+      AuthUserUpdate.fromJson(readJsonObject(value));
 
   factory AuthUserUpdate.fromJson(Map<String, Object?> json) => AuthUserUpdate(
     id: json.containsKey('id')
@@ -420,7 +448,9 @@ final class AuthUserUpdate implements JsonEncodable {
         ? SqlValue<bool>((json['emailVerified'] as bool))
         : const SqlValue.absent(),
     image: json.containsKey('image')
-        ? SqlValue<String?>(json['image'] == null ? null : (json['image'] as String))
+        ? SqlValue<String?>(
+            json['image'] == null ? null : (json['image'] as String),
+          )
         : const SqlValue.absent(),
     createdAt: json.containsKey('createdAt')
         ? SqlValue<DateTime>(DateTime.parse((json['createdAt'] as String)))
@@ -429,25 +459,39 @@ final class AuthUserUpdate implements JsonEncodable {
         ? SqlValue<DateTime>(DateTime.parse((json['updatedAt'] as String)))
         : const SqlValue.absent(),
     role: json.containsKey('role')
-        ? SqlValue<String?>(json['role'] == null ? null : (json['role'] as String))
+        ? SqlValue<String?>(
+            json['role'] == null ? null : (json['role'] as String),
+          )
         : const SqlValue.absent(),
     banned: json.containsKey('banned')
-        ? SqlValue<bool?>(json['banned'] == null ? null : (json['banned'] as bool))
+        ? SqlValue<bool?>(
+            json['banned'] == null ? null : (json['banned'] as bool),
+          )
         : const SqlValue.absent(),
     banReason: json.containsKey('banReason')
-        ? SqlValue<String?>(json['banReason'] == null ? null : (json['banReason'] as String))
+        ? SqlValue<String?>(
+            json['banReason'] == null ? null : (json['banReason'] as String),
+          )
         : const SqlValue.absent(),
     banExpires: json.containsKey('banExpires')
         ? SqlValue<DateTime?>(
-            json['banExpires'] == null ? null : DateTime.parse((json['banExpires'] as String)),
+            json['banExpires'] == null
+                ? null
+                : DateTime.parse((json['banExpires'] as String)),
           )
         : const SqlValue.absent(),
     phoneNumber: json.containsKey('phoneNumber')
-        ? SqlValue<String?>(json['phoneNumber'] == null ? null : (json['phoneNumber'] as String))
+        ? SqlValue<String?>(
+            json['phoneNumber'] == null
+                ? null
+                : (json['phoneNumber'] as String),
+          )
         : const SqlValue.absent(),
     phoneNumberVerified: json.containsKey('phoneNumberVerified')
         ? SqlValue<bool?>(
-            json['phoneNumberVerified'] == null ? null : (json['phoneNumberVerified'] as bool),
+            json['phoneNumberVerified'] == null
+                ? null
+                : (json['phoneNumberVerified'] as bool),
           )
         : const SqlValue.absent(),
   );
@@ -459,7 +503,7 @@ final class AuthUserUpdate implements JsonEncodable {
   static const jsonSchema = JsonSchema.object(
     id: schemaId,
     properties: <String, JsonSchema>{
-      'id': JsonSchema.string(),
+      'id': AuthUserId.schema,
       'name': JsonSchema.string(),
       'email': JsonSchema.string(),
       'emailVerified': JsonSchema.boolean(),
@@ -548,7 +592,8 @@ final class AuthUserUpdate implements JsonEncodable {
     if (banReason.isPresent) 'banReason': banReason.value,
     if (banExpires.isPresent) 'banExpires': banExpires.value,
     if (phoneNumber.isPresent) 'phoneNumber': phoneNumber.value,
-    if (phoneNumberVerified.isPresent) 'phoneNumberVerified': phoneNumberVerified.value,
+    if (phoneNumberVerified.isPresent)
+      'phoneNumberVerified': phoneNumberVerified.value,
   };
 
   @override
@@ -565,7 +610,8 @@ final class AuthUserUpdate implements JsonEncodable {
     if (banReason.isPresent) 'banReason': banReason.value,
     if (banExpires.isPresent) 'banExpires': banExpires.value?.toIso8601String(),
     if (phoneNumber.isPresent) 'phoneNumber': phoneNumber.value,
-    if (phoneNumberVerified.isPresent) 'phoneNumberVerified': phoneNumberVerified.value,
+    if (phoneNumberVerified.isPresent)
+      'phoneNumberVerified': phoneNumberVerified.value,
   };
 
   @override
@@ -573,7 +619,8 @@ final class AuthUserUpdate implements JsonEncodable {
       'AuthUserUpdate(id: $id, name: $name, email: $email, emailVerified: $emailVerified, image: $image, createdAt: $createdAt, updatedAt: $updatedAt, role: $role, banned: $banned, banReason: $banReason, banExpires: $banExpires, phoneNumber: $phoneNumber, phoneNumberVerified: $phoneNumberVerified)';
 }
 
-final class AuthUsersTable extends SqlTable<AuthUserRow, AuthUserInsert, AuthUserUpdate> {
+final class AuthUsersTable
+    extends SqlTable<AuthUserRow, AuthUserInsert, AuthUserUpdate> {
   const AuthUsersTable._() : schema = 'auth';
 
   const AuthUsersTable.withSchema(this.schema);
@@ -679,19 +726,63 @@ final class AuthUsersTable extends SqlTable<AuthUserRow, AuthUserInsert, AuthUse
 
   @override
   List<SqlColumn<Object?>> get columns => <SqlColumn<Object?>>[
-    column<AuthUserId>('id', nullable: false, databaseType: 'text').asObjectColumn,
-    column<String>('name', nullable: false, databaseType: 'text').asObjectColumn,
-    column<String>('email', nullable: false, databaseType: 'text').asObjectColumn,
-    column<bool>('emailVerified', nullable: false, databaseType: 'bool').asObjectColumn,
-    column<String>('image', nullable: true, databaseType: 'text').asObjectColumn,
-    column<DateTime>('createdAt', nullable: false, databaseType: 'timestamptz').asObjectColumn,
-    column<DateTime>('updatedAt', nullable: false, databaseType: 'timestamptz').asObjectColumn,
+    column<AuthUserId>(
+      'id',
+      nullable: false,
+      databaseType: 'text',
+    ).asObjectColumn,
+    column<String>(
+      'name',
+      nullable: false,
+      databaseType: 'text',
+    ).asObjectColumn,
+    column<String>(
+      'email',
+      nullable: false,
+      databaseType: 'text',
+    ).asObjectColumn,
+    column<bool>(
+      'emailVerified',
+      nullable: false,
+      databaseType: 'bool',
+    ).asObjectColumn,
+    column<String>(
+      'image',
+      nullable: true,
+      databaseType: 'text',
+    ).asObjectColumn,
+    column<DateTime>(
+      'createdAt',
+      nullable: false,
+      databaseType: 'timestamptz',
+    ).asObjectColumn,
+    column<DateTime>(
+      'updatedAt',
+      nullable: false,
+      databaseType: 'timestamptz',
+    ).asObjectColumn,
     column<String>('role', nullable: true, databaseType: 'text').asObjectColumn,
     column<bool>('banned', nullable: true, databaseType: 'bool').asObjectColumn,
-    column<String>('banReason', nullable: true, databaseType: 'text').asObjectColumn,
-    column<DateTime>('banExpires', nullable: true, databaseType: 'timestamptz').asObjectColumn,
-    column<String>('phoneNumber', nullable: true, databaseType: 'text').asObjectColumn,
-    column<bool>('phoneNumberVerified', nullable: true, databaseType: 'bool').asObjectColumn,
+    column<String>(
+      'banReason',
+      nullable: true,
+      databaseType: 'text',
+    ).asObjectColumn,
+    column<DateTime>(
+      'banExpires',
+      nullable: true,
+      databaseType: 'timestamptz',
+    ).asObjectColumn,
+    column<String>(
+      'phoneNumber',
+      nullable: true,
+      databaseType: 'text',
+    ).asObjectColumn,
+    column<bool>(
+      'phoneNumberVerified',
+      nullable: true,
+      databaseType: 'bool',
+    ).asObjectColumn,
   ];
 
   @override
@@ -706,32 +797,47 @@ final class AuthUsersTable extends SqlTable<AuthUserRow, AuthUserInsert, AuthUse
 }
 
 extension AuthUsersTableColumns on AuthUsersTable {
-  SqlColumn<AuthUserId> get id => column<AuthUserId>('id', nullable: false, databaseType: 'text');
+  SqlColumn<AuthUserId> get id =>
+      column<AuthUserId>('id', nullable: false, databaseType: 'text');
 
-  SqlColumn<String> get nameColumn => column<String>('name', nullable: false, databaseType: 'text');
+  SqlColumn<String> get nameColumn =>
+      column<String>('name', nullable: false, databaseType: 'text');
 
-  SqlColumn<String> get email => column<String>('email', nullable: false, databaseType: 'text');
+  SqlColumn<String> get email =>
+      column<String>('email', nullable: false, databaseType: 'text');
 
   SqlColumn<bool> get emailVerified =>
       column<bool>('emailVerified', nullable: false, databaseType: 'bool');
 
-  SqlColumn<String> get image => column<String>('image', nullable: true, databaseType: 'text');
+  SqlColumn<String> get image =>
+      column<String>('image', nullable: true, databaseType: 'text');
 
-  SqlColumn<DateTime> get createdAt =>
-      column<DateTime>('createdAt', nullable: false, databaseType: 'timestamptz');
+  SqlColumn<DateTime> get createdAt => column<DateTime>(
+    'createdAt',
+    nullable: false,
+    databaseType: 'timestamptz',
+  );
 
-  SqlColumn<DateTime> get updatedAt =>
-      column<DateTime>('updatedAt', nullable: false, databaseType: 'timestamptz');
+  SqlColumn<DateTime> get updatedAt => column<DateTime>(
+    'updatedAt',
+    nullable: false,
+    databaseType: 'timestamptz',
+  );
 
-  SqlColumn<String> get role => column<String>('role', nullable: true, databaseType: 'text');
+  SqlColumn<String> get role =>
+      column<String>('role', nullable: true, databaseType: 'text');
 
-  SqlColumn<bool> get banned => column<bool>('banned', nullable: true, databaseType: 'bool');
+  SqlColumn<bool> get banned =>
+      column<bool>('banned', nullable: true, databaseType: 'bool');
 
   SqlColumn<String> get banReason =>
       column<String>('banReason', nullable: true, databaseType: 'text');
 
-  SqlColumn<DateTime> get banExpires =>
-      column<DateTime>('banExpires', nullable: true, databaseType: 'timestamptz');
+  SqlColumn<DateTime> get banExpires => column<DateTime>(
+    'banExpires',
+    nullable: true,
+    databaseType: 'timestamptz',
+  );
 
   SqlColumn<String> get phoneNumber =>
       column<String>('phoneNumber', nullable: true, databaseType: 'text');

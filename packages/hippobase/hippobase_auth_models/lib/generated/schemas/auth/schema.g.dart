@@ -49,22 +49,28 @@ final class AuthSchema {
     AuthVerificationUpdate.jsonSchema,
   ];
 
-  static const JsonSchemaRegistry jsonSchemas = JsonSchemaRegistry(schemas: schemas);
+  static const JsonSchemaRegistry jsonSchemas = JsonSchemaRegistry(
+    schemas: schemas,
+  );
 }
 
 extension AuthSchemaTables on AuthSchema {
-  AuthAccountsTable get account =>
-      AuthAccountsTable.withSchema(databaseSchema ?? AuthAccountsTable.table.schema);
+  AuthAccountsTable get account => AuthAccountsTable.withSchema(
+    databaseSchema ?? AuthAccountsTable.table.schema,
+  );
 
-  AuthPasskeysTable get passkey =>
-      AuthPasskeysTable.withSchema(databaseSchema ?? AuthPasskeysTable.table.schema);
+  AuthPasskeysTable get passkey => AuthPasskeysTable.withSchema(
+    databaseSchema ?? AuthPasskeysTable.table.schema,
+  );
 
-  AuthSessionsTable get session =>
-      AuthSessionsTable.withSchema(databaseSchema ?? AuthSessionsTable.table.schema);
+  AuthSessionsTable get session => AuthSessionsTable.withSchema(
+    databaseSchema ?? AuthSessionsTable.table.schema,
+  );
 
   AuthUsersTable get user =>
       AuthUsersTable.withSchema(databaseSchema ?? AuthUsersTable.table.schema);
 
-  AuthVerificationsTable get verification =>
-      AuthVerificationsTable.withSchema(databaseSchema ?? AuthVerificationsTable.table.schema);
+  AuthVerificationsTable get verification => AuthVerificationsTable.withSchema(
+    databaseSchema ?? AuthVerificationsTable.table.schema,
+  );
 }

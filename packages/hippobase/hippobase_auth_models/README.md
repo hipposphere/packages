@@ -7,3 +7,9 @@ Regenerate models with:
 ```sh
 dart run tool/generate_models.dart
 ```
+
+Or, if you use `just`:
+
+```sh
+just generate
+```

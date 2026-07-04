@@ -9,5 +9,7 @@ final class AuthDatabase {
 
   static const List<JsonSchema> schemas = <JsonSchema>[...AuthSchema.schemas];
 
-  static const JsonSchemaRegistry jsonSchemas = JsonSchemaRegistry(schemas: schemas);
+  static const JsonSchemaRegistry jsonSchemas = JsonSchemaRegistry(
+    schemas: schemas,
+  );
 }

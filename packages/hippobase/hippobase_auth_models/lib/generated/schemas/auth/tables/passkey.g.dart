@@ -1,7 +1,9 @@
 import 'package:dart_edge_core/dart_edge_core.dart';
 import 'user.g.dart';
 
-extension type const AuthPasskeyId(String value) {}
+extension type const AuthPasskeyId(String value) {
+  static const JsonSchema schema = .string(dartType: .value('AuthPasskeyId'));
+}
 
 final class AuthPasskeyRow implements JsonEncodable {
   const AuthPasskeyRow({
@@ -18,29 +20,33 @@ final class AuthPasskeyRow implements JsonEncodable {
     required this.aaguid,
   });
 
-  factory AuthPasskeyRow.fromSqlRow(SqlRow row, {String prefix = ''}) => AuthPasskeyRow(
-    id: AuthPasskeyId(row.read<String>('${prefix}id')),
-    name: row.readNullable<String>('${prefix}name'),
-    publicKey: row.read<String>('${prefix}publicKey'),
-    userId: AuthUserId(row.read<String>('${prefix}userId')),
-    credentialID: row.read<String>('${prefix}credentialID'),
-    counter: row.read<int>('${prefix}counter'),
-    deviceType: row.read<String>('${prefix}deviceType'),
-    backedUp: row.read<bool>('${prefix}backedUp'),
-    transports: row.readNullable<String>('${prefix}transports'),
-    createdAt: switch (row.readNullable<Object?>('${prefix}createdAt')) {
-      null => null,
-      final DateTime value => value,
-      final String value => DateTime.parse(value),
-      final value => value as DateTime,
-    },
-    aaguid: row.readNullable<String>('${prefix}aaguid'),
-  );
+  factory AuthPasskeyRow.fromSqlRow(SqlRow row, {String prefix = ''}) =>
+      AuthPasskeyRow(
+        id: AuthPasskeyId(row.read<String>('${prefix}id')),
+        name: row.readNullable<String>('${prefix}name'),
+        publicKey: row.read<String>('${prefix}publicKey'),
+        userId: AuthUserId(row.read<String>('${prefix}userId')),
+        credentialID: row.read<String>('${prefix}credentialID'),
+        counter: row.read<int>('${prefix}counter'),
+        deviceType: row.read<String>('${prefix}deviceType'),
+        backedUp: row.read<bool>('${prefix}backedUp'),
+        transports: row.readNullable<String>('${prefix}transports'),
+        createdAt: switch (row.readNullable<Object?>('${prefix}createdAt')) {
+          null => null,
+          final DateTime value => value,
+          final String value => DateTime.parse(value),
+          final value => value as DateTime,
+        },
+        aaguid: row.readNullable<String>('${prefix}aaguid'),
+      );
 
-  factory AuthPasskeyRow.fromColumns(Map<String, Object?> columns, {String prefix = ''}) =>
-      AuthPasskeyRow.fromSqlRow(SqlRow(columns), prefix: prefix);
+  factory AuthPasskeyRow.fromColumns(
+    Map<String, Object?> columns, {
+    String prefix = '',
+  }) => AuthPasskeyRow.fromSqlRow(SqlRow(columns), prefix: prefix);
 
-  factory AuthPasskeyRow.decode(Object? value) => AuthPasskeyRow.fromJson(readJsonObject(value));
+  factory AuthPasskeyRow.decode(Object? value) =>
+      AuthPasskeyRow.fromJson(readJsonObject(value));
 
   factory AuthPasskeyRow.fromJson(Map<String, Object?> json) => AuthPasskeyRow(
     id: AuthPasskeyId((json['id'] as String)),
@@ -51,8 +57,12 @@ final class AuthPasskeyRow implements JsonEncodable {
     counter: (json['counter'] as num).toInt(),
     deviceType: (json['deviceType'] as String),
     backedUp: (json['backedUp'] as bool),
-    transports: json['transports'] == null ? null : (json['transports'] as String),
-    createdAt: json['createdAt'] == null ? null : DateTime.parse((json['createdAt'] as String)),
+    transports: json['transports'] == null
+        ? null
+        : (json['transports'] as String),
+    createdAt: json['createdAt'] == null
+        ? null
+        : DateTime.parse((json['createdAt'] as String)),
     aaguid: json['aaguid'] == null ? null : (json['aaguid'] as String),
   );
 
@@ -63,10 +73,10 @@ final class AuthPasskeyRow implements JsonEncodable {
   static const jsonSchema = JsonSchema.object(
     id: schemaId,
     properties: <String, JsonSchema>{
-      'id': JsonSchema.string(),
+      'id': AuthPasskeyId.schema,
       'name': JsonSchema.string(nullable: true),
       'publicKey': JsonSchema.string(),
-      'userId': JsonSchema.string(),
+      'userId': AuthUserId.schema,
       'credentialID': JsonSchema.string(),
       'counter': JsonSchema.integer(),
       'deviceType': JsonSchema.string(),
@@ -135,8 +145,12 @@ final class AuthPasskeyRow implements JsonEncodable {
       counter: counter ?? this.counter,
       deviceType: deviceType ?? this.deviceType,
       backedUp: backedUp ?? this.backedUp,
-      transports: transports == null || !transports.isPresent ? this.transports : transports.value,
-      createdAt: createdAt == null || !createdAt.isPresent ? this.createdAt : createdAt.value,
+      transports: transports == null || !transports.isPresent
+          ? this.transports
+          : transports.value,
+      createdAt: createdAt == null || !createdAt.isPresent
+          ? this.createdAt
+          : createdAt.value,
       aaguid: aaguid == null || !aaguid.isPresent ? this.aaguid : aaguid.value,
     );
   }
@@ -193,21 +207,26 @@ final class AuthPasskeyInsert implements JsonEncodable {
   factory AuthPasskeyInsert.decode(Object? value) =>
       AuthPasskeyInsert.fromJson(readJsonObject(value));
 
-  factory AuthPasskeyInsert.fromJson(Map<String, Object?> json) => AuthPasskeyInsert(
-    id: json.containsKey('id')
-        ? SqlValue<AuthPasskeyId>(AuthPasskeyId((json['id'] as String)))
-        : const SqlValue.absent(),
-    name: json['name'] == null ? null : (json['name'] as String),
-    publicKey: (json['publicKey'] as String),
-    userId: AuthUserId((json['userId'] as String)),
-    credentialID: (json['credentialID'] as String),
-    counter: (json['counter'] as num).toInt(),
-    deviceType: (json['deviceType'] as String),
-    backedUp: (json['backedUp'] as bool),
-    transports: json['transports'] == null ? null : (json['transports'] as String),
-    createdAt: json['createdAt'] == null ? null : DateTime.parse((json['createdAt'] as String)),
-    aaguid: json['aaguid'] == null ? null : (json['aaguid'] as String),
-  );
+  factory AuthPasskeyInsert.fromJson(Map<String, Object?> json) =>
+      AuthPasskeyInsert(
+        id: json.containsKey('id')
+            ? SqlValue<AuthPasskeyId>(AuthPasskeyId((json['id'] as String)))
+            : const SqlValue.absent(),
+        name: json['name'] == null ? null : (json['name'] as String),
+        publicKey: (json['publicKey'] as String),
+        userId: AuthUserId((json['userId'] as String)),
+        credentialID: (json['credentialID'] as String),
+        counter: (json['counter'] as num).toInt(),
+        deviceType: (json['deviceType'] as String),
+        backedUp: (json['backedUp'] as bool),
+        transports: json['transports'] == null
+            ? null
+            : (json['transports'] as String),
+        createdAt: json['createdAt'] == null
+            ? null
+            : DateTime.parse((json['createdAt'] as String)),
+        aaguid: json['aaguid'] == null ? null : (json['aaguid'] as String),
+      );
 
   static const schemaId = 'AuthPasskeyInsert';
 
@@ -216,10 +235,10 @@ final class AuthPasskeyInsert implements JsonEncodable {
   static const jsonSchema = JsonSchema.object(
     id: schemaId,
     properties: <String, JsonSchema>{
-      'id': JsonSchema.string(),
+      'id': AuthPasskeyId.schema,
       'name': JsonSchema.string(nullable: true),
       'publicKey': JsonSchema.string(),
-      'userId': JsonSchema.string(),
+      'userId': AuthUserId.schema,
       'credentialID': JsonSchema.string(),
       'counter': JsonSchema.integer(),
       'deviceType': JsonSchema.string(),
@@ -287,8 +306,12 @@ final class AuthPasskeyInsert implements JsonEncodable {
       counter: counter ?? this.counter,
       deviceType: deviceType ?? this.deviceType,
       backedUp: backedUp ?? this.backedUp,
-      transports: transports == null || !transports.isPresent ? this.transports : transports.value,
-      createdAt: createdAt == null || !createdAt.isPresent ? this.createdAt : createdAt.value,
+      transports: transports == null || !transports.isPresent
+          ? this.transports
+          : transports.value,
+      createdAt: createdAt == null || !createdAt.isPresent
+          ? this.createdAt
+          : createdAt.value,
       aaguid: aaguid == null || !aaguid.isPresent ? this.aaguid : aaguid.value,
     );
   }
@@ -345,43 +368,54 @@ final class AuthPasskeyUpdate implements JsonEncodable {
   factory AuthPasskeyUpdate.decode(Object? value) =>
       AuthPasskeyUpdate.fromJson(readJsonObject(value));
 
-  factory AuthPasskeyUpdate.fromJson(Map<String, Object?> json) => AuthPasskeyUpdate(
-    id: json.containsKey('id')
-        ? SqlValue<AuthPasskeyId>(AuthPasskeyId((json['id'] as String)))
-        : const SqlValue.absent(),
-    name: json.containsKey('name')
-        ? SqlValue<String?>(json['name'] == null ? null : (json['name'] as String))
-        : const SqlValue.absent(),
-    publicKey: json.containsKey('publicKey')
-        ? SqlValue<String>((json['publicKey'] as String))
-        : const SqlValue.absent(),
-    userId: json.containsKey('userId')
-        ? SqlValue<AuthUserId>(AuthUserId((json['userId'] as String)))
-        : const SqlValue.absent(),
-    credentialID: json.containsKey('credentialID')
-        ? SqlValue<String>((json['credentialID'] as String))
-        : const SqlValue.absent(),
-    counter: json.containsKey('counter')
-        ? SqlValue<int>((json['counter'] as num).toInt())
-        : const SqlValue.absent(),
-    deviceType: json.containsKey('deviceType')
-        ? SqlValue<String>((json['deviceType'] as String))
-        : const SqlValue.absent(),
-    backedUp: json.containsKey('backedUp')
-        ? SqlValue<bool>((json['backedUp'] as bool))
-        : const SqlValue.absent(),
-    transports: json.containsKey('transports')
-        ? SqlValue<String?>(json['transports'] == null ? null : (json['transports'] as String))
-        : const SqlValue.absent(),
-    createdAt: json.containsKey('createdAt')
-        ? SqlValue<DateTime?>(
-            json['createdAt'] == null ? null : DateTime.parse((json['createdAt'] as String)),
-          )
-        : const SqlValue.absent(),
-    aaguid: json.containsKey('aaguid')
-        ? SqlValue<String?>(json['aaguid'] == null ? null : (json['aaguid'] as String))
-        : const SqlValue.absent(),
-  );
+  factory AuthPasskeyUpdate.fromJson(Map<String, Object?> json) =>
+      AuthPasskeyUpdate(
+        id: json.containsKey('id')
+            ? SqlValue<AuthPasskeyId>(AuthPasskeyId((json['id'] as String)))
+            : const SqlValue.absent(),
+        name: json.containsKey('name')
+            ? SqlValue<String?>(
+                json['name'] == null ? null : (json['name'] as String),
+              )
+            : const SqlValue.absent(),
+        publicKey: json.containsKey('publicKey')
+            ? SqlValue<String>((json['publicKey'] as String))
+            : const SqlValue.absent(),
+        userId: json.containsKey('userId')
+            ? SqlValue<AuthUserId>(AuthUserId((json['userId'] as String)))
+            : const SqlValue.absent(),
+        credentialID: json.containsKey('credentialID')
+            ? SqlValue<String>((json['credentialID'] as String))
+            : const SqlValue.absent(),
+        counter: json.containsKey('counter')
+            ? SqlValue<int>((json['counter'] as num).toInt())
+            : const SqlValue.absent(),
+        deviceType: json.containsKey('deviceType')
+            ? SqlValue<String>((json['deviceType'] as String))
+            : const SqlValue.absent(),
+        backedUp: json.containsKey('backedUp')
+            ? SqlValue<bool>((json['backedUp'] as bool))
+            : const SqlValue.absent(),
+        transports: json.containsKey('transports')
+            ? SqlValue<String?>(
+                json['transports'] == null
+                    ? null
+                    : (json['transports'] as String),
+              )
+            : const SqlValue.absent(),
+        createdAt: json.containsKey('createdAt')
+            ? SqlValue<DateTime?>(
+                json['createdAt'] == null
+                    ? null
+                    : DateTime.parse((json['createdAt'] as String)),
+              )
+            : const SqlValue.absent(),
+        aaguid: json.containsKey('aaguid')
+            ? SqlValue<String?>(
+                json['aaguid'] == null ? null : (json['aaguid'] as String),
+              )
+            : const SqlValue.absent(),
+      );
 
   static const schemaId = 'AuthPasskeyUpdate';
 
@@ -390,10 +424,10 @@ final class AuthPasskeyUpdate implements JsonEncodable {
   static const jsonSchema = JsonSchema.object(
     id: schemaId,
     properties: <String, JsonSchema>{
-      'id': JsonSchema.string(),
+      'id': AuthPasskeyId.schema,
       'name': JsonSchema.string(nullable: true),
       'publicKey': JsonSchema.string(),
-      'userId': JsonSchema.string(),
+      'userId': AuthUserId.schema,
       'credentialID': JsonSchema.string(),
       'counter': JsonSchema.integer(),
       'deviceType': JsonSchema.string(),
@@ -583,17 +617,57 @@ final class AuthPasskeysTable
 
   @override
   List<SqlColumn<Object?>> get columns => <SqlColumn<Object?>>[
-    column<AuthPasskeyId>('id', nullable: false, databaseType: 'text').asObjectColumn,
+    column<AuthPasskeyId>(
+      'id',
+      nullable: false,
+      databaseType: 'text',
+    ).asObjectColumn,
     column<String>('name', nullable: true, databaseType: 'text').asObjectColumn,
-    column<String>('publicKey', nullable: false, databaseType: 'text').asObjectColumn,
-    column<AuthUserId>('userId', nullable: false, databaseType: 'text').asObjectColumn,
-    column<String>('credentialID', nullable: false, databaseType: 'text').asObjectColumn,
-    column<int>('counter', nullable: false, databaseType: 'int4').asObjectColumn,
-    column<String>('deviceType', nullable: false, databaseType: 'text').asObjectColumn,
-    column<bool>('backedUp', nullable: false, databaseType: 'bool').asObjectColumn,
-    column<String>('transports', nullable: true, databaseType: 'text').asObjectColumn,
-    column<DateTime>('createdAt', nullable: true, databaseType: 'timestamptz').asObjectColumn,
-    column<String>('aaguid', nullable: true, databaseType: 'text').asObjectColumn,
+    column<String>(
+      'publicKey',
+      nullable: false,
+      databaseType: 'text',
+    ).asObjectColumn,
+    column<AuthUserId>(
+      'userId',
+      nullable: false,
+      databaseType: 'text',
+    ).asObjectColumn,
+    column<String>(
+      'credentialID',
+      nullable: false,
+      databaseType: 'text',
+    ).asObjectColumn,
+    column<int>(
+      'counter',
+      nullable: false,
+      databaseType: 'int4',
+    ).asObjectColumn,
+    column<String>(
+      'deviceType',
+      nullable: false,
+      databaseType: 'text',
+    ).asObjectColumn,
+    column<bool>(
+      'backedUp',
+      nullable: false,
+      databaseType: 'bool',
+    ).asObjectColumn,
+    column<String>(
+      'transports',
+      nullable: true,
+      databaseType: 'text',
+    ).asObjectColumn,
+    column<DateTime>(
+      'createdAt',
+      nullable: true,
+      databaseType: 'timestamptz',
+    ).asObjectColumn,
+    column<String>(
+      'aaguid',
+      nullable: true,
+      databaseType: 'text',
+    ).asObjectColumn,
   ];
 
   @override
@@ -601,17 +675,20 @@ final class AuthPasskeysTable
       AuthPasskeyRow.fromSqlRow(row, prefix: prefix);
 
   @override
-  Map<String, Object?> encodeInsert(AuthPasskeyInsert value) => value.toColumns();
+  Map<String, Object?> encodeInsert(AuthPasskeyInsert value) =>
+      value.toColumns();
 
   @override
-  Map<String, Object?> encodeUpdate(AuthPasskeyUpdate value) => value.toColumns();
+  Map<String, Object?> encodeUpdate(AuthPasskeyUpdate value) =>
+      value.toColumns();
 }
 
 extension AuthPasskeysTableColumns on AuthPasskeysTable {
   SqlColumn<AuthPasskeyId> get id =>
       column<AuthPasskeyId>('id', nullable: false, databaseType: 'text');
 
-  SqlColumn<String> get nameColumn => column<String>('name', nullable: true, databaseType: 'text');
+  SqlColumn<String> get nameColumn =>
+      column<String>('name', nullable: true, databaseType: 'text');
 
   SqlColumn<String> get publicKey =>
       column<String>('publicKey', nullable: false, databaseType: 'text');
@@ -622,18 +699,24 @@ extension AuthPasskeysTableColumns on AuthPasskeysTable {
   SqlColumn<String> get credentialID =>
       column<String>('credentialID', nullable: false, databaseType: 'text');
 
-  SqlColumn<int> get counter => column<int>('counter', nullable: false, databaseType: 'int4');
+  SqlColumn<int> get counter =>
+      column<int>('counter', nullable: false, databaseType: 'int4');
 
   SqlColumn<String> get deviceType =>
       column<String>('deviceType', nullable: false, databaseType: 'text');
 
-  SqlColumn<bool> get backedUp => column<bool>('backedUp', nullable: false, databaseType: 'bool');
+  SqlColumn<bool> get backedUp =>
+      column<bool>('backedUp', nullable: false, databaseType: 'bool');
 
   SqlColumn<String> get transports =>
       column<String>('transports', nullable: true, databaseType: 'text');
 
-  SqlColumn<DateTime> get createdAt =>
-      column<DateTime>('createdAt', nullable: true, databaseType: 'timestamptz');
+  SqlColumn<DateTime> get createdAt => column<DateTime>(
+    'createdAt',
+    nullable: true,
+    databaseType: 'timestamptz',
+  );
 
-  SqlColumn<String> get aaguid => column<String>('aaguid', nullable: true, databaseType: 'text');
+  SqlColumn<String> get aaguid =>
+      column<String>('aaguid', nullable: true, databaseType: 'text');
 }

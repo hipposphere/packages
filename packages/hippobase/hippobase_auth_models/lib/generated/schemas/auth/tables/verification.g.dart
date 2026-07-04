@@ -1,6 +1,10 @@
 import 'package:dart_edge_core/dart_edge_core.dart';
 
-extension type const AuthVerificationId(String value) {}
+extension type const AuthVerificationId(String value) {
+  static const JsonSchema schema = .string(
+    dartType: .value('AuthVerificationId'),
+  );
+}
 
 final class AuthVerificationRow implements JsonEncodable {
   const AuthVerificationRow({
@@ -12,41 +16,45 @@ final class AuthVerificationRow implements JsonEncodable {
     required this.updatedAt,
   });
 
-  factory AuthVerificationRow.fromSqlRow(SqlRow row, {String prefix = ''}) => AuthVerificationRow(
-    id: AuthVerificationId(row.read<String>('${prefix}id')),
-    identifier: row.read<String>('${prefix}identifier'),
-    value: row.read<String>('${prefix}value'),
-    expiresAt: switch (row.read<Object?>('${prefix}expiresAt')) {
-      final DateTime value => value,
-      final String value => DateTime.parse(value),
-      final value => value as DateTime,
-    },
-    createdAt: switch (row.read<Object?>('${prefix}createdAt')) {
-      final DateTime value => value,
-      final String value => DateTime.parse(value),
-      final value => value as DateTime,
-    },
-    updatedAt: switch (row.read<Object?>('${prefix}updatedAt')) {
-      final DateTime value => value,
-      final String value => DateTime.parse(value),
-      final value => value as DateTime,
-    },
-  );
+  factory AuthVerificationRow.fromSqlRow(SqlRow row, {String prefix = ''}) =>
+      AuthVerificationRow(
+        id: AuthVerificationId(row.read<String>('${prefix}id')),
+        identifier: row.read<String>('${prefix}identifier'),
+        value: row.read<String>('${prefix}value'),
+        expiresAt: switch (row.read<Object?>('${prefix}expiresAt')) {
+          final DateTime value => value,
+          final String value => DateTime.parse(value),
+          final value => value as DateTime,
+        },
+        createdAt: switch (row.read<Object?>('${prefix}createdAt')) {
+          final DateTime value => value,
+          final String value => DateTime.parse(value),
+          final value => value as DateTime,
+        },
+        updatedAt: switch (row.read<Object?>('${prefix}updatedAt')) {
+          final DateTime value => value,
+          final String value => DateTime.parse(value),
+          final value => value as DateTime,
+        },
+      );
 
-  factory AuthVerificationRow.fromColumns(Map<String, Object?> columns, {String prefix = ''}) =>
-      AuthVerificationRow.fromSqlRow(SqlRow(columns), prefix: prefix);
+  factory AuthVerificationRow.fromColumns(
+    Map<String, Object?> columns, {
+    String prefix = '',
+  }) => AuthVerificationRow.fromSqlRow(SqlRow(columns), prefix: prefix);
 
   factory AuthVerificationRow.decode(Object? value) =>
       AuthVerificationRow.fromJson(readJsonObject(value));
 
-  factory AuthVerificationRow.fromJson(Map<String, Object?> json) => AuthVerificationRow(
-    id: AuthVerificationId((json['id'] as String)),
-    identifier: (json['identifier'] as String),
-    value: (json['value'] as String),
-    expiresAt: DateTime.parse((json['expiresAt'] as String)),
-    createdAt: DateTime.parse((json['createdAt'] as String)),
-    updatedAt: DateTime.parse((json['updatedAt'] as String)),
-  );
+  factory AuthVerificationRow.fromJson(Map<String, Object?> json) =>
+      AuthVerificationRow(
+        id: AuthVerificationId((json['id'] as String)),
+        identifier: (json['identifier'] as String),
+        value: (json['value'] as String),
+        expiresAt: DateTime.parse((json['expiresAt'] as String)),
+        createdAt: DateTime.parse((json['createdAt'] as String)),
+        updatedAt: DateTime.parse((json['updatedAt'] as String)),
+      );
 
   static const schemaId = 'AuthVerificationRow';
 
@@ -55,14 +63,21 @@ final class AuthVerificationRow implements JsonEncodable {
   static const jsonSchema = JsonSchema.object(
     id: schemaId,
     properties: <String, JsonSchema>{
-      'id': JsonSchema.string(),
+      'id': AuthVerificationId.schema,
       'identifier': JsonSchema.string(),
       'value': JsonSchema.string(),
       'expiresAt': JsonSchema.string(format: 'date-time'),
       'createdAt': JsonSchema.string(format: 'date-time'),
       'updatedAt': JsonSchema.string(format: 'date-time'),
     },
-    required: <String>['id', 'identifier', 'value', 'expiresAt', 'createdAt', 'updatedAt'],
+    required: <String>[
+      'id',
+      'identifier',
+      'value',
+      'expiresAt',
+      'createdAt',
+      'updatedAt',
+    ],
     additionalProperties: false,
   );
 
@@ -133,16 +148,19 @@ final class AuthVerificationInsert implements JsonEncodable {
   factory AuthVerificationInsert.decode(Object? value) =>
       AuthVerificationInsert.fromJson(readJsonObject(value));
 
-  factory AuthVerificationInsert.fromJson(Map<String, Object?> json) => AuthVerificationInsert(
-    id: json.containsKey('id')
-        ? SqlValue<AuthVerificationId>(AuthVerificationId((json['id'] as String)))
-        : const SqlValue.absent(),
-    identifier: (json['identifier'] as String),
-    value: (json['value'] as String),
-    expiresAt: DateTime.parse((json['expiresAt'] as String)),
-    createdAt: DateTime.parse((json['createdAt'] as String)),
-    updatedAt: DateTime.parse((json['updatedAt'] as String)),
-  );
+  factory AuthVerificationInsert.fromJson(Map<String, Object?> json) =>
+      AuthVerificationInsert(
+        id: json.containsKey('id')
+            ? SqlValue<AuthVerificationId>(
+                AuthVerificationId((json['id'] as String)),
+              )
+            : const SqlValue.absent(),
+        identifier: (json['identifier'] as String),
+        value: (json['value'] as String),
+        expiresAt: DateTime.parse((json['expiresAt'] as String)),
+        createdAt: DateTime.parse((json['createdAt'] as String)),
+        updatedAt: DateTime.parse((json['updatedAt'] as String)),
+      );
 
   static const schemaId = 'AuthVerificationInsert';
 
@@ -151,14 +169,20 @@ final class AuthVerificationInsert implements JsonEncodable {
   static const jsonSchema = JsonSchema.object(
     id: schemaId,
     properties: <String, JsonSchema>{
-      'id': JsonSchema.string(),
+      'id': AuthVerificationId.schema,
       'identifier': JsonSchema.string(),
       'value': JsonSchema.string(),
       'expiresAt': JsonSchema.string(format: 'date-time'),
       'createdAt': JsonSchema.string(format: 'date-time'),
       'updatedAt': JsonSchema.string(format: 'date-time'),
     },
-    required: <String>['identifier', 'value', 'expiresAt', 'createdAt', 'updatedAt'],
+    required: <String>[
+      'identifier',
+      'value',
+      'expiresAt',
+      'createdAt',
+      'updatedAt',
+    ],
     additionalProperties: false,
   );
 
@@ -229,26 +253,29 @@ final class AuthVerificationUpdate implements JsonEncodable {
   factory AuthVerificationUpdate.decode(Object? value) =>
       AuthVerificationUpdate.fromJson(readJsonObject(value));
 
-  factory AuthVerificationUpdate.fromJson(Map<String, Object?> json) => AuthVerificationUpdate(
-    id: json.containsKey('id')
-        ? SqlValue<AuthVerificationId>(AuthVerificationId((json['id'] as String)))
-        : const SqlValue.absent(),
-    identifier: json.containsKey('identifier')
-        ? SqlValue<String>((json['identifier'] as String))
-        : const SqlValue.absent(),
-    value: json.containsKey('value')
-        ? SqlValue<String>((json['value'] as String))
-        : const SqlValue.absent(),
-    expiresAt: json.containsKey('expiresAt')
-        ? SqlValue<DateTime>(DateTime.parse((json['expiresAt'] as String)))
-        : const SqlValue.absent(),
-    createdAt: json.containsKey('createdAt')
-        ? SqlValue<DateTime>(DateTime.parse((json['createdAt'] as String)))
-        : const SqlValue.absent(),
-    updatedAt: json.containsKey('updatedAt')
-        ? SqlValue<DateTime>(DateTime.parse((json['updatedAt'] as String)))
-        : const SqlValue.absent(),
-  );
+  factory AuthVerificationUpdate.fromJson(Map<String, Object?> json) =>
+      AuthVerificationUpdate(
+        id: json.containsKey('id')
+            ? SqlValue<AuthVerificationId>(
+                AuthVerificationId((json['id'] as String)),
+              )
+            : const SqlValue.absent(),
+        identifier: json.containsKey('identifier')
+            ? SqlValue<String>((json['identifier'] as String))
+            : const SqlValue.absent(),
+        value: json.containsKey('value')
+            ? SqlValue<String>((json['value'] as String))
+            : const SqlValue.absent(),
+        expiresAt: json.containsKey('expiresAt')
+            ? SqlValue<DateTime>(DateTime.parse((json['expiresAt'] as String)))
+            : const SqlValue.absent(),
+        createdAt: json.containsKey('createdAt')
+            ? SqlValue<DateTime>(DateTime.parse((json['createdAt'] as String)))
+            : const SqlValue.absent(),
+        updatedAt: json.containsKey('updatedAt')
+            ? SqlValue<DateTime>(DateTime.parse((json['updatedAt'] as String)))
+            : const SqlValue.absent(),
+      );
 
   static const schemaId = 'AuthVerificationUpdate';
 
@@ -257,7 +284,7 @@ final class AuthVerificationUpdate implements JsonEncodable {
   static const jsonSchema = JsonSchema.object(
     id: schemaId,
     properties: <String, JsonSchema>{
-      'id': JsonSchema.string(),
+      'id': AuthVerificationId.schema,
       'identifier': JsonSchema.string(),
       'value': JsonSchema.string(),
       'expiresAt': JsonSchema.string(format: 'date-time'),
@@ -323,7 +350,12 @@ final class AuthVerificationUpdate implements JsonEncodable {
 }
 
 final class AuthVerificationsTable
-    extends SqlTable<AuthVerificationRow, AuthVerificationInsert, AuthVerificationUpdate> {
+    extends
+        SqlTable<
+          AuthVerificationRow,
+          AuthVerificationInsert,
+          AuthVerificationUpdate
+        > {
   const AuthVerificationsTable._() : schema = 'auth';
 
   const AuthVerificationsTable.withSchema(this.schema);
@@ -380,12 +412,36 @@ final class AuthVerificationsTable
 
   @override
   List<SqlColumn<Object?>> get columns => <SqlColumn<Object?>>[
-    column<AuthVerificationId>('id', nullable: false, databaseType: 'text').asObjectColumn,
-    column<String>('identifier', nullable: false, databaseType: 'text').asObjectColumn,
-    column<String>('value', nullable: false, databaseType: 'text').asObjectColumn,
-    column<DateTime>('expiresAt', nullable: false, databaseType: 'timestamptz').asObjectColumn,
-    column<DateTime>('createdAt', nullable: false, databaseType: 'timestamptz').asObjectColumn,
-    column<DateTime>('updatedAt', nullable: false, databaseType: 'timestamptz').asObjectColumn,
+    column<AuthVerificationId>(
+      'id',
+      nullable: false,
+      databaseType: 'text',
+    ).asObjectColumn,
+    column<String>(
+      'identifier',
+      nullable: false,
+      databaseType: 'text',
+    ).asObjectColumn,
+    column<String>(
+      'value',
+      nullable: false,
+      databaseType: 'text',
+    ).asObjectColumn,
+    column<DateTime>(
+      'expiresAt',
+      nullable: false,
+      databaseType: 'timestamptz',
+    ).asObjectColumn,
+    column<DateTime>(
+      'createdAt',
+      nullable: false,
+      databaseType: 'timestamptz',
+    ).asObjectColumn,
+    column<DateTime>(
+      'updatedAt',
+      nullable: false,
+      databaseType: 'timestamptz',
+    ).asObjectColumn,
   ];
 
   @override
@@ -393,10 +449,12 @@ final class AuthVerificationsTable
       AuthVerificationRow.fromSqlRow(row, prefix: prefix);
 
   @override
-  Map<String, Object?> encodeInsert(AuthVerificationInsert value) => value.toColumns();
+  Map<String, Object?> encodeInsert(AuthVerificationInsert value) =>
+      value.toColumns();
 
   @override
-  Map<String, Object?> encodeUpdate(AuthVerificationUpdate value) => value.toColumns();
+  Map<String, Object?> encodeUpdate(AuthVerificationUpdate value) =>
+      value.toColumns();
 }
 
 extension AuthVerificationsTableColumns on AuthVerificationsTable {
@@ -406,14 +464,24 @@ extension AuthVerificationsTableColumns on AuthVerificationsTable {
   SqlColumn<String> get identifier =>
       column<String>('identifier', nullable: false, databaseType: 'text');
 
-  SqlColumn<String> get value => column<String>('value', nullable: false, databaseType: 'text');
+  SqlColumn<String> get value =>
+      column<String>('value', nullable: false, databaseType: 'text');
 
-  SqlColumn<DateTime> get expiresAt =>
-      column<DateTime>('expiresAt', nullable: false, databaseType: 'timestamptz');
+  SqlColumn<DateTime> get expiresAt => column<DateTime>(
+    'expiresAt',
+    nullable: false,
+    databaseType: 'timestamptz',
+  );
 
-  SqlColumn<DateTime> get createdAt =>
-      column<DateTime>('createdAt', nullable: false, databaseType: 'timestamptz');
+  SqlColumn<DateTime> get createdAt => column<DateTime>(
+    'createdAt',
+    nullable: false,
+    databaseType: 'timestamptz',
+  );
 
-  SqlColumn<DateTime> get updatedAt =>
-      column<DateTime>('updatedAt', nullable: false, databaseType: 'timestamptz');
+  SqlColumn<DateTime> get updatedAt => column<DateTime>(
+    'updatedAt',
+    nullable: false,
+    databaseType: 'timestamptz',
+  );
 }

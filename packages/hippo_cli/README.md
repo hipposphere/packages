@@ -384,12 +384,26 @@ packages/hippo_cli/
       workspace/
         workspace_detector.dart
       commands/
+        hippo_command.dart
         doctor_command.dart
-        workspace_command.dart
-        release_command.dart
-        skills_command.dart
-        self_command.dart
-        config_command.dart
+        check_command.dart
+        workspace/
+          workspace_command.dart
+          check_command.dart
+        release/
+          release_command.dart
+          version_command.dart
+          docker/
+            docker_command.dart
+            generate_command.dart
+            build_command.dart
+        skills/
+          skills_command.dart
+          install_command.dart
+          validate_command.dart
+        self/
+          self_command.dart
+          version_command.dart
 ```
 
 Implementation boundaries:

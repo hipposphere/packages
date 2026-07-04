@@ -1,0 +1,7 @@
+default:
+    @just --list
+
+generate:
+    dart run tool/generate_models.dart
+
+generate-models: generate
