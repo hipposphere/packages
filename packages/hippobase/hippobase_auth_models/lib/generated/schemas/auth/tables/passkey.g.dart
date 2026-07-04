@@ -3,6 +3,11 @@ import 'user.g.dart';
 
 extension type const AuthPasskeyId(String value) {
   static const JsonSchema schema = .string(dartType: .value('AuthPasskeyId'));
+
+  static const JsonSchema schemaNullable = .string(
+    nullable: true,
+    dartType: .value('AuthPasskeyId'),
+  );
 }
 
 final class AuthPasskeyRow implements JsonEncodable {

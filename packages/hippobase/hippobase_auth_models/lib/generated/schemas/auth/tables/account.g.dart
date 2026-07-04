@@ -3,6 +3,11 @@ import 'user.g.dart';
 
 extension type const AuthAccountId(String value) {
   static const JsonSchema schema = .string(dartType: .value('AuthAccountId'));
+
+  static const JsonSchema schemaNullable = .string(
+    nullable: true,
+    dartType: .value('AuthAccountId'),
+  );
 }
 
 final class AuthAccountRow implements JsonEncodable {

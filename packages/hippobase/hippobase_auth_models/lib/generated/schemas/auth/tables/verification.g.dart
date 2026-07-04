@@ -4,6 +4,11 @@ extension type const AuthVerificationId(String value) {
   static const JsonSchema schema = .string(
     dartType: .value('AuthVerificationId'),
   );
+
+  static const JsonSchema schemaNullable = .string(
+    nullable: true,
+    dartType: .value('AuthVerificationId'),
+  );
 }
 
 final class AuthVerificationRow implements JsonEncodable {

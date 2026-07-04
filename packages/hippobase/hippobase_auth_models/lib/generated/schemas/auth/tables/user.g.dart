@@ -2,6 +2,11 @@ import 'package:dart_edge_core/dart_edge_core.dart';
 
 extension type const AuthUserId(String value) {
   static const JsonSchema schema = .string(dartType: .value('AuthUserId'));
+
+  static const JsonSchema schemaNullable = .string(
+    nullable: true,
+    dartType: .value('AuthUserId'),
+  );
 }
 
 final class AuthUserRow implements JsonEncodable {
