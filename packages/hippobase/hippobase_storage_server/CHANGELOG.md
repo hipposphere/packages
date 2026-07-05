@@ -1,4 +1,4 @@
-## 0.1.1
+## 0.1.2
 
 * Add a close method to storage providers and the storage client facade.
 
