@@ -14,6 +14,11 @@ final class S3StorageProvider implements StorageProvider {
   final String bucket;
 
   @override
+  Future<void> close() async {
+    client.dispose();
+  }
+
+  @override
   Future<void> delete(String key) async {
     validateStorageKey(key);
     await client.deleteObject(S3ObjectRef(bucket: bucket, key: key));

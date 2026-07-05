@@ -6,6 +6,15 @@ import 'package:test/test.dart';
 
 void main() {
   group('StorageClient', () {
+    test('delegates close to the provider', () async {
+      final provider = _CloseTrackingStorageProvider();
+      final client = StorageClient(provider: provider);
+
+      await client.close();
+
+      expect(provider.closeCount, 1);
+    });
+
     test('delegates upload, metadata, download, exists, and delete', () async {
       final client = StorageClient(provider: InMemoryStorageProvider());
 
@@ -72,4 +81,42 @@ void main() {
       expect(await client.exists('exports/data.json'), isFalse);
     });
   });
+}
+
+final class _CloseTrackingStorageProvider implements StorageProvider {
+  var closeCount = 0;
+
+  @override
+  Future<void> close() async {
+    closeCount += 1;
+  }
+
+  @override
+  Future<void> delete(String key) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<StorageObject> download(String key) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> exists(String key) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<StorageObjectMetadata> getMetadata(String key) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> upload(
+    String key,
+    Uint8List bytes, {
+    StorageWriteOptions options = const StorageWriteOptions(),
+  }) {
+    throw UnimplementedError();
+  }
 }

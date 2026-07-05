@@ -11,6 +11,10 @@ final class StorageClient {
 
   final StorageProvider provider;
 
+  Future<void> close() {
+    return provider.close();
+  }
+
   Future<void> delete(String key) {
     validateStorageKey(key);
     return provider.delete(key);

@@ -14,6 +14,9 @@ final class FileSystemStorageProvider implements StorageProvider {
   final Directory baseDirectory;
 
   @override
+  Future<void> close() async {}
+
+  @override
   Future<void> delete(String key) async {
     validateStorageKey(key);
     final file = _fileForKey(key);

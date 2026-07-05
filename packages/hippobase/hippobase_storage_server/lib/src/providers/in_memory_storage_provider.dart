@@ -13,6 +13,9 @@ final class InMemoryStorageProvider implements StorageProvider {
   final Map<String, StorageObject> _objects;
 
   @override
+  Future<void> close() async {}
+
+  @override
   Future<void> delete(String key) async {
     validateStorageKey(key);
     _objects.remove(key);
