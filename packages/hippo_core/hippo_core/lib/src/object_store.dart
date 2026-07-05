@@ -7,9 +7,9 @@
 // SPDX-License-Identifier: LicenseRef-Hipposphere-Proprietary
 // ---------------------------------------------------------------------------
 */
-export 'key_value_store/impl/mock.dart';
-export 'key_value_store/impl/secure.dart';
-export 'key_value_store/impl/shared_pref.dart';
-export 'object_store/impl/application_support_stub.dart'
-    if (dart.library.io) 'object_store/impl/application_support_io.dart';
-export 'object_store/impl/secure_key_value_keyring.dart';
+export 'object_store/binary_object_store.dart';
+export 'object_store/encrypted_object_store.dart';
+export 'object_store/json_object_store.dart';
+export 'object_store/memory_binary_object_store.dart';
+export 'object_store/object_store_key.dart';
+export 'object_store/object_store_keyring.dart';

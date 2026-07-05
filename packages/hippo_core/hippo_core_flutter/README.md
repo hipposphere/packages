@@ -7,3 +7,5 @@ This package contains:
 - `DataSubjectBuilder`, combined subject builders, and text editing helpers.
 - `BlocProvider`, `BlocDefiner`, and `MultiBlocProvider`.
 - `SharedPreferencesKeyValueStore`, `SecureKeyValueStore`, and `MockKeyValueStore`.
+- `ApplicationSupportObjectStore` and `SecureKeyValueObjectStoreKeyring` for encrypted
+  file-backed object caches.

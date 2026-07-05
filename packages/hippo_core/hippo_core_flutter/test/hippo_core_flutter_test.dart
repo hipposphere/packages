@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hippo_core/hippo_core.dart';
@@ -84,6 +87,47 @@ void main() {
     await store.removeValue('name');
 
     expect(await store.containsKey('name'), isFalse);
+  });
+
+  test('SecureKeyValueObjectStoreKeyring persists a generated key', () async {
+    final keyValueStore = MockKeyValueStore();
+    final keyring = SecureKeyValueObjectStoreKeyring(
+      keyValueStore: keyValueStore,
+      storeKey: 'object-store-key',
+      keyId: 'v1',
+    );
+
+    final firstKey = await keyring.currentKey();
+    final secondKey = await keyring.currentKey();
+
+    expect(firstKey.id, 'v1');
+    expect(secondKey.id, 'v1');
+    expect(secondKey.bytes, orderedEquals(firstKey.bytes));
+    expect(await keyring.keyForId('unknown'), isNull);
+  });
+
+  test('ApplicationSupportObjectStore stores, lists, and deletes files', () async {
+    final directory = await Directory.systemTemp.createTemp('hippo-object-store-test-');
+    addTearDown(() async {
+      if (await directory.exists()) {
+        await directory.delete(recursive: true);
+      }
+    });
+    final store = ApplicationSupportObjectStore(
+      namespace: 'test',
+      rootDirectoryPath: directory.path,
+    );
+    final key = ObjectStoreKey(['scope', 'chat.json']);
+
+    await store.writeBytes(key, Uint8List.fromList([1, 2, 3]));
+
+    expect(await store.exists(key), isTrue);
+    expect(await store.readBytes(key), [1, 2, 3]);
+    expect((await store.list(ObjectStoreKey(['scope']))).map((entry) => entry.key), [key]);
+
+    await store.deleteTree(ObjectStoreKey(['scope']));
+
+    expect(await store.exists(key), isFalse);
   });
 
   test('FilterController filters data with a text search filter from Flutter', () async {
