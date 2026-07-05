@@ -1,13 +1,13 @@
 name: hippo_ui_preview_flutter
 description: Flutter Hipposphere UI preview package shell.
-version: 0.1.1
+version: 0.1.2
 homepage: https://hippolabs.org
 publish_to: "https://pub.hippolabs.org"
 resolution: workspace
 
 environment:
   sdk: ">=3.12.0 < 4.0.0"
-  flutter: ">=3.44.2"
+  flutter: ">=3.44.0"
 
 dependencies:
   flutter:
