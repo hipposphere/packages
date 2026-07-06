@@ -241,6 +241,14 @@ packages:
       url: "https://registry.hippolabs.org/pub/internal-pub/"
     source: hosted
     version: "0.3.27"
+  dart_edge_http_server_codegen:
+    dependency: transitive
+    description:
+      name: dart_edge_http_server_codegen
+      sha256: "2f68f3c8bf9e562b18cecf9825163a85befbcd4e069a3681b2c553d9c1d9a24d"
+      url: "https://registry.hippolabs.org/pub/internal-pub/"
+    source: hosted
+    version: "0.3.35"
   dart_edge_native_assets:
     dependency: transitive
     description:
