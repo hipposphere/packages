@@ -8,6 +8,10 @@
 // ---------------------------------------------------------------------------
 */
 
+export 'src/app_changelog/app_changelog.dart';
+export 'src/app_changelog/app_changelog_bloc.dart';
+export 'src/app_changelog/app_changelog_builder.dart';
+export 'src/app_changelog/app_changelog_state.dart';
 export 'src/app_settings/app_settings.dart';
 export 'src/app_settings/app_settings_bloc.dart';
 export 'src/app_settings/app_settings_builder.dart';
