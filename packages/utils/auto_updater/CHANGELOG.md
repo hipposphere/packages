@@ -2,6 +2,7 @@
 
 * feat(macos): Add Swift Package Manager support for Sparkle.
 * chore: Support Sparkle tools from CocoaPods, SwiftPM, or `AUTO_UPDATER_SPARKLE_BIN`.
+* fix(macos): Forward stdin to `sign_update` when using `--ed-key-file -`.
 * chore: Require Dart `>=3.11.0` and Flutter `>=3.41.0`.
 
 ## 1.0.0
