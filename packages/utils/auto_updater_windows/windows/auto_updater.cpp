@@ -1,4 +1,4 @@
-#include "WinSparkle-0.8.1/include/winsparkle.h"
+#include "WinSparkle-0.9.3/include/winsparkle.h"
 
 #include <flutter/event_channel.h>
 #include <flutter/method_channel.h>
@@ -18,7 +18,6 @@ void __onUpdateCancelledCallback();
 void __onUpdateSkippedCallback();
 void __onUpdatePostponedCallback();
 void __onUpdateDismissedCallback();
-void __onUserRunInstallerCallback();
 
 class AutoUpdater {
  public:
@@ -67,12 +66,9 @@ void AutoUpdater::SetFeedURL(std::string feedURL) {
   win_sparkle_set_did_find_update_callback(__onDidFindUpdateCallback);
   win_sparkle_set_did_not_find_update_callback(__onDidNotFindUpdateCallback);
   win_sparkle_set_update_cancelled_callback(__onUpdateCancelledCallback);
-
-  // TODO: These will be supported once we update WinSparkle to >0.8.0
-  // win_sparkle_set_update_skipped_callback(__onUpdateSkippedCallback);
-  // win_sparkle_set_update_postponed_callback(__onUpdatePostponedCallback);
-  // win_sparkle_set_update_dismissed_callback(__onUpdateDismissedCallback);
-  // win_sparkle_set_user_run_installer_callback(__onUserRunInstallerCallback);
+  win_sparkle_set_update_skipped_callback(__onUpdateSkippedCallback);
+  win_sparkle_set_update_postponed_callback(__onUpdatePostponedCallback);
+  win_sparkle_set_update_dismissed_callback(__onUpdateDismissedCallback);
 }
 
 void AutoUpdater::CheckForUpdates() {
@@ -160,10 +156,4 @@ void __onUpdateDismissedCallback() {
   autoUpdater->OnWinSparkleEvent("updateDismissed");
 }
 
-void __onUserRunInstallerCallback() {
-  AutoUpdater* autoUpdater = AutoUpdater::GetInstance();
-  if (autoUpdater == nullptr)
-    return;
-  autoUpdater->OnWinSparkleEvent("userRunInstaller");
-}
 }  // namespace

@@ -138,9 +138,9 @@ void main() {
         '.plugin_symlinks',
         'auto_updater_windows',
         'windows',
-        'WinSparkle-0.8.1',
+        'WinSparkle-0.9.3',
         'bin',
-        'sign_update.bat',
+        'legacy_sign_update.bat',
       ]),
     );
   });

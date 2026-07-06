@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 
 enum SparkleTool {
-  generateKeys('generate_keys', 'generate_keys.bat'),
-  signUpdate('sign_update', 'sign_update.bat');
+  generateKeys('generate_keys', 'legacy_generate_keys.bat'),
+  signUpdate('sign_update', 'legacy_sign_update.bat');
 
   const SparkleTool(this.macosExecutable, this.windowsExecutable);
 
@@ -103,7 +103,7 @@ String _windowsExecutable(SparkleTool tool, String projectRoot) {
     '.plugin_symlinks',
     'auto_updater_windows',
     'windows',
-    'WinSparkle-0.8.1',
+    'WinSparkle-0.9.3',
     'bin',
     tool.windowsExecutable,
   ]);
