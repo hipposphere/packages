@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:io';
 
 import 'package:arb_translate/arb_translate.dart';
@@ -28,11 +30,7 @@ Future<void> main(List<String> arguments) async {
   TranslateOptions options;
 
   try {
-    options = TranslateOptions.resolve(
-      fileSystem,
-      argResults,
-      yamlResults,
-    );
+    options = TranslateOptions.resolve(fileSystem, argResults, yamlResults);
   } on OptionException catch (e) {
     print(e.message);
     exit(1);

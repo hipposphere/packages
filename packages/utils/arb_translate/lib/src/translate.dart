@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:io';
 
 import 'package:arb_translate/src/find_untranslated_resource_ids.dart';
@@ -57,8 +59,7 @@ Future<void> translate(FileSystem fileSystem, TranslateOptions options) async {
     ),
   };
 
-  final bundles =
-      AppResourceBundleCollection(fileSystem.directory(options.arbDir)).bundles;
+  final bundles = AppResourceBundleCollection(fileSystem.directory(options.arbDir)).bundles;
   final templateBundle = bundles.firstWhere(
     (bundle) => bundle.file.path.endsWith(options.templateArbFile),
   );
@@ -83,10 +84,7 @@ Future<void> _translateBundle({
   required AppResourceBundle templateBundle,
   required AppResourceBundle bundle,
 }) async {
-  final untranslatedResourceIds = findUntranslatedResourceIds(
-    bundle,
-    templateBundle,
-  );
+  final untranslatedResourceIds = findUntranslatedResourceIds(bundle, templateBundle);
 
   if (untranslatedResourceIds.isEmpty) {
     print('No terms to translate for locale ${bundle.locale}');
@@ -107,10 +105,7 @@ Future<void> _translateBundle({
   Map<String, String> translationResult;
 
   try {
-    translationResult = await translationDelegate.translate(
-      untranslatedResources,
-      bundle.locale,
-    );
+    translationResult = await translationDelegate.translate(untranslatedResources, bundle.locale);
   } on TranslateException catch (e) {
     print(e.message);
     exit(1);

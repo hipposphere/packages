@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 
 import 'package:arb_translate/src/flutter_tools/localizations_utils.dart';
@@ -100,12 +102,10 @@ class GeminiTranslationDelegate extends TranslationDelegate {
     _ => throw ArgumentError.value(model),
   };
 
-  static String _vertexBaseUrl(Uri projectUrl) =>
-      '${projectUrl.scheme}://${projectUrl.authority}';
+  static String _vertexBaseUrl(Uri projectUrl) => '${projectUrl.scheme}://${projectUrl.authority}';
 
   static googleai.ApiVersion _vertexApiVersion(Uri projectUrl) {
-    if (projectUrl.pathSegments.isNotEmpty &&
-        projectUrl.pathSegments.first == 'v1beta') {
+    if (projectUrl.pathSegments.isNotEmpty && projectUrl.pathSegments.first == 'v1beta') {
       return googleai.ApiVersion.v1beta;
     }
 
@@ -142,10 +142,7 @@ class GeminiTranslationDelegate extends TranslationDelegate {
   final googleai.GoogleAIClient _client;
 
   @override
-  Future<String> getModelResponse(
-    Map<String, Object?> resources,
-    LocaleInfo locale,
-  ) async {
+  Future<String> getModelResponse(Map<String, Object?> resources, LocaleInfo locale) async {
     final encodedResources = JsonEncoder.withIndent('  ').convert(resources);
     final prompt = googleai.Content.text(
       'Translate ARB messages for ${context ?? 'app'} to locale "$locale". '

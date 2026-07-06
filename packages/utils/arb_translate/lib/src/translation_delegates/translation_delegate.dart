@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 
 import 'package:arb_translate/src/flutter_tools/fakes/fake_app_resource_bundle.dart';
@@ -24,10 +26,7 @@ abstract class TranslationDelegate {
   int get maxParallelQueries;
   Duration get queryBackoff;
 
-  Future<Map<String, String>> translate(
-    Map<String, Object?> resources,
-    LocaleInfo locale,
-  ) async {
+  Future<Map<String, String>> translate(Map<String, Object?> resources, LocaleInfo locale) async {
     final batches = prepareBatches(resources);
 
     final results = <String, String>{};
@@ -147,15 +146,9 @@ abstract class TranslationDelegate {
     }
   }
 
-  Future<String> getModelResponse(
-    Map<String, Object?> resources,
-    LocaleInfo locale,
-  );
+  Future<String> getModelResponse(Map<String, Object?> resources, LocaleInfo locale);
 
-  Map<String, String>? _tryParseResponse(
-    Map<String, Object?> resources,
-    String? response,
-  ) {
+  Map<String, String>? _tryParseResponse(Map<String, Object?> resources, String? response) {
     if (response == null) {
       return null;
     }
@@ -173,25 +166,18 @@ abstract class TranslationDelegate {
       return null;
     }
 
-    final messageResources = resources.keys.where(
-      (key) => !key.startsWith('@'),
-    );
+    final messageResources = resources.keys.where((key) => !key.startsWith('@'));
 
     if (messageResources.any((key) => responseJson[key] is! String)) {
       return null;
     }
 
-    return {
-      for (final key in messageResources) key: responseJson[key] as String,
-    };
+    return {for (final key in messageResources) key: responseJson[key] as String};
   }
 
   @protected
   @visibleForTesting
-  bool validateResults(
-    Map<String, Object?> resources,
-    Map<String, String> results,
-  ) {
+  bool validateResults(Map<String, Object?> resources, Map<String, String> results) {
     final templateBundle = FakeAppResourcesBundle(resources, true);
     final otherBundle = FakeAppResourcesBundle(results, false);
 
@@ -199,10 +185,7 @@ abstract class TranslationDelegate {
       try {
         final message = Message(
           templateBundle,
-          FakeAppResourceBundleCollection(
-            templateBundle: templateBundle,
-            otherBundle: otherBundle,
-          ),
+          FakeAppResourceBundleCollection(templateBundle: templateBundle, otherBundle: otherBundle),
           key,
           false,
           useEscaping: useEscaping,
