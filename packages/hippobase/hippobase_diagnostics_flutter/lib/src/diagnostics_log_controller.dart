@@ -10,6 +10,7 @@ final class DiagnosticsLogController extends ChangeNotifier {
     required this.diagnostics,
     DiagnosticLogQuery initialQuery = const DiagnosticLogQuery(limit: 500),
     bool autoRefresh = true,
+    this.autoRefreshDebounce = const Duration(milliseconds: 250),
   }) : _query = initialQuery {
     if (autoRefresh) {
       startAutoRefresh();
@@ -17,6 +18,7 @@ final class DiagnosticsLogController extends ChangeNotifier {
   }
 
   final HippobaseFlutterDiagnostics diagnostics;
+  final Duration autoRefreshDebounce;
 
   DiagnosticLogQuery _query;
   List<DiagnosticLogEntry> _entries = const <DiagnosticLogEntry>[];
@@ -25,6 +27,10 @@ final class DiagnosticsLogController extends ChangeNotifier {
   Object? _error;
   StackTrace? _stackTrace;
   StreamSubscription<DiagnosticLogEntry>? _entrySubscription;
+  Timer? _autoRefreshTimer;
+  Future<void>? _loadFuture;
+  bool _loadRequested = false;
+  bool _isDisposed = false;
 
   DiagnosticLogQuery get query => _query;
   List<DiagnosticLogEntry> get entries => _entries;
@@ -35,34 +41,65 @@ final class DiagnosticsLogController extends ChangeNotifier {
 
   void startAutoRefresh() {
     _entrySubscription ??= diagnostics.store.entries.listen((_) {
-      unawaited(load());
+      _scheduleAutoRefresh();
     });
   }
 
   void stopAutoRefresh() {
+    _autoRefreshTimer?.cancel();
+    _autoRefreshTimer = null;
     unawaited(_entrySubscription?.cancel());
     _entrySubscription = null;
   }
 
   void updateQuery(DiagnosticLogQuery query) {
     _query = query;
-    notifyListeners();
+    _notifyListeners();
     unawaited(load());
   }
 
   Future<void> load() async {
+    if (_isDisposed) {
+      return;
+    }
+    final loadFuture = _loadFuture;
+    if (loadFuture != null) {
+      _loadRequested = true;
+      return loadFuture;
+    }
+    final future = _loadUntilSettled();
+    _loadFuture = future;
+    try {
+      await future;
+    } finally {
+      if (identical(_loadFuture, future)) {
+        _loadFuture = null;
+      }
+    }
+  }
+
+  Future<void> _loadUntilSettled() async {
     _isLoading = true;
     _error = null;
     _stackTrace = null;
-    notifyListeners();
+    _notifyListeners();
     try {
-      _entries = await diagnostics.store.query(_query);
+      do {
+        _loadRequested = false;
+        final entries = await diagnostics.store.query(_query);
+        if (_isDisposed) {
+          return;
+        }
+        _entries = entries;
+      } while (_loadRequested && !_isDisposed);
     } catch (error, stackTrace) {
       _error = error;
       _stackTrace = stackTrace;
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      if (!_isDisposed) {
+        _isLoading = false;
+        _notifyListeners();
+      }
     }
   }
 
@@ -70,7 +107,7 @@ final class DiagnosticsLogController extends ChangeNotifier {
     _isLoading = true;
     _error = null;
     _stackTrace = null;
-    notifyListeners();
+    _notifyListeners();
     try {
       await diagnostics.store.clear();
       _entries = const <DiagnosticLogEntry>[];
@@ -79,7 +116,7 @@ final class DiagnosticsLogController extends ChangeNotifier {
       _stackTrace = stackTrace;
     } finally {
       _isLoading = false;
-      notifyListeners();
+      _notifyListeners();
     }
   }
 
@@ -87,7 +124,7 @@ final class DiagnosticsLogController extends ChangeNotifier {
     _isExporting = true;
     _error = null;
     _stackTrace = null;
-    notifyListeners();
+    _notifyListeners();
     try {
       final path = await diagnostics.exportLogsToFile(_query);
       if (path != null) {
@@ -100,12 +137,30 @@ final class DiagnosticsLogController extends ChangeNotifier {
       return null;
     } finally {
       _isExporting = false;
+      _notifyListeners();
+    }
+  }
+
+  void _scheduleAutoRefresh() {
+    if (_isDisposed) {
+      return;
+    }
+    _autoRefreshTimer?.cancel();
+    _autoRefreshTimer = Timer(autoRefreshDebounce, () {
+      _autoRefreshTimer = null;
+      unawaited(load());
+    });
+  }
+
+  void _notifyListeners() {
+    if (!_isDisposed) {
       notifyListeners();
     }
   }
 
   @override
   void dispose() {
+    _isDisposed = true;
     stopAutoRefresh();
     super.dispose();
   }
