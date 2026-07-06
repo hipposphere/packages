@@ -24,6 +24,11 @@ The generated file exports `hippoUiGeneratedPreviews`, a list of
 `HippoUiGeneratedPreview` objects with preview metadata, option metadata, and a
 builder closure for constructor-based previews.
 
+For Flutter widget classes annotated with `HippoWidgetPreviewFlutter`, the
+generated file also emits top-level `@Preview` bridge functions. Flutter's
+widget preview scanner discovers those functions, while Hippo code can keep the
+class-based preview pattern.
+
 Each generated preview has a stable `id`. If the source annotation omits `id`,
 the builder derives one from the target import URI and declaration name.
 

@@ -22,6 +22,8 @@ final class GeneratedPreviewMetadata {
     required this.targetKind,
     required this.name,
     required this.path,
+    this.targetUsesConfiguration = false,
+    this.createsFlutterPreviewBridge = false,
     this.description,
     this.options = const <GeneratedOptionMetadata>[],
     this.optionConverters = const <GeneratedOptionConverterMetadata>[],
@@ -39,6 +41,10 @@ final class GeneratedPreviewMetadata {
   final String name;
 
   final String path;
+
+  final bool targetUsesConfiguration;
+
+  final bool createsFlutterPreviewBridge;
 
   final String? description;
 

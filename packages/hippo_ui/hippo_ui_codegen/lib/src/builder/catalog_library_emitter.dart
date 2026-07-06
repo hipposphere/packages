@@ -24,7 +24,16 @@ class CatalogLibraryEmitter {
     final targetImportUris = _targetImportUris(catalog).toList();
     final converterImportUris = _converterImportUris(catalog).toList();
     final enumImportUris = _enumImportUris(catalog).toList();
-    final imports = <String>{...targetImportUris, ...converterImportUris, ...enumImportUris};
+    final flutterPreviewBridges = catalog.previews
+        .where((preview) => preview.createsFlutterPreviewBridge)
+        .toList();
+    final imports = <String>{
+      if (flutterPreviewBridges.isNotEmpty) 'package:flutter/widget_previews.dart',
+      if (flutterPreviewBridges.isNotEmpty) 'package:flutter/widgets.dart',
+      ...targetImportUris,
+      ...converterImportUris,
+      ...enumImportUris,
+    };
     final hippoUiExportedByFlutter = imports.contains(
       'package:hippo_ui_flutter/hippo_ui_flutter.dart',
     );
@@ -34,9 +43,7 @@ class CatalogLibraryEmitter {
         ..comments.add('GENERATED CODE - DO NOT MODIFY BY HAND.')
         ..directives.addAll(<Directive>[
           if (!hippoUiExportedByFlutter) Directive.import('package:hippo_ui/hippo_ui.dart'),
-          ...targetImportUris.map(Directive.import),
-          ...converterImportUris.map(Directive.import),
-          ...enumImportUris.map(Directive.import),
+          ...imports.map(Directive.import),
         ])
         ..body.addAll(<Spec>[
           _generatedListField(
@@ -44,6 +51,7 @@ class CatalogLibraryEmitter {
             itemType: 'HippoUiGeneratedPreview',
             values: catalog.previews.map(_previewExpression),
           ),
+          ..._flutterPreviewBridgeMethods(flutterPreviewBridges),
         ]),
     );
 
@@ -229,23 +237,63 @@ class CatalogLibraryEmitter {
     return switch (preview.targetKind) {
       GeneratedPreviewTargetKind.classDeclaration => CodeExpression(
         Code.scope((allocate) {
-          final target = allocate(refer(preview.targetName, preview.targetImportUri));
-          final arguments = preview.options
-              .map((option) {
-                return '${option.key}: ${_configurationValueSource(option, preview, allocate)}';
-              })
-              .join(', ');
-          return '(configuration) => $target($arguments)';
+          return '(configuration) => ${_classPreviewConstructionSource(preview, allocate)}';
         }),
       ),
       GeneratedPreviewTargetKind.functionDeclaration => CodeExpression(
         Code.scope((allocate) {
           final target = allocate(refer(preview.targetName, preview.targetImportUri));
-          return '(configuration) => $target(configuration)';
+          if (preview.targetUsesConfiguration) {
+            return '(configuration) => $target(configuration)';
+          }
+          return '(_) => $target()';
         }),
       ),
       GeneratedPreviewTargetKind.other => null,
     };
+  }
+
+  Iterable<Method> _flutterPreviewBridgeMethods(List<GeneratedPreviewMetadata> previews) sync* {
+    for (final preview in previews) {
+      yield _flutterPreviewBridgeMethod(preview);
+    }
+  }
+
+  Method _flutterPreviewBridgeMethod(GeneratedPreviewMetadata preview) {
+    return Method(
+      (builder) => builder
+        ..annotations.add(
+          refer('Preview').call(const <Expression>[], {
+            'group': literalString(preview.path),
+            'name': literalString(preview.name),
+          }),
+        )
+        ..returns = refer('Widget')
+        ..name = _flutterPreviewBridgeName(preview)
+        ..body = Code.scope((allocate) {
+          final target = _classPreviewConstructionSource(preview, allocate);
+          if (preview.options.isEmpty) {
+            return 'return $target;';
+          }
+          return '''
+final configuration = ${_defaultConfigurationMapSource(preview)};
+return $target;
+''';
+        }),
+    );
+  }
+
+  String _classPreviewConstructionSource(
+    GeneratedPreviewMetadata preview,
+    String Function(Reference) allocate,
+  ) {
+    final target = allocate(refer(preview.targetName, preview.targetImportUri));
+    final arguments = preview.options
+        .map((option) {
+          return '${option.key}: ${_configurationValueSource(option, preview, allocate)}';
+        })
+        .join(', ');
+    return '$target($arguments)';
   }
 
   Map<String, Expression>? _previewBuilderMap(GeneratedPreviewMetadata preview) {
@@ -319,6 +367,50 @@ class CatalogLibraryEmitter {
       final List<Object?> list => literalList(list.map(_literalJson), refer('Object?')),
       _ => literal(value),
     };
+  }
+
+  String _defaultConfigurationMapSource(GeneratedPreviewMetadata preview) {
+    return _sourceFor(
+      literalMap(
+        <Expression, Expression>{
+          for (final option in preview.options)
+            literalString(option.key): _literalJson(option.defaultValue),
+        },
+        refer('String'),
+        refer('Object?'),
+      ),
+    );
+  }
+
+  String _flutterPreviewBridgeName(GeneratedPreviewMetadata preview) {
+    return 'hippoUiFlutterPreview${_identifierPart(preview.targetName)}${_stableHash(preview.id)}';
+  }
+
+  String _identifierPart(String value) {
+    final segments = value
+        .split(RegExp(r'[^a-zA-Z0-9]+'))
+        .where((segment) => segment.isNotEmpty)
+        .toList();
+    if (segments.isEmpty) {
+      return 'Preview';
+    }
+    return segments.map(_upperFirst).join();
+  }
+
+  String _upperFirst(String value) {
+    if (value.length == 1) {
+      return value.toUpperCase();
+    }
+    return value[0].toUpperCase() + value.substring(1);
+  }
+
+  String _stableHash(String value) {
+    var hash = 0x811c9dc5;
+    for (final codeUnit in value.codeUnits) {
+      hash ^= codeUnit;
+      hash = (hash * 0x01000193).toUnsigned(32);
+    }
+    return hash.toRadixString(36);
   }
 
   Expression _stringList(List<String> values) {

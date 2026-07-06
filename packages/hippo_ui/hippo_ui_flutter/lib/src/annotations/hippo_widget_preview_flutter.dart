@@ -17,6 +17,14 @@ import 'package:hippo_ui/hippo_ui.dart';
 /// can discover the target. It also implements [HippoWidgetPreviewMetadata] so
 /// Hippo tooling can read the same annotation for catalogs, playgrounds, and
 /// review apps.
+///
+/// Flutter's preview scanner only discovers annotations placed on public
+/// top-level functions, public static methods, and public widget constructors or
+/// factories with no required arguments. Flutter Preview will not discover class
+/// annotations directly, but `hippo_ui_codegen` emits top-level Flutter preview
+/// bridge functions for widget classes annotated with [HippoWidgetPreviewFlutter].
+/// Class-level [HippoWidgetPreview] remains framework-neutral and does not emit
+/// Flutter preview bridges.
 base class HippoWidgetPreviewFlutter extends Preview implements HippoWidgetPreviewMetadata {
   const HippoWidgetPreviewFlutter({
     this.id,

@@ -11,6 +11,7 @@ import 'dart:convert';
 
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:hippo_ui/hippo_ui.dart';
 import 'package:source_gen/source_gen.dart';
@@ -27,6 +28,12 @@ class AnnotationCatalogReader {
   static const TypeChecker _fieldChecker = TypeChecker.typeNamed(
     HippoWidgetPreviewField,
     inPackage: 'hippo_ui',
+  );
+  static final Uri _flutterPreviewLibraryUri = Uri.parse(
+    'package:flutter/src/widget_previews/widget_previews.dart',
+  );
+  static final Uri _flutterWidgetLibraryUri = Uri.parse(
+    'package:flutter/src/widgets/framework.dart',
   );
 
   Future<CatalogMetadata> readPackageCatalog(BuildStep buildStep, List<AssetId> libraries) async {
@@ -65,6 +72,8 @@ class AnnotationCatalogReader {
       targetKind: targetKind,
       name: _requiredString(object, 'name'),
       path: _requiredString(object, 'path'),
+      targetUsesConfiguration: _targetUsesConfiguration(targetElement),
+      createsFlutterPreviewBridge: _createsFlutterPreviewBridge(object, targetElement),
       description: object.getField('description')?.toStringValue(),
       options: _fieldOptionList(targetElement),
       tags: _stringList(object.getField('tags')),
@@ -723,7 +732,9 @@ class AnnotationCatalogReader {
   }
 
   String _requiredString(DartObject object, String fieldName) {
-    return object.getField(fieldName)?.toStringValue() ?? '';
+    return object.getField(fieldName)?.toStringValue() ??
+        (fieldName == 'name' ? object.getField('_name')?.toStringValue() : null) ??
+        '';
   }
 
   String _libraryImportUri(BuildStep buildStep, AssetId asset) {
@@ -748,8 +759,43 @@ class AnnotationCatalogReader {
       return GeneratedPreviewTargetKind.classDeclaration;
     }
     if (element is TopLevelFunctionElement) {
-      return GeneratedPreviewTargetKind.functionDeclaration;
+      return element.formalParameters.length <= 1
+          ? GeneratedPreviewTargetKind.functionDeclaration
+          : GeneratedPreviewTargetKind.other;
     }
     return GeneratedPreviewTargetKind.other;
+  }
+
+  bool _targetUsesConfiguration(Element element) {
+    return element is TopLevelFunctionElement && element.formalParameters.isNotEmpty;
+  }
+
+  bool _createsFlutterPreviewBridge(DartObject annotation, Element element) {
+    return element is ClassElement &&
+        _isFlutterPreviewAnnotation(annotation) &&
+        _isFlutterWidgetClass(element);
+  }
+
+  bool _isFlutterPreviewAnnotation(DartObject annotation) {
+    final type = annotation.type;
+    return type is InterfaceType &&
+        _isTypeOrSuperType(type, typeName: 'Preview', libraryUri: _flutterPreviewLibraryUri);
+  }
+
+  bool _isFlutterWidgetClass(ClassElement element) {
+    return _isTypeOrSuperType(
+      element.thisType,
+      typeName: 'Widget',
+      libraryUri: _flutterWidgetLibraryUri,
+    );
+  }
+
+  bool _isTypeOrSuperType(InterfaceType type, {required String typeName, required Uri libraryUri}) {
+    bool matches(InterfaceType candidate) {
+      return candidate.element.displayName == typeName &&
+          candidate.element.library.uri == libraryUri;
+    }
+
+    return matches(type) || type.allSupertypes.any(matches);
   }
 }

@@ -11,7 +11,7 @@
 import 'package:flutter/material.dart';
 import 'package:hippo_ui_flutter/hippo_ui_flutter.dart';
 
-@HippoWidgetPreview(
+@HippoWidgetPreviewFlutter(
   name: 'Demo button',
   path: 'Components/Button',
   description: 'A configurable button preview rendered from the generated catalog.',
@@ -51,7 +51,7 @@ final class PreviewButton extends StatelessWidget {
   }
 }
 
-@HippoWidgetPreview(
+@HippoWidgetPreviewFlutter(
   name: 'Status card',
   path: 'Components/Card',
   description: 'A compact status card preview with configurable tone and value.',

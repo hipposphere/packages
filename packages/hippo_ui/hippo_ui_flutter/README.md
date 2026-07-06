@@ -12,7 +12,7 @@ common Flutter converters.
 import 'package:flutter/widgets.dart';
 import 'package:hippo_ui_flutter/hippo_ui_flutter.dart';
 
-@HippoWidgetPreview(
+@HippoWidgetPreviewFlutter(
   name: 'Aligned label',
   path: 'Typography/Label',
 )
@@ -34,6 +34,22 @@ final class PreviewLabel extends StatelessWidget {
   }
 }
 ```
+
+`@HippoWidgetPreviewFlutter` on a widget class is read by Hippo catalog codegen.
+Flutter's widget preview scanner only discovers public top-level functions,
+public static methods, and public widget constructors or factories with no
+required arguments, so `hippo_ui_codegen` emits top-level Flutter preview bridge
+functions into `lib/hippo_ui_catalog.g.dart`.
+
+Run codegen before starting Flutter Preview:
+
+```sh
+dart run build_runner build
+flutter widget-preview start
+```
+
+Use the framework-neutral `@HippoWidgetPreview` when a declaration should appear
+in Hippo catalogs without generating Flutter preview bridges.
 
 Flutter-specific option helpers are available for constructor parameters that
 cannot be represented directly as JSON-safe preview values:
@@ -69,9 +85,8 @@ For theme-dependent or compositional parameters, use string-keyed options with a
 project converter: `HippoUiTextStyleOption` for `TextStyle` and
 `HippoUiWidgetOption` for `Widget`.
 
-Use `HippoWidgetPreviewFlutter` when the same declaration should also be visible
-to Flutter's widget preview tooling. Project-specific annotations can extend it
-when they need custom constructor defaults or additional const metadata.
+Project-specific annotations can extend `HippoWidgetPreviewFlutter` when they
+need custom constructor defaults or additional const metadata.
 
 ## Validation
 

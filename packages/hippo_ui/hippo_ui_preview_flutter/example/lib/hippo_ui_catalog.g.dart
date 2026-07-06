@@ -1,8 +1,9 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 
+import 'package:flutter/widget_previews.dart';
+import 'package:flutter/widgets.dart';
 import 'package:hippo_ui_preview_flutter_example/button_preview.dart';
 import 'package:hippo_ui_flutter/hippo_ui_flutter.dart';
-import 'package:flutter/widgets.dart';
 
 final List<HippoUiGeneratedPreview>
 hippoUiGeneratedPreviews = <HippoUiGeneratedPreview>[
@@ -122,3 +123,38 @@ hippoUiGeneratedPreviews = <HippoUiGeneratedPreview>[
     ),
   ),
 ];
+@Preview(group: 'Components/Button', name: 'Demo button')
+Widget hippoUiFlutterPreviewPreviewButton1ewqivl() {
+  final configuration = <String, Object?>{
+    'label': 'Continue',
+    'count': 2,
+    'prominent': true,
+  };
+  return PreviewButton(
+    label: (configuration["label"] as String?) ?? "Continue",
+    count: (configuration["count"] as int?) ?? 2,
+    prominent: (configuration["prominent"] as bool?) ?? true,
+  );
+}
+
+@Preview(group: 'Components/Card', name: 'Status card')
+Widget hippoUiFlutterPreviewPreviewStatusCard12q22o9() {
+  final configuration = <String, Object?>{
+    'title': 'Pipeline health',
+    'value': '98%',
+    'warning': false,
+    'alignment': 'center',
+    'mainAxisAlignment': 'start',
+  };
+  return PreviewStatusCard(
+    title: (configuration["title"] as String?) ?? "Pipeline health",
+    value: (configuration["value"] as String?) ?? "98%",
+    warning: (configuration["warning"] as bool?) ?? false,
+    alignment: const HippoUiAlignmentConverter().convert(
+      configuration["alignment"],
+    ),
+    mainAxisAlignment: MainAxisAlignment.values.byName(
+      (configuration["mainAxisAlignment"] as String?) ?? "start",
+    ),
+  );
+}
