@@ -22,7 +22,10 @@ extension HippobaseSelectQueryApplication<TRow, TInsert, TUpdate>
     final effectiveSort = sort.isEmpty ? spec.defaultSort : sort;
     for (final term in effectiveSort) {
       final field = spec.requireField(term.field);
-      builder = builder.orderBy(field.column, descending: term.direction == SortDirection.desc);
+      builder = builder.orderByColumn(
+        field.column,
+        descending: term.direction == SortDirection.desc,
+      );
     }
     return builder;
   }
@@ -51,7 +54,10 @@ extension HippobaseSelectedQueryApplication<TSelection> on SelectedSelectQueryBu
     final effectiveSort = sort.isEmpty ? spec.defaultSort : sort;
     for (final term in effectiveSort) {
       final field = spec.requireField(term.field);
-      builder = builder.orderBy(field.column, descending: term.direction == SortDirection.desc);
+      builder = builder.orderByColumn(
+        field.column,
+        descending: term.direction == SortDirection.desc,
+      );
     }
     return builder;
   }
