@@ -1,5 +1,6 @@
 import 'package:dart_edge_core/dart_edge_core.dart';
 import 'schemas/auth/schema.g.dart';
+export 'key_manifest.g.dart';
 export 'schemas/auth/schema.g.dart';
 
 final class AuthDatabase {
@@ -9,7 +10,5 @@ final class AuthDatabase {
 
   static const List<JsonSchema> schemas = <JsonSchema>[...AuthSchema.schemas];
 
-  static const JsonSchemaRegistry jsonSchemas = JsonSchemaRegistry(
-    schemas: schemas,
-  );
+  static const JsonSchemaRegistry jsonSchemas = JsonSchemaRegistry(schemas: schemas);
 }
