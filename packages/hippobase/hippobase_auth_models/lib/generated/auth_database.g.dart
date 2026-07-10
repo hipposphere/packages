@@ -1,6 +1,5 @@
 import 'package:dart_edge_core/dart_edge_core.dart';
 import 'schemas/auth/schema.g.dart';
-export 'key_manifest.g.dart';
 export 'schemas/auth/schema.g.dart';
 
 final class AuthDatabase {
@@ -8,7 +7,17 @@ final class AuthDatabase {
 
   static const authSchema = AuthSchema.instance;
 
+  static const List<SqlKeyManifestEntry> sqlKeyManifest = <SqlKeyManifestEntry>[
+    AuthAccountId.manifest,
+    AuthPasskeyId.manifest,
+    AuthSessionId.manifest,
+    AuthUserId.manifest,
+    AuthVerificationId.manifest,
+  ];
+
   static const List<JsonSchema> schemas = <JsonSchema>[...AuthSchema.schemas];
 
-  static const JsonSchemaRegistry jsonSchemas = JsonSchemaRegistry(schemas: schemas);
+  static const JsonSchemaRegistry jsonSchemas = JsonSchemaRegistry(
+    schemas: schemas,
+  );
 }

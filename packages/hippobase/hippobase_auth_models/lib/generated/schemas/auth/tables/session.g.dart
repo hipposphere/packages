@@ -31,34 +31,38 @@ final class AuthSessionRow implements JsonEncodable {
     required this.impersonatedBy,
   });
 
-  factory AuthSessionRow.fromSqlRow(SqlRow row, {String prefix = ''}) => AuthSessionRow(
-    id: AuthSessionId(row.read<String>('${prefix}id')),
-    expiresAt: switch (row.read<Object?>('${prefix}expiresAt')) {
-      final DateTime value => value,
-      final String value => DateTime.parse(value),
-      final value => value as DateTime,
-    },
-    token: row.read<String>('${prefix}token'),
-    createdAt: switch (row.read<Object?>('${prefix}createdAt')) {
-      final DateTime value => value,
-      final String value => DateTime.parse(value),
-      final value => value as DateTime,
-    },
-    updatedAt: switch (row.read<Object?>('${prefix}updatedAt')) {
-      final DateTime value => value,
-      final String value => DateTime.parse(value),
-      final value => value as DateTime,
-    },
-    ipAddress: row.readNullable<String>('${prefix}ipAddress'),
-    userAgent: row.readNullable<String>('${prefix}userAgent'),
-    userId: AuthUserId(row.read<String>('${prefix}userId')),
-    impersonatedBy: row.readNullable<String>('${prefix}impersonatedBy'),
-  );
+  factory AuthSessionRow.fromSqlRow(SqlRow row, {String prefix = ''}) =>
+      AuthSessionRow(
+        id: AuthSessionId(row.read<String>('${prefix}id')),
+        expiresAt: switch (row.read<Object?>('${prefix}expiresAt')) {
+          final DateTime value => value,
+          final String value => DateTime.parse(value),
+          final value => value as DateTime,
+        },
+        token: row.read<String>('${prefix}token'),
+        createdAt: switch (row.read<Object?>('${prefix}createdAt')) {
+          final DateTime value => value,
+          final String value => DateTime.parse(value),
+          final value => value as DateTime,
+        },
+        updatedAt: switch (row.read<Object?>('${prefix}updatedAt')) {
+          final DateTime value => value,
+          final String value => DateTime.parse(value),
+          final value => value as DateTime,
+        },
+        ipAddress: row.readNullable<String>('${prefix}ipAddress'),
+        userAgent: row.readNullable<String>('${prefix}userAgent'),
+        userId: AuthUserId(row.read<String>('${prefix}userId')),
+        impersonatedBy: row.readNullable<String>('${prefix}impersonatedBy'),
+      );
 
-  factory AuthSessionRow.fromColumns(Map<String, Object?> columns, {String prefix = ''}) =>
-      AuthSessionRow.fromSqlRow(SqlRow(columns), prefix: prefix);
+  factory AuthSessionRow.fromColumns(
+    Map<String, Object?> columns, {
+    String prefix = '',
+  }) => AuthSessionRow.fromSqlRow(SqlRow(columns), prefix: prefix);
 
-  factory AuthSessionRow.decode(Object? value) => AuthSessionRow.fromJson(readJsonObject(value));
+  factory AuthSessionRow.decode(Object? value) =>
+      AuthSessionRow.fromJson(readJsonObject(value));
 
   factory AuthSessionRow.fromJson(Map<String, Object?> json) => AuthSessionRow(
     id: AuthSessionId((json['id'] as String)),
@@ -69,7 +73,9 @@ final class AuthSessionRow implements JsonEncodable {
     ipAddress: json['ipAddress'] == null ? null : (json['ipAddress'] as String),
     userAgent: json['userAgent'] == null ? null : (json['userAgent'] as String),
     userId: AuthUserId((json['userId'] as String)),
-    impersonatedBy: json['impersonatedBy'] == null ? null : (json['impersonatedBy'] as String),
+    impersonatedBy: json['impersonatedBy'] == null
+        ? null
+        : (json['impersonatedBy'] as String),
   );
 
   static const schemaId = 'AuthSessionRow';
@@ -138,8 +144,12 @@ final class AuthSessionRow implements JsonEncodable {
       token: token ?? this.token,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      ipAddress: ipAddress == null || !ipAddress.isPresent ? this.ipAddress : ipAddress.value,
-      userAgent: userAgent == null || !userAgent.isPresent ? this.userAgent : userAgent.value,
+      ipAddress: ipAddress == null || !ipAddress.isPresent
+          ? this.ipAddress
+          : ipAddress.value,
+      userAgent: userAgent == null || !userAgent.isPresent
+          ? this.userAgent
+          : userAgent.value,
       userId: userId ?? this.userId,
       impersonatedBy: impersonatedBy == null || !impersonatedBy.isPresent
           ? this.impersonatedBy
@@ -193,7 +203,9 @@ final class AuthSessionInsert implements JsonEncodable {
   factory AuthSessionInsert.decode(Object? value) =>
       AuthSessionInsert.fromJson(readJsonObject(value));
 
-  factory AuthSessionInsert.fromJson(Map<String, Object?> json) => AuthSessionInsert(
+  factory AuthSessionInsert.fromJson(
+    Map<String, Object?> json,
+  ) => AuthSessionInsert(
     id: json.containsKey('id')
         ? SqlValue<AuthSessionId>(AuthSessionId((json['id'] as String)))
         : const SqlValue.absent(),
@@ -204,7 +216,9 @@ final class AuthSessionInsert implements JsonEncodable {
     ipAddress: json['ipAddress'] == null ? null : (json['ipAddress'] as String),
     userAgent: json['userAgent'] == null ? null : (json['userAgent'] as String),
     userId: AuthUserId((json['userId'] as String)),
-    impersonatedBy: json['impersonatedBy'] == null ? null : (json['impersonatedBy'] as String),
+    impersonatedBy: json['impersonatedBy'] == null
+        ? null
+        : (json['impersonatedBy'] as String),
   );
 
   static const schemaId = 'AuthSessionInsert';
@@ -272,8 +286,12 @@ final class AuthSessionInsert implements JsonEncodable {
       token: token ?? this.token,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      ipAddress: ipAddress == null || !ipAddress.isPresent ? this.ipAddress : ipAddress.value,
-      userAgent: userAgent == null || !userAgent.isPresent ? this.userAgent : userAgent.value,
+      ipAddress: ipAddress == null || !ipAddress.isPresent
+          ? this.ipAddress
+          : ipAddress.value,
+      userAgent: userAgent == null || !userAgent.isPresent
+          ? this.userAgent
+          : userAgent.value,
       userId: userId ?? this.userId,
       impersonatedBy: impersonatedBy == null || !impersonatedBy.isPresent
           ? this.impersonatedBy
@@ -327,7 +345,9 @@ final class AuthSessionUpdate implements JsonEncodable {
   factory AuthSessionUpdate.decode(Object? value) =>
       AuthSessionUpdate.fromJson(readJsonObject(value));
 
-  factory AuthSessionUpdate.fromJson(Map<String, Object?> json) => AuthSessionUpdate(
+  factory AuthSessionUpdate.fromJson(
+    Map<String, Object?> json,
+  ) => AuthSessionUpdate(
     id: json.containsKey('id')
         ? SqlValue<AuthSessionId>(AuthSessionId((json['id'] as String)))
         : const SqlValue.absent(),
@@ -344,17 +364,23 @@ final class AuthSessionUpdate implements JsonEncodable {
         ? SqlValue<DateTime>(DateTime.parse((json['updatedAt'] as String)))
         : const SqlValue.absent(),
     ipAddress: json.containsKey('ipAddress')
-        ? SqlValue<String?>(json['ipAddress'] == null ? null : (json['ipAddress'] as String))
+        ? SqlValue<String?>(
+            json['ipAddress'] == null ? null : (json['ipAddress'] as String),
+          )
         : const SqlValue.absent(),
     userAgent: json.containsKey('userAgent')
-        ? SqlValue<String?>(json['userAgent'] == null ? null : (json['userAgent'] as String))
+        ? SqlValue<String?>(
+            json['userAgent'] == null ? null : (json['userAgent'] as String),
+          )
         : const SqlValue.absent(),
     userId: json.containsKey('userId')
         ? SqlValue<AuthUserId>(AuthUserId((json['userId'] as String)))
         : const SqlValue.absent(),
     impersonatedBy: json.containsKey('impersonatedBy')
         ? SqlValue<String?>(
-            json['impersonatedBy'] == null ? null : (json['impersonatedBy'] as String),
+            json['impersonatedBy'] == null
+                ? null
+                : (json['impersonatedBy'] as String),
           )
         : const SqlValue.absent(),
   );
@@ -463,63 +489,63 @@ final class AuthSessionsTable
 
   static const table = AuthSessionsTable._();
 
-  static final id = SqlColumn<AuthSessionId>(
+  static const id = SqlColumn<AuthSessionId>(
     table: table,
     name: 'id',
     nullable: false,
     databaseType: 'text',
   );
 
-  static final expiresAt = SqlColumn<DateTime>(
+  static const expiresAt = SqlColumn<DateTime>(
     table: table,
     name: 'expiresAt',
     nullable: false,
     databaseType: 'timestamptz',
   );
 
-  static final token = SqlColumn<String>(
+  static const token = SqlColumn<String>(
     table: table,
     name: 'token',
     nullable: false,
     databaseType: 'text',
   );
 
-  static final createdAt = SqlColumn<DateTime>(
+  static const createdAt = SqlColumn<DateTime>(
     table: table,
     name: 'createdAt',
     nullable: false,
     databaseType: 'timestamptz',
   );
 
-  static final updatedAt = SqlColumn<DateTime>(
+  static const updatedAt = SqlColumn<DateTime>(
     table: table,
     name: 'updatedAt',
     nullable: false,
     databaseType: 'timestamptz',
   );
 
-  static final ipAddress = SqlColumn<String>(
+  static const ipAddress = SqlColumn<String>(
     table: table,
     name: 'ipAddress',
     nullable: true,
     databaseType: 'text',
   );
 
-  static final userAgent = SqlColumn<String>(
+  static const userAgent = SqlColumn<String>(
     table: table,
     name: 'userAgent',
     nullable: true,
     databaseType: 'text',
   );
 
-  static final userId = SqlColumn<AuthUserId>(
+  static const userId = SqlColumn<AuthUserId>(
     table: table,
     name: 'userId',
     nullable: false,
     databaseType: 'text',
   );
 
-  static final impersonatedBy = SqlColumn<String>(
+  static const impersonatedBy = SqlColumn<String>(
     table: table,
     name: 'impersonatedBy',
     nullable: true,
@@ -547,8 +573,10 @@ final class AuthSessionsTable
       AuthSessionRow.fromSqlRow(row, prefix: prefix);
 
   @override
-  Map<String, Object?> encodeInsert(AuthSessionInsert value) => value.toColumns();
+  Map<String, Object?> encodeInsert(AuthSessionInsert value) =>
+      value.toColumns();
 
   @override
-  Map<String, Object?> encodeUpdate(AuthSessionUpdate value) => value.toColumns();
+  Map<String, Object?> encodeUpdate(AuthSessionUpdate value) =>
+      value.toColumns();
 }

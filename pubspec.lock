@@ -293,10 +293,10 @@ packages:
     dependency: transitive
     description:
       name: dart_edge_sql_codegen
-      sha256: "612dd7c798e93044fdf210a42892802c657a35d72c7edd9949a78522090e5a3f"
+      sha256: ece2d3a956eda04b54f49fb31e306b202d783df89cfeaa8f770ed25607427f75
       url: "https://registry.hippolabs.org/pub/internal-pub/"
     source: hosted
-    version: "0.3.39"
+    version: "0.3.40"
   dart_edge_sql_migrator:
     dependency: transitive
     description:
