@@ -52,10 +52,7 @@ class ChatGptTranslationDelegate extends TranslationDelegate {
   Duration get queryBackoff => Duration(seconds: 5);
 
   @override
-  Future<String> getModelResponse(
-    Map<String, Object?> resources,
-    LocaleInfo locale,
-  ) async {
+  Future<String> getModelResponse(Map<String, Object?> resources, LocaleInfo locale) async {
     final encodedResources = JsonEncoder.withIndent('  ').convert(resources);
 
     final prompt = openai.ChatMessage.user(
@@ -69,9 +66,7 @@ class ChatGptTranslationDelegate extends TranslationDelegate {
       final response = (await _client.chat.completions.create(
         openai.ChatCompletionCreateRequest(
           model: _model,
-          responseFormat: _model != Model.gpt4.key
-              ? openai.ResponseFormat.jsonObject()
-              : null,
+          responseFormat: _model != Model.gpt4.key ? openai.ResponseFormat.jsonObject() : null,
           messages: [prompt],
         ),
       )).text;

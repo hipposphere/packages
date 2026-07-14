@@ -7,8 +7,7 @@ Map<String, dynamic> prepareUntranslatedResources(
   return {
     for (final id in untranslatedResourceIds) ...{
       id: templateBundle.resources[id],
-      if (templateBundle.resources.containsKey('@$id'))
-        '@$id': templateBundle.resources['@$id'],
+      if (templateBundle.resources.containsKey('@$id')) '@$id': templateBundle.resources['@$id'],
     },
   };
 }

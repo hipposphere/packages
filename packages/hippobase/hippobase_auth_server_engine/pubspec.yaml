@@ -1,0 +1,23 @@
+name: hippobase_auth_server_engine
+description: Pure-Dart security engine for Hippobase Auth servers.
+version: 0.1.0
+homepage: https://hippolabs.org
+publish_to: "https://pub.hippolabs.org"
+resolution: workspace
+
+environment:
+  sdk: ">=3.12.0 <4.0.0"
+
+dependencies:
+  crypto: ^3.0.7
+  hippobase_auth_api_contract:
+    hosted: "https://pub.hippolabs.org"
+    version: ^0.1.0
+  hippobase_auth_models:
+    hosted: "https://pub.hippolabs.org"
+    version: ^0.1.6
+  pointycastle: ^4.0.0
+  unorm_dart: ^0.3.1
+
+dev_dependencies:
+  test: ^1.30.0

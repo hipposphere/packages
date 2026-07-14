@@ -1,0 +1,15 @@
+# hippobase_auth_server_sql
+
+Purpose: Dart Edge SQL repositories and transaction boundaries for server auth.
+
+Read first:
+- README.md
+- lib/src/store.dart
+
+Main APIs:
+- lib/hippobase_auth_server_sql.dart
+- lib/src/repositories/
+
+Validation:
+- dart analyze
+- dart test

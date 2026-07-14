@@ -7,91 +7,59 @@ import 'package:test/test.dart';
 import 'util.dart';
 
 void main() {
-  group(
-    'GeminiTranslationDelegate',
-    () {
-      group(
-        'using Gemini API',
-        () {
-          setUpAll(
-            () {
-              if (Platform
-                      .environment['ARB_TRANSLATE_GEMINI_API_KEY']?.isEmpty ??
-                  true) {
-                throw Exception(
-                    'Missing ARB_TRANSLATE_GEMINI_API_KEY environment variable');
-              }
-            },
+  final geminiApiKey = Platform.environment['ARB_TRANSLATE_GEMINI_API_KEY'];
+  final vertexApiKey = Platform.environment['ARB_TRANSLATE_VERTEX_AI_API_KEY'];
+  final vertexProjectUrl = Platform.environment['ARB_TRANSLATE_VERTEX_AI_PROJECT_URL'];
+  group('GeminiTranslationDelegate', () {
+    group(
+      'using Gemini API',
+      () {
+        GeminiTranslationDelegate createDelegate(Model model) {
+          return GeminiTranslationDelegate(
+            model: model,
+            apiKey: geminiApiKey!,
+            batchSize: 4096,
+            context: context,
+            disableSafety: false,
+            useEscaping: false,
+            relaxSyntax: false,
           );
+        }
 
-          GeminiTranslationDelegate createDelegate(Model model) {
-            return GeminiTranslationDelegate(
-              model: model,
-              apiKey: Platform.environment['ARB_TRANSLATE_GEMINI_API_KEY']!,
-              batchSize: 4096,
-              context: context,
-              disableSafety: false,
-              useEscaping: false,
-              relaxSyntax: false,
-            );
-          }
+        for (final model in Model.geminiModels) {
+          test('returns a result from ${model.name}', () async {
+            await tryTranslateWithDelegate(createDelegate(model));
+          });
+        }
+      },
+      skip: geminiApiKey?.isNotEmpty == true ? false : 'Requires ARB_TRANSLATE_GEMINI_API_KEY.',
+    );
 
-          for (final model in Model.geminiModels) {
-            test(
-              'returns a result from ${model.name}',
-              () async {
-                await tryTranslateWithDelegate(createDelegate(model));
-              },
-            );
-          }
-        },
-      );
-
-      group(
-        'using Vertex AI API',
-        () {
-          setUpAll(
-            () {
-              if (Platform.environment['ARB_TRANSLATE_VERTEX_AI_API_KEY']
-                      ?.isEmpty ??
-                  true) {
-                throw Exception(
-                    'Missing ARB_TRANSLATE_VERTEX_AI_API_KEY environment variable');
-              }
-
-              if (Platform.environment['ARB_TRANSLATE_VERTEX_AI_PROJECT_URL']
-                      ?.isEmpty ??
-                  true) {
-                throw Exception(
-                    'Missing ARB_TRANSLATE_VERTEX_AI_PROJECT_URL environment variable');
-              }
-            },
+    group(
+      'using Vertex AI API',
+      () {
+        GeminiTranslationDelegate createDelegate(Model model) {
+          return GeminiTranslationDelegate.vertexAi(
+            model: model,
+            apiKey: vertexApiKey!,
+            projectUrl: Uri.parse(vertexProjectUrl!),
+            batchSize: 4096,
+            context: context,
+            disableSafety: false,
+            useEscaping: false,
+            relaxSyntax: false,
           );
+        }
 
-          GeminiTranslationDelegate createDelegate(Model model) {
-            return GeminiTranslationDelegate.vertexAi(
-              model: model,
-              apiKey: Platform.environment['ARB_TRANSLATE_VERTEX_AI_API_KEY']!,
-              projectUrl: Uri.parse(
-                  Platform.environment['ARB_TRANSLATE_VERTEX_AI_PROJECT_URL']!),
-              batchSize: 4096,
-              context: context,
-              disableSafety: false,
-              useEscaping: false,
-              relaxSyntax: false,
-            );
-          }
-
-          for (final model in Model.geminiModels) {
-            test(
-              'returns a result from ${model.name}',
-              () async {
-                await tryTranslateWithDelegate(createDelegate(model));
-              },
-            );
-          }
-        },
-      );
-    },
-  );
+        for (final model in Model.geminiModels) {
+          test('returns a result from ${model.name}', () async {
+            await tryTranslateWithDelegate(createDelegate(model));
+          });
+        }
+      },
+      skip: vertexApiKey?.isNotEmpty == true && vertexProjectUrl?.isNotEmpty == true
+          ? false
+          : 'Requires ARB_TRANSLATE_VERTEX_AI_API_KEY and ARB_TRANSLATE_VERTEX_AI_PROJECT_URL.',
+    );
+  });
 }

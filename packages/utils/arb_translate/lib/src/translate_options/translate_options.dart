@@ -40,10 +40,9 @@ enum Model {
   final String key;
   final String name;
 
-  List<ModelProvider> get providers =>
-      geminiModels.contains(this)
-          ? [ModelProvider.gemini, ModelProvider.vertexAi]
-          : [ModelProvider.openAi];
+  List<ModelProvider> get providers => geminiModels.contains(this)
+      ? [ModelProvider.gemini, ModelProvider.vertexAi]
+      : [ModelProvider.openAi];
 
   /// Returns a set of Gemini models.
   static Set<Model> get geminiModels => {
@@ -121,25 +120,19 @@ class TranslateOptions {
     TranslateYamlResults yamlResults,
   ) {
     final apiKey =
-        argResults.apiKey ??
-        yamlResults.apiKey ??
-        Platform.environment['ARB_TRANSLATE_API_KEY'];
+        argResults.apiKey ?? yamlResults.apiKey ?? Platform.environment['ARB_TRANSLATE_API_KEY'];
 
     if (apiKey == null || apiKey.isEmpty) {
       throw MissingApiKeyException();
     }
 
     final modelProvider =
-        argResults.modelProvider ??
-        yamlResults.modelProvider ??
-        ModelProvider.gemini;
+        argResults.modelProvider ?? yamlResults.modelProvider ?? ModelProvider.gemini;
 
     final model =
         argResults.model ??
         yamlResults.model ??
-        (modelProvider == ModelProvider.openAi
-            ? Model.gpt35Turbo
-            : Model.gemini25Flash);
+        (modelProvider == ModelProvider.openAi ? Model.gpt35Turbo : Model.gemini25Flash);
     final customModel = argResults.customModel ?? yamlResults.customModel;
 
     if (modelProvider != ModelProvider.customOpenAiCompatible) {
@@ -152,17 +145,15 @@ class TranslateOptions {
       }
     }
 
-    if (modelProvider == ModelProvider.customOpenAiCompatible &&
-        customModel == null) {
+    if (modelProvider == ModelProvider.customOpenAiCompatible && customModel == null) {
       throw MissingCustomModelException();
     }
 
     final vertexAiProjectUrlString =
         argResults.vertexAiProjectUrl ?? yamlResults.vertexAiProjectUrl;
-    final Uri? vertexAiProjectUrl =
-        vertexAiProjectUrlString != null
-            ? Uri.tryParse(vertexAiProjectUrlString)
-            : null;
+    final Uri? vertexAiProjectUrl = vertexAiProjectUrlString != null
+        ? Uri.tryParse(vertexAiProjectUrlString)
+        : null;
 
     if (modelProvider == ModelProvider.vertexAi) {
       if (vertexAiProjectUrlString == null) {
@@ -177,12 +168,10 @@ class TranslateOptions {
     }
 
     final customModelProviderBaseUrlString =
-        argResults.customModelProviderBaseUrl ??
-        yamlResults.customModelProviderBaseUrl;
-    final Uri? customModelProviderBaseUrl =
-        customModelProviderBaseUrlString != null
-            ? Uri.tryParse(customModelProviderBaseUrlString)
-            : null;
+        argResults.customModelProviderBaseUrl ?? yamlResults.customModelProviderBaseUrl;
+    final Uri? customModelProviderBaseUrl = customModelProviderBaseUrlString != null
+        ? Uri.tryParse(customModelProviderBaseUrlString)
+        : null;
 
     if (modelProvider == ModelProvider.customOpenAiCompatible) {
       if (customModelProviderBaseUrlString == null) {
@@ -209,12 +198,8 @@ class TranslateOptions {
       vertexAiProjectUrl: vertexAiProjectUrl,
       disableSafety: argResults.disableSafety ?? yamlResults.disableSafety,
       context: context,
-      arbDir:
-          argResults.arbDir ??
-          yamlResults.arbDir ??
-          fileSystem.path.join('lib', 'l10n'),
-      templateArbFile:
-          argResults.templateArbFile ?? yamlResults.templateArbFile,
+      arbDir: argResults.arbDir ?? yamlResults.arbDir ?? fileSystem.path.join('lib', 'l10n'),
+      templateArbFile: argResults.templateArbFile ?? yamlResults.templateArbFile,
       excludeLocales: argResults.excludeLocales ?? yamlResults.excludeLocales,
       batchSize: argResults.batchSize ?? yamlResults.batchSize ?? 4096,
       useEscaping: argResults.useEscaping ?? yamlResults.useEscaping,

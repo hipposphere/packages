@@ -28,8 +28,7 @@ class LocaleInfo implements Comparable<LocaleInfo> {
   ///
   /// When `deriveScriptCode` is true, if [scriptCode] was unspecified, it will
   /// be derived from the [languageCode] and [countryCode] if possible.
-  factory LocaleInfo.fromString(String locale,
-      {bool deriveScriptCode = false}) {
+  factory LocaleInfo.fromString(String locale, {bool deriveScriptCode = false}) {
     final List<String> codes = locale.split('_'); // [language, script, country]
     assert(codes.isNotEmpty && codes.length < 4);
     final String languageCode = codes[0];
@@ -112,9 +111,9 @@ class LocaleInfo implements Comparable<LocaleInfo> {
   String camelCase() {
     return originalString
         .split('_')
-        .map<String>((String part) =>
-            part.substring(0, 1).toUpperCase() +
-            part.substring(1).toLowerCase())
+        .map<String>(
+          (String part) => part.substring(0, 1).toUpperCase() + part.substring(1).toLowerCase(),
+        )
         .join();
   }
 

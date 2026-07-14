@@ -3,10 +3,7 @@ import 'package:arb_translate/src/flutter_tools/gen_l10n_types.dart';
 import 'package:arb_translate/src/flutter_tools/localizations_utils.dart';
 
 class FakeAppResourceBundleCollection implements AppResourceBundleCollection {
-  const FakeAppResourceBundleCollection({
-    required this.templateBundle,
-    required this.otherBundle,
-  });
+  const FakeAppResourceBundleCollection({required this.templateBundle, required this.otherBundle});
 
   final FakeAppResourcesBundle templateBundle;
   final FakeAppResourcesBundle otherBundle;
@@ -17,10 +14,7 @@ class FakeAppResourceBundleCollection implements AppResourceBundleCollection {
   }
 
   @override
-  Iterable<AppResourceBundle> get bundles => [
-        templateBundle,
-        otherBundle,
-      ];
+  Iterable<AppResourceBundle> get bundles => [templateBundle, otherBundle];
 
   @override
   Iterable<String> get languages => throw UnimplementedError();

@@ -7,23 +7,14 @@ import 'package:test/test.dart';
 import 'util.dart';
 
 void main() {
+  final apiKey = Platform.environment['ARB_TRANSLATE_OPEN_AI_API_KEY'];
   group(
     'ChatGptTranslationDelegate',
     () {
-      setUpAll(
-        () {
-          if (Platform.environment['ARB_TRANSLATE_OPEN_AI_API_KEY']?.isEmpty ??
-              true) {
-            throw Exception(
-                'Missing ARB_TRANSLATE_OPEN_AI_API_KEY environment variable');
-          }
-        },
-      );
-
       ChatGptTranslationDelegate createDelegate(Model model) {
         return ChatGptTranslationDelegate(
           model: model,
-          apiKey: Platform.environment['ARB_TRANSLATE_OPEN_AI_API_KEY']!,
+          apiKey: apiKey!,
           batchSize: 4096,
           context: context,
           useEscaping: false,
@@ -32,13 +23,11 @@ void main() {
       }
 
       for (final model in Model.gptModels) {
-        test(
-          'returns a result from ${model.name}',
-          () async {
-            await tryTranslateWithDelegate(createDelegate(model));
-          },
-        );
+        test('returns a result from ${model.name}', () async {
+          await tryTranslateWithDelegate(createDelegate(model));
+        });
       }
     },
+    skip: apiKey?.isNotEmpty == true ? false : 'Requires ARB_TRANSLATE_OPEN_AI_API_KEY.',
   );
 }

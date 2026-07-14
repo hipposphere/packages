@@ -1,0 +1,24 @@
+name: hippobase_auth_server_sql
+description: Dart Edge SQL persistence adapter for Hippobase Auth servers.
+version: 0.1.0
+homepage: https://hippolabs.org
+publish_to: "https://pub.hippolabs.org"
+resolution: workspace
+
+environment:
+  sdk: ">=3.12.0 <4.0.0"
+
+dependencies:
+  dart_edge_sql:
+    hosted: "https://registry.hippolabs.org/pub/internal-pub/"
+    version: ^0.3.30
+  hippobase_auth_models:
+    hosted: "https://pub.hippolabs.org"
+    version: ^0.1.6
+  hippobase_auth_server_engine:
+    hosted: "https://pub.hippolabs.org"
+    version: ^0.1.0
+  uuid: ^4.5.2
+
+dev_dependencies:
+  test: ^1.30.0

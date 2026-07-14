@@ -1,0 +1,17 @@
+# hippobase_auth_server_engine
+
+Purpose: Pure-Dart, server-only authentication rules and security primitives.
+
+Read first:
+- README.md
+- lib/hippobase_auth_server_engine.dart
+
+Main APIs:
+- lib/src/service.dart
+- lib/src/store.dart
+- lib/src/password.dart
+- lib/src/session_tokens.dart
+
+Validation:
+- dart analyze
+- dart test

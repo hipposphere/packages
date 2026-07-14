@@ -1,0 +1,19 @@
+# hippobase_auth_client
+
+Purpose: Flutter auth clients, persistent session state, interceptors, gates, blocs, and login UI.
+
+Read first:
+- README.md
+- lib/hippobase_auth_client.dart
+- lib/src/controllers/auth_controller.dart
+
+Main implementation:
+- lib/src/api/
+- lib/src/controllers/
+- lib/src/models/
+- lib/src/storage/
+- lib/src/widgets/
+
+Validation:
+- flutter analyze
+- flutter test

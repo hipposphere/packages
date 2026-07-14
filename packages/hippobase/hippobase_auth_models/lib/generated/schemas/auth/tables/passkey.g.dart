@@ -33,33 +33,29 @@ final class AuthPasskeyRow implements JsonEncodable {
     required this.aaguid,
   });
 
-  factory AuthPasskeyRow.fromSqlRow(SqlRow row, {String prefix = ''}) =>
-      AuthPasskeyRow(
-        id: AuthPasskeyId(row.read<String>('${prefix}id')),
-        name: row.readNullable<String>('${prefix}name'),
-        publicKey: row.read<String>('${prefix}publicKey'),
-        userId: AuthUserId(row.read<String>('${prefix}userId')),
-        credentialID: row.read<String>('${prefix}credentialID'),
-        counter: row.read<int>('${prefix}counter'),
-        deviceType: row.read<String>('${prefix}deviceType'),
-        backedUp: row.read<bool>('${prefix}backedUp'),
-        transports: row.readNullable<String>('${prefix}transports'),
-        createdAt: switch (row.readNullable<Object?>('${prefix}createdAt')) {
-          null => null,
-          final DateTime value => value,
-          final String value => DateTime.parse(value),
-          final value => value as DateTime,
-        },
-        aaguid: row.readNullable<String>('${prefix}aaguid'),
-      );
+  factory AuthPasskeyRow.fromSqlRow(SqlRow row, {String prefix = ''}) => AuthPasskeyRow(
+    id: AuthPasskeyId(row.read<String>('${prefix}id')),
+    name: row.readNullable<String>('${prefix}name'),
+    publicKey: row.read<String>('${prefix}publicKey'),
+    userId: AuthUserId(row.read<String>('${prefix}userId')),
+    credentialID: row.read<String>('${prefix}credentialID'),
+    counter: row.read<int>('${prefix}counter'),
+    deviceType: row.read<String>('${prefix}deviceType'),
+    backedUp: row.read<bool>('${prefix}backedUp'),
+    transports: row.readNullable<String>('${prefix}transports'),
+    createdAt: switch (row.readNullable<Object?>('${prefix}createdAt')) {
+      null => null,
+      final DateTime value => value,
+      final String value => DateTime.parse(value),
+      final value => value as DateTime,
+    },
+    aaguid: row.readNullable<String>('${prefix}aaguid'),
+  );
 
-  factory AuthPasskeyRow.fromColumns(
-    Map<String, Object?> columns, {
-    String prefix = '',
-  }) => AuthPasskeyRow.fromSqlRow(SqlRow(columns), prefix: prefix);
+  factory AuthPasskeyRow.fromColumns(Map<String, Object?> columns, {String prefix = ''}) =>
+      AuthPasskeyRow.fromSqlRow(SqlRow(columns), prefix: prefix);
 
-  factory AuthPasskeyRow.decode(Object? value) =>
-      AuthPasskeyRow.fromJson(readJsonObject(value));
+  factory AuthPasskeyRow.decode(Object? value) => AuthPasskeyRow.fromJson(readJsonObject(value));
 
   factory AuthPasskeyRow.fromJson(Map<String, Object?> json) => AuthPasskeyRow(
     id: AuthPasskeyId((json['id'] as String)),
@@ -70,12 +66,8 @@ final class AuthPasskeyRow implements JsonEncodable {
     counter: (json['counter'] as num).toInt(),
     deviceType: (json['deviceType'] as String),
     backedUp: (json['backedUp'] as bool),
-    transports: json['transports'] == null
-        ? null
-        : (json['transports'] as String),
-    createdAt: json['createdAt'] == null
-        ? null
-        : DateTime.parse((json['createdAt'] as String)),
+    transports: json['transports'] == null ? null : (json['transports'] as String),
+    createdAt: json['createdAt'] == null ? null : DateTime.parse((json['createdAt'] as String)),
     aaguid: json['aaguid'] == null ? null : (json['aaguid'] as String),
   );
 
@@ -158,12 +150,8 @@ final class AuthPasskeyRow implements JsonEncodable {
       counter: counter ?? this.counter,
       deviceType: deviceType ?? this.deviceType,
       backedUp: backedUp ?? this.backedUp,
-      transports: transports == null || !transports.isPresent
-          ? this.transports
-          : transports.value,
-      createdAt: createdAt == null || !createdAt.isPresent
-          ? this.createdAt
-          : createdAt.value,
+      transports: transports == null || !transports.isPresent ? this.transports : transports.value,
+      createdAt: createdAt == null || !createdAt.isPresent ? this.createdAt : createdAt.value,
       aaguid: aaguid == null || !aaguid.isPresent ? this.aaguid : aaguid.value,
     );
   }
@@ -220,26 +208,21 @@ final class AuthPasskeyInsert implements JsonEncodable {
   factory AuthPasskeyInsert.decode(Object? value) =>
       AuthPasskeyInsert.fromJson(readJsonObject(value));
 
-  factory AuthPasskeyInsert.fromJson(Map<String, Object?> json) =>
-      AuthPasskeyInsert(
-        id: json.containsKey('id')
-            ? SqlValue<AuthPasskeyId>(AuthPasskeyId((json['id'] as String)))
-            : const SqlValue.absent(),
-        name: json['name'] == null ? null : (json['name'] as String),
-        publicKey: (json['publicKey'] as String),
-        userId: AuthUserId((json['userId'] as String)),
-        credentialID: (json['credentialID'] as String),
-        counter: (json['counter'] as num).toInt(),
-        deviceType: (json['deviceType'] as String),
-        backedUp: (json['backedUp'] as bool),
-        transports: json['transports'] == null
-            ? null
-            : (json['transports'] as String),
-        createdAt: json['createdAt'] == null
-            ? null
-            : DateTime.parse((json['createdAt'] as String)),
-        aaguid: json['aaguid'] == null ? null : (json['aaguid'] as String),
-      );
+  factory AuthPasskeyInsert.fromJson(Map<String, Object?> json) => AuthPasskeyInsert(
+    id: json.containsKey('id')
+        ? SqlValue<AuthPasskeyId>(AuthPasskeyId((json['id'] as String)))
+        : const SqlValue.absent(),
+    name: json['name'] == null ? null : (json['name'] as String),
+    publicKey: (json['publicKey'] as String),
+    userId: AuthUserId((json['userId'] as String)),
+    credentialID: (json['credentialID'] as String),
+    counter: (json['counter'] as num).toInt(),
+    deviceType: (json['deviceType'] as String),
+    backedUp: (json['backedUp'] as bool),
+    transports: json['transports'] == null ? null : (json['transports'] as String),
+    createdAt: json['createdAt'] == null ? null : DateTime.parse((json['createdAt'] as String)),
+    aaguid: json['aaguid'] == null ? null : (json['aaguid'] as String),
+  );
 
   static const schemaId = 'AuthPasskeyInsert';
 
@@ -319,12 +302,8 @@ final class AuthPasskeyInsert implements JsonEncodable {
       counter: counter ?? this.counter,
       deviceType: deviceType ?? this.deviceType,
       backedUp: backedUp ?? this.backedUp,
-      transports: transports == null || !transports.isPresent
-          ? this.transports
-          : transports.value,
-      createdAt: createdAt == null || !createdAt.isPresent
-          ? this.createdAt
-          : createdAt.value,
+      transports: transports == null || !transports.isPresent ? this.transports : transports.value,
+      createdAt: createdAt == null || !createdAt.isPresent ? this.createdAt : createdAt.value,
       aaguid: aaguid == null || !aaguid.isPresent ? this.aaguid : aaguid.value,
     );
   }
@@ -381,54 +360,43 @@ final class AuthPasskeyUpdate implements JsonEncodable {
   factory AuthPasskeyUpdate.decode(Object? value) =>
       AuthPasskeyUpdate.fromJson(readJsonObject(value));
 
-  factory AuthPasskeyUpdate.fromJson(Map<String, Object?> json) =>
-      AuthPasskeyUpdate(
-        id: json.containsKey('id')
-            ? SqlValue<AuthPasskeyId>(AuthPasskeyId((json['id'] as String)))
-            : const SqlValue.absent(),
-        name: json.containsKey('name')
-            ? SqlValue<String?>(
-                json['name'] == null ? null : (json['name'] as String),
-              )
-            : const SqlValue.absent(),
-        publicKey: json.containsKey('publicKey')
-            ? SqlValue<String>((json['publicKey'] as String))
-            : const SqlValue.absent(),
-        userId: json.containsKey('userId')
-            ? SqlValue<AuthUserId>(AuthUserId((json['userId'] as String)))
-            : const SqlValue.absent(),
-        credentialID: json.containsKey('credentialID')
-            ? SqlValue<String>((json['credentialID'] as String))
-            : const SqlValue.absent(),
-        counter: json.containsKey('counter')
-            ? SqlValue<int>((json['counter'] as num).toInt())
-            : const SqlValue.absent(),
-        deviceType: json.containsKey('deviceType')
-            ? SqlValue<String>((json['deviceType'] as String))
-            : const SqlValue.absent(),
-        backedUp: json.containsKey('backedUp')
-            ? SqlValue<bool>((json['backedUp'] as bool))
-            : const SqlValue.absent(),
-        transports: json.containsKey('transports')
-            ? SqlValue<String?>(
-                json['transports'] == null
-                    ? null
-                    : (json['transports'] as String),
-              )
-            : const SqlValue.absent(),
-        createdAt: json.containsKey('createdAt')
-            ? SqlValue<DateTime?>(
-                json['createdAt'] == null
-                    ? null
-                    : DateTime.parse((json['createdAt'] as String)),
-              )
-            : const SqlValue.absent(),
-        aaguid: json.containsKey('aaguid')
-            ? SqlValue<String?>(
-                json['aaguid'] == null ? null : (json['aaguid'] as String),
-              )
-            : const SqlValue.absent(),
-      );
+  factory AuthPasskeyUpdate.fromJson(Map<String, Object?> json) => AuthPasskeyUpdate(
+    id: json.containsKey('id')
+        ? SqlValue<AuthPasskeyId>(AuthPasskeyId((json['id'] as String)))
+        : const SqlValue.absent(),
+    name: json.containsKey('name')
+        ? SqlValue<String?>(json['name'] == null ? null : (json['name'] as String))
+        : const SqlValue.absent(),
+    publicKey: json.containsKey('publicKey')
+        ? SqlValue<String>((json['publicKey'] as String))
+        : const SqlValue.absent(),
+    userId: json.containsKey('userId')
+        ? SqlValue<AuthUserId>(AuthUserId((json['userId'] as String)))
+        : const SqlValue.absent(),
+    credentialID: json.containsKey('credentialID')
+        ? SqlValue<String>((json['credentialID'] as String))
+        : const SqlValue.absent(),
+    counter: json.containsKey('counter')
+        ? SqlValue<int>((json['counter'] as num).toInt())
+        : const SqlValue.absent(),
+    deviceType: json.containsKey('deviceType')
+        ? SqlValue<String>((json['deviceType'] as String))
+        : const SqlValue.absent(),
+    backedUp: json.containsKey('backedUp')
+        ? SqlValue<bool>((json['backedUp'] as bool))
+        : const SqlValue.absent(),
+    transports: json.containsKey('transports')
+        ? SqlValue<String?>(json['transports'] == null ? null : (json['transports'] as String))
+        : const SqlValue.absent(),
+    createdAt: json.containsKey('createdAt')
+        ? SqlValue<DateTime?>(
+            json['createdAt'] == null ? null : DateTime.parse((json['createdAt'] as String)),
+          )
+        : const SqlValue.absent(),
+    aaguid: json.containsKey('aaguid')
+        ? SqlValue<String?>(json['aaguid'] == null ? null : (json['aaguid'] as String))
+        : const SqlValue.absent(),
+  );
 
   static const schemaId = 'AuthPasskeyUpdate';
 
@@ -546,80 +514,83 @@ final class AuthPasskeysTable
   @override
   final String? schema;
 
+  @override
+  String get selectionPrefix => '${name}__';
+
   static const table = AuthPasskeysTable._();
 
   static const id = SqlColumn<AuthPasskeyId>(
-    table: table,
+    table: AuthPasskeysTable.withSchema(null),
     name: 'id',
     nullable: false,
     databaseType: 'text',
   );
 
   static const nameColumn = SqlColumn<String>(
-    table: table,
+    table: AuthPasskeysTable.withSchema(null),
     name: 'name',
     nullable: true,
     databaseType: 'text',
   );
 
   static const publicKey = SqlColumn<String>(
-    table: table,
+    table: AuthPasskeysTable.withSchema(null),
     name: 'publicKey',
     nullable: false,
     databaseType: 'text',
   );
 
   static const userId = SqlColumn<AuthUserId>(
-    table: table,
+    table: AuthPasskeysTable.withSchema(null),
     name: 'userId',
     nullable: false,
     databaseType: 'text',
   );
 
   static const credentialID = SqlColumn<String>(
-    table: table,
+    table: AuthPasskeysTable.withSchema(null),
     name: 'credentialID',
     nullable: false,
     databaseType: 'text',
   );
 
   static const counter = SqlColumn<int>(
-    table: table,
+    table: AuthPasskeysTable.withSchema(null),
     name: 'counter',
     nullable: false,
     databaseType: 'int4',
   );
 
   static const deviceType = SqlColumn<String>(
-    table: table,
+    table: AuthPasskeysTable.withSchema(null),
     name: 'deviceType',
     nullable: false,
     databaseType: 'text',
   );
 
   static const backedUp = SqlColumn<bool>(
-    table: table,
+    table: AuthPasskeysTable.withSchema(null),
     name: 'backedUp',
     nullable: false,
     databaseType: 'bool',
   );
 
   static const transports = SqlColumn<String>(
-    table: table,
+    table: AuthPasskeysTable.withSchema(null),
     name: 'transports',
     nullable: true,
     databaseType: 'text',
   );
 
   static const createdAt = SqlColumn<DateTime>(
-    table: table,
+    table: AuthPasskeysTable.withSchema(null),
     name: 'createdAt',
     nullable: true,
     databaseType: 'timestamptz',
   );
 
   static const aaguid = SqlColumn<String>(
-    table: table,
+    table: AuthPasskeysTable.withSchema(null),
     name: 'aaguid',
     nullable: true,
     databaseType: 'text',
@@ -648,10 +619,8 @@ final class AuthPasskeysTable
       AuthPasskeyRow.fromSqlRow(row, prefix: prefix);
 
   @override
-  Map<String, Object?> encodeInsert(AuthPasskeyInsert value) =>
-      value.toColumns();
+  Map<String, Object?> encodeInsert(AuthPasskeyInsert value) => value.toColumns();
 
   @override
-  Map<String, Object?> encodeUpdate(AuthPasskeyUpdate value) =>
-      value.toColumns();
+  Map<String, Object?> encodeUpdate(AuthPasskeyUpdate value) => value.toColumns();
 }

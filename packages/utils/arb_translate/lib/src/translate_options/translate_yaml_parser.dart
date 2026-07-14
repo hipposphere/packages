@@ -89,8 +89,7 @@ class TranslateYamlParser {
   static const _customModelKey = 'arb-translate-custom-model';
   static const _apiKeyKey = 'arb-translate-api-key';
   static const _vertexAiProjectUrlKey = 'arb-translate-vertex-ai-project-url';
-  static const _customModelProviderBaseUrlKey =
-      'arb-translate-custom-model-provider-base-url';
+  static const _customModelProviderBaseUrlKey = 'arb-translate-custom-model-provider-base-url';
   static const _disableSafetyKey = 'arb-translate-disable-safety';
   static const _contextKey = 'arb-translate-context';
   static const _excludeLocalesKey = 'arb-translate-exclude-locales';
@@ -114,9 +113,7 @@ class TranslateYamlParser {
     final yamlNode = loadYamlNode(file.readAsStringSync());
 
     if (yamlNode is! YamlMap) {
-      throw FormatException(
-        'Expected ${file.path} to contain a map, instead was $yamlNode',
-      );
+      throw FormatException('Expected ${file.path} to contain a map, instead was $yamlNode');
     }
 
     return TranslateYamlResults(
@@ -124,16 +121,13 @@ class TranslateYamlParser {
       model: _tryReadModel(yamlNode, _modelKey),
       customModel: _tryReadString(yamlNode, _customModelKey),
       arbDir: _tryReadUri(yamlNode, TranslateOptions.arbDirKey)?.path,
-      vertexAiProjectUrl:
-          _tryReadUri(yamlNode, _vertexAiProjectUrlKey).toString(),
-      customModelProviderBaseUrl:
-          _tryReadUri(yamlNode, _customModelProviderBaseUrlKey).toString(),
+      vertexAiProjectUrl: _tryReadUri(yamlNode, _vertexAiProjectUrlKey).toString(),
+      customModelProviderBaseUrl: _tryReadUri(yamlNode, _customModelProviderBaseUrlKey).toString(),
       disableSafety: _tryReadBool(yamlNode, _disableSafetyKey),
       context: _tryReadString(yamlNode, _contextKey),
       excludeLocales: _tryReadStringList(yamlNode, _excludeLocalesKey),
       batchSize: _tryReadInt(yamlNode, _batchSizeKey),
-      templateArbFile:
-          _tryReadUri(yamlNode, TranslateOptions.templateArbFileKey)?.path,
+      templateArbFile: _tryReadUri(yamlNode, TranslateOptions.templateArbFileKey)?.path,
       apiKey: _tryReadString(yamlNode, _apiKeyKey),
       useEscaping: _tryReadBool(yamlNode, TranslateOptions.useEscapingKey),
       relaxSyntax: _tryReadBool(yamlNode, TranslateOptions.relaxSyntaxKey),
@@ -149,11 +143,9 @@ class TranslateYamlParser {
 
     return ModelProvider.values.firstWhere(
       (provider) => provider.key == value,
-      orElse:
-          () =>
-              throw FormatException(
-                'Expected "$key" to be equal to one of (${ModelProvider.values.map((provider) => provider.key).join(', ')}), instead was "$value"',
-              ),
+      orElse: () => throw FormatException(
+        'Expected "$key" to be equal to one of (${ModelProvider.values.map((provider) => provider.key).join(', ')}), instead was "$value"',
+      ),
     );
   }
 
@@ -166,11 +158,9 @@ class TranslateYamlParser {
 
     return Model.values.firstWhere(
       (model) => model.key == value,
-      orElse:
-          () =>
-              throw FormatException(
-                'Expected "$key" to be equal to one of (${Model.values.map((model) => model.key).join(', ')}), instead was "$value"',
-              ),
+      orElse: () => throw FormatException(
+        'Expected "$key" to be equal to one of (${Model.values.map((model) => model.key).join(', ')}), instead was "$value"',
+      ),
     );
   }
 
@@ -184,9 +174,7 @@ class TranslateYamlParser {
     final uri = Uri.tryParse(value);
 
     if (uri == null) {
-      throw FormatException(
-        'Expected "$key" to have a String value, instead was "$value"',
-      );
+      throw FormatException('Expected "$key" to have a String value, instead was "$value"');
     }
 
     return uri;
@@ -200,9 +188,7 @@ class TranslateYamlParser {
     }
 
     if (value is! String) {
-      throw FormatException(
-        'Expected "$key" to have a String value, instead was "$value"',
-      );
+      throw FormatException('Expected "$key" to have a String value, instead was "$value"');
     }
 
     return value;
@@ -216,9 +202,7 @@ class TranslateYamlParser {
     }
 
     if (value is! bool) {
-      throw FormatException(
-        'Expected "$key" to have a bool value, instead was "$value"',
-      );
+      throw FormatException('Expected "$key" to have a bool value, instead was "$value"');
     }
 
     return value;
@@ -232,9 +216,7 @@ class TranslateYamlParser {
     }
 
     if (value is! int) {
-      throw FormatException(
-        'Expected "$key" to have a int value, instead was "$value"',
-      );
+      throw FormatException('Expected "$key" to have a int value, instead was "$value"');
     }
 
     return value;
@@ -255,8 +237,6 @@ class TranslateYamlParser {
       return value.map((e) => e.toString()).toList();
     }
 
-    throw FormatException(
-      'Expected "$key" to have a String or List value, instead was "$value"',
-    );
+    throw FormatException('Expected "$key" to have a String or List value, instead was "$value"');
   }
 }

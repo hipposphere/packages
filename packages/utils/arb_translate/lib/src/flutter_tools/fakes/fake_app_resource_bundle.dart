@@ -4,10 +4,7 @@ import 'package:arb_translate/src/flutter_tools/localizations_utils.dart';
 import 'package:file/file.dart';
 
 class FakeAppResourcesBundle implements AppResourceBundle {
-  const FakeAppResourcesBundle(
-    this.resources,
-    this.isTemplate,
-  );
+  const FakeAppResourcesBundle(this.resources, this.isTemplate);
 
   static const _templateBundleLanguageCode = 'tm';
   static const _otherBundleLanguageCode = 'ot';
@@ -16,8 +13,7 @@ class FakeAppResourcesBundle implements AppResourceBundle {
   final Map<String, Object?> resources;
   final bool isTemplate;
 
-  String get _languageCode =>
-      isTemplate ? _templateBundleLanguageCode : _otherBundleLanguageCode;
+  String get _languageCode => isTemplate ? _templateBundleLanguageCode : _otherBundleLanguageCode;
 
   @override
   File get file => FakeFile();

@@ -39,6 +39,7 @@ Future<void> main() async {
       naming: DartSchemaNaming(modelNameBuilder: _authModelName),
     );
     emission.writeToDirectory('${packageRoot.path}/lib/generated');
+    _makeColumnsSchemaAgnostic(packageRoot);
     _log('Wrote generated schema.');
   } catch (error, stackTrace) {
     bodyError = error;
@@ -60,6 +61,31 @@ Future<void> main() async {
 
   if (bodyError != null) {
     Error.throwWithStackTrace(bodyError, bodyStackTrace!);
+  }
+}
+
+void _makeColumnsSchemaAgnostic(Directory packageRoot) {
+  const tableClasses = <String, String>{
+    'account.g.dart': 'AuthAccountsTable',
+    'passkey.g.dart': 'AuthPasskeysTable',
+    'session.g.dart': 'AuthSessionsTable',
+    'user.g.dart': 'AuthUsersTable',
+    'verification.g.dart': 'AuthVerificationsTable',
+  };
+  final tablesDirectory = Directory('${packageRoot.path}/lib/generated/schemas/auth/tables');
+  for (final entry in tableClasses.entries) {
+    final file = File('${tablesDirectory.path}/${entry.key}');
+    final source = file.readAsStringSync();
+    final rewritten = source
+        .replaceAll('table: table,', 'table: ${entry.value}.withSchema(null),')
+        .replaceFirst('final String? schema;', r'''final String? schema;
+
+  @override
+  String get selectionPrefix => '${name}__';''');
+    if (source == rewritten) {
+      throw StateError('No generated columns were rewritten in ${entry.key}.');
+    }
+    file.writeAsStringSync(rewritten);
   }
 }
 

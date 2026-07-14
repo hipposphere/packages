@@ -7,15 +7,12 @@ const resources = {
   "months": "{count, plural, one{1 month} other{{count} months}}",
   "@months": {
     "placeholders": {
-      "count": {"type": "int"}
-    }
+      "count": {"type": "int"},
+    },
   },
-  "bat": "Bat"
+  "bat": "Bat",
 };
 
 Future<void> tryTranslateWithDelegate(TranslationDelegate delegate) {
-  return delegate.translate(
-    resources,
-    LocaleInfo.fromString('pl'),
-  );
+  return delegate.translate(resources, LocaleInfo.fromString('pl'));
 }

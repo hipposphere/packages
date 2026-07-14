@@ -13,3 +13,6 @@ Or, if you use `just`:
 ```sh
 just generate
 ```
+
+Generated output remains grouped by schema and table under `lib/generated`.
+The handwritten JSON-schema registry lives under `lib/src/schemas`.
