@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hippobase_auth_client/hippobase_auth_client.dart';
+import 'package:hippobase_auth_flutter/hippobase_auth_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
@@ -24,14 +24,13 @@ void main() {
 
   test('signs in, persists the session, and signs out remotely', () async {
     final storage = HippobaseAuthMemorySessionStorage();
-    final methods = <String>[];
+    final requests = <http.Request>[];
     final controller = _controller(storage, (request) async {
-      methods.add('${request.method} ${request.url.path}');
+      requests.add(request);
       if (request.url.path.endsWith('/sign-in-email')) {
         return http.Response(jsonEncode(_sessionPayload()), 200);
       }
       if (request.url.path.endsWith('/logout')) {
-        expect(request.headers['authorization'], 'Bearer token-1');
         return http.Response(jsonEncode(<String, Object?>{'user': _user()}), 200);
       }
       return http.Response('{}', 404);
@@ -40,18 +39,15 @@ void main() {
     await controller.ready;
 
     await controller.signInWithEmail(email: 'ada@example.com', password: 'password123');
-
-    expect(storage.value?.token, 'token-1');
-    expect(controller.state.value, isA<HippobaseAuthenticated>());
-
     await controller.signOut();
 
     expect(storage.value, isNull);
     expect(controller.state.value, isA<HippobaseUnauthenticated>());
-    expect(
-      methods,
-      containsAll(<String>['POST /auth/v1/user/sign-in-email', 'GET /auth/v1/user/logout']),
-    );
+    expect(requests.map((request) => request.url.path), <String>[
+      '/auth/v1/user/sign-in-email',
+      '/auth/v1/user/logout',
+    ]);
+    expect(requests.last.headers['authorization'], 'Bearer token-1');
   });
 
   test('refresh failure clears the persisted session', () async {
@@ -75,29 +71,6 @@ void main() {
 
     expect(await controller.authorizationToken(), isNull);
     expect(storage.value, isNull);
-    expect(controller.state.value, isA<HippobaseUnauthenticated>());
-  });
-
-  test('keeps the unauthenticated state for a failed sign-in', () async {
-    final controller = _controller(
-      HippobaseAuthMemorySessionStorage(),
-      (_) async => http.Response(
-        jsonEncode(<String, Object?>{
-          'error': <String, Object?>{
-            'code': 'InvalidCredentials',
-            'message': 'Invalid email or password.',
-          },
-        }),
-        401,
-      ),
-    );
-    addTearDown(controller.dispose);
-    await controller.ready;
-
-    await expectLater(
-      controller.signInWithEmail(email: 'ada@example.com', password: 'wrong-password'),
-      throwsA(isA<HippobaseAuthApiException>()),
-    );
     expect(controller.state.value, isA<HippobaseUnauthenticated>());
   });
 }

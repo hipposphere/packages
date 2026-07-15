@@ -1,4 +1,4 @@
-import 'api_exception.dart';
+import 'package:hippobase_auth_client/hippobase_auth_client.dart';
 
 sealed class HippobaseLoginError {
   const HippobaseLoginError();

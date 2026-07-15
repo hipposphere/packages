@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../controllers/auth_controller.dart';
-import '../../controllers/sign_in_email_bloc.dart';
-import '../../models/login_error.dart';
+import 'auth_controller.dart';
+import 'login_error.dart';
+import 'sign_in_email_bloc.dart';
 
 final class HippobaseAuthLoginForm extends StatefulWidget {
   const HippobaseAuthLoginForm({super.key, required this.controller});
@@ -43,12 +43,26 @@ final class _HippobaseAuthLoginFormState extends State<HippobaseAuthLoginForm> {
             keyboardType: TextInputType.emailAddress,
             decoration: const InputDecoration(labelText: 'Email'),
           ),
-          TextField(
-            controller: bloc.passwordController,
-            autofillHints: const <String>[AutofillHints.password],
-            obscureText: true,
-            onSubmitted: (_) => bloc.signIn(),
-            decoration: const InputDecoration(labelText: 'Password'),
+          StreamBuilder<bool>(
+            stream: bloc.obscurePassword.stream,
+            initialData: bloc.obscurePassword.value,
+            builder: (context, snapshot) {
+              final obscure = snapshot.data ?? true;
+              return TextField(
+                controller: bloc.passwordController,
+                autofillHints: const <String>[AutofillHints.password],
+                obscureText: obscure,
+                onSubmitted: (_) => bloc.signIn(),
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  suffixIcon: IconButton(
+                    onPressed: () => bloc.obscurePassword.add(!obscure),
+                    icon: Icon(obscure ? Icons.visibility : Icons.visibility_off),
+                    tooltip: obscure ? 'Show password' : 'Hide password',
+                  ),
+                ),
+              );
+            },
           ),
           StreamBuilder<HippobaseLoginError?>(
             stream: bloc.error.stream,

@@ -2,10 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 
-import '../controllers/auth_controller.dart';
-import '../models/session.dart';
-import '../models/state.dart';
+import 'auth_controller.dart';
+import 'session.dart';
+import 'state.dart';
 
+/// Resolves app dependencies as the user moves between auth states.
 final class HippobaseAuthGate<TAuthenticated, TUnauthenticated> extends StatefulWidget {
   const HippobaseAuthGate({
     super.key,
@@ -15,7 +16,7 @@ final class HippobaseAuthGate<TAuthenticated, TUnauthenticated> extends Stateful
     required this.authenticatedBuilder,
     required this.unauthenticatedBuilder,
     required this.loadingBuilder,
-    this.errorBuilder,
+    required this.errorBuilder,
   });
 
   final HippobaseAuthController controller;
@@ -24,7 +25,7 @@ final class HippobaseAuthGate<TAuthenticated, TUnauthenticated> extends Stateful
   final Widget Function(BuildContext, TAuthenticated, HippobaseAuthSession) authenticatedBuilder;
   final Widget Function(BuildContext, TUnauthenticated) unauthenticatedBuilder;
   final WidgetBuilder loadingBuilder;
-  final Widget Function(BuildContext, HippobaseAuthFailure)? errorBuilder;
+  final Widget Function(BuildContext, HippobaseAuthFailure) errorBuilder;
 
   @override
   State<HippobaseAuthGate<TAuthenticated, TUnauthenticated>> createState() =>
@@ -93,7 +94,9 @@ final class _HippobaseAuthGateState<TAuthenticated, TUnauthenticated>
     _set(_GatePhase.loading);
     try {
       final data = await Future<TUnauthenticated>.sync(widget.createUnauthenticated);
-      if (mounted && revision == _revision) _set(_GatePhase.unauthenticated, data: data);
+      if (mounted && revision == _revision) {
+        _set(_GatePhase.unauthenticated, data: data);
+      }
     } catch (error) {
       if (mounted && revision == _revision) {
         _set(_GatePhase.error, failure: HippobaseAuthFailure(error));
@@ -125,8 +128,7 @@ final class _HippobaseAuthGateState<TAuthenticated, TUnauthenticated>
   Widget build(BuildContext context) {
     return switch (_phase) {
       _GatePhase.loading => widget.loadingBuilder(context),
-      _GatePhase.error =>
-        widget.errorBuilder?.call(context, _failure!) ?? widget.loadingBuilder(context),
+      _GatePhase.error => widget.errorBuilder(context, _failure!),
       _GatePhase.authenticated => widget.authenticatedBuilder(
         context,
         _data as TAuthenticated,

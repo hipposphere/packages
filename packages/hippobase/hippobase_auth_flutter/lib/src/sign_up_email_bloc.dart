@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:hippo_core/hippo_core.dart';
 
-import '../models/login_error.dart';
 import 'auth_controller.dart';
+import 'login_error.dart';
 
 final class HippobaseSignUpEmailBloc extends BlocBase {
   HippobaseSignUpEmailBloc({required this.controller});
@@ -27,8 +27,8 @@ final class HippobaseSignUpEmailBloc extends BlocBase {
     isRunning.add(true);
     try {
       await controller.signUpWithEmail(
-        name: nameController.text,
-        email: emailController.text,
+        name: nameController.text.trim(),
+        email: emailController.text.trim(),
         password: passwordController.text,
       );
     } catch (failure) {

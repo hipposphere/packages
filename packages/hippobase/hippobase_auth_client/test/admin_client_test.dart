@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:flutter_test/flutter_test.dart';
-import 'package:hippobase_auth_client/hippobase_auth_client.dart';
+import 'package:hippobase_auth_client/hippobase_auth_admin_client.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:test/test.dart';
 
 void main() {
   test('admin client uses resource routes and typed pagination', () async {

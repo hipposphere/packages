@@ -1,6 +1,6 @@
 import 'package:hippo_core/hippo_core.dart';
 
-import '../models/session.dart';
+import 'session.dart';
 
 abstract interface class HippobaseAuthSessionStorage {
   Future<HippobaseAuthSession?> read();
@@ -31,7 +31,9 @@ final class HippobaseAuthKeyValueSessionStorage implements HippobaseAuthSessionS
   }
 
   @override
-  Future<void> write(HippobaseAuthSession session) => store.setString(key, session.encode());
+  Future<void> write(HippobaseAuthSession session) {
+    return store.setString(key, session.encode());
+  }
 
   @override
   Future<void> clear() => store.removeValue(key);
@@ -44,7 +46,9 @@ final class HippobaseAuthMemorySessionStorage implements HippobaseAuthSessionSto
   Future<void> clear() async => value = null;
 
   @override
-  Future<HippobaseAuthSession?> read() async => value?.isExpired == true ? null : value;
+  Future<HippobaseAuthSession?> read() async {
+    return value?.isExpired == true ? null : value;
+  }
 
   @override
   Future<void> write(HippobaseAuthSession session) async => value = session;

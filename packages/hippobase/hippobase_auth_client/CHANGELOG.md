@@ -1,5 +1,7 @@
 ## 0.1.0
 
-* Add typed public/admin clients, persistent auth controller, authorization
-  interceptor, auth gates, blocs, and Flutter login UI.
-* Use resource-oriented admin user operations and typed `PaginationConfig`.
+- Add plain Dart public authentication bindings and an opt-in admin client
+  entrypoint.
+- Use resource-oriented admin user operations and typed `PaginationConfig`.
+- Keep Flutter session state, OAuth orchestration, persistence, and widgets in
+  `hippobase_auth_flutter`.

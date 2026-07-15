@@ -1,10 +1,11 @@
 import 'package:dart_edge_core/dart_edge_core.dart';
 
-import '../controllers/auth_controller.dart';
+import 'auth_controller.dart';
 
 typedef HippobaseAuthClientSend =
     Future<DartEdgeClientResponse> Function(DartEdgeClientRequest request);
 
+/// Adds the current user session token to Dart Edge client requests.
 final class HippobaseAuthAuthorizationInterceptor {
   const HippobaseAuthAuthorizationInterceptor(this.controller);
 

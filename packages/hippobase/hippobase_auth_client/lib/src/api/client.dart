@@ -4,12 +4,15 @@ import 'package:http/http.dart' as http;
 import 'http_transport.dart';
 
 final class HippobaseAuthClient {
-  HippobaseAuthClient({required this.baseUrl, required this.tokenProvider, http.Client? httpClient})
-    : _transport = HippobaseAuthHttpTransport(
-        baseUrl: baseUrl,
-        tokenProvider: tokenProvider,
-        httpClient: httpClient,
-      );
+  HippobaseAuthClient({
+    required this.baseUrl,
+    this.tokenProvider = _noAuthToken,
+    http.Client? httpClient,
+  }) : _transport = HippobaseAuthHttpTransport(
+         baseUrl: baseUrl,
+         tokenProvider: tokenProvider,
+         httpClient: httpClient,
+       );
 
   final Uri baseUrl;
   final HippobaseAuthTokenProvider tokenProvider;
@@ -100,3 +103,5 @@ final class HippobaseAuthClient {
 
   void close() => _transport.close();
 }
+
+String? _noAuthToken() => null;

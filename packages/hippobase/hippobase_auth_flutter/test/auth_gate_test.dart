@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hippobase_auth_client/hippobase_auth_client.dart';
+import 'package:hippobase_auth_flutter/hippobase_auth_flutter.dart';
 import 'package:http/testing.dart';
 
 void main() {
@@ -24,9 +24,11 @@ void main() {
           authenticatedBuilder: (_, data, _) => Text(data),
           unauthenticatedBuilder: (_, data) => Text(data),
           loadingBuilder: (_) => const Text('loading'),
+          errorBuilder: (_, failure) => Text('error:${failure.error}'),
         ),
       ),
     );
+
     expect(find.text('loading'), findsOneWidget);
 
     storage.complete();
@@ -35,7 +37,7 @@ void main() {
     expect(find.text('unauthenticated'), findsOneWidget);
   });
 
-  testWidgets('login form exposes email, password, and loading-safe submit', (tester) async {
+  testWidgets('login form exposes email, password, and submit controls', (tester) async {
     final controller = HippobaseAuthController.create(
       baseUrl: Uri.parse('https://api.example.test/auth'),
       storage: HippobaseAuthMemorySessionStorage(),
@@ -52,6 +54,7 @@ void main() {
 
     expect(find.byType(TextField), findsNWidgets(2));
     expect(find.text('Sign in'), findsOneWidget);
+    expect(find.byTooltip('Show password'), findsOneWidget);
   });
 }
 

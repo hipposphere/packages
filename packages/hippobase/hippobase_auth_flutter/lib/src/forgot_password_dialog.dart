@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../controllers/auth_controller.dart';
+import 'auth_controller.dart';
 
 final class HippobaseForgotPasswordDialog {
   const HippobaseForgotPasswordDialog({required this.controller, this.initialEmail = ''});
@@ -25,7 +25,7 @@ final class HippobaseForgotPasswordDialog {
             TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
             FilledButton(
               onPressed: () async {
-                await controller.client.requestPasswordReset(email.text);
+                await controller.client.requestPasswordReset(email.text.trim());
                 if (context.mounted) Navigator.pop(context);
               },
               child: const Text('Send reset link'),

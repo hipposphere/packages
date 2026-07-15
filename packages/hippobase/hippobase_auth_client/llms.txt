@@ -1,19 +1,23 @@
 # hippobase_auth_client
 
-Purpose: Flutter auth clients, persistent session state, interceptors, gates, blocs, and login UI.
+Purpose: plain Dart HTTP bindings for Hippobase Auth.
+
+This package must remain Flutter-free. Persistent session state, OAuth UI,
+controllers, gates, blocs, and login widgets belong in
+`hippobase_auth_flutter`.
+
+`HippobaseAuthClient` contains public user auth bindings. Construct
+`HippobaseAuthAdminClient` explicitly from
+`hippobase_auth_admin_client.dart` only for admin surfaces.
 
 Read first:
 - README.md
 - lib/hippobase_auth_client.dart
-- lib/src/controllers/auth_controller.dart
+- lib/src/api/client.dart
 
 Main implementation:
 - lib/src/api/
-- lib/src/controllers/
-- lib/src/models/
-- lib/src/storage/
-- lib/src/widgets/
 
 Validation:
-- flutter analyze
-- flutter test
+- dart analyze
+- dart test

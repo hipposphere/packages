@@ -4,20 +4,19 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:hippo_core/hippo_core.dart';
 import 'package:hippo_core_flutter/hippo_core_flutter.dart';
+import 'package:hippobase_auth_client/hippobase_auth_client.dart';
 import 'package:http/http.dart' as http;
 
-import '../api/admin_client.dart';
-import '../api/client.dart';
-import '../models/session.dart';
-import '../models/state.dart';
-import '../storage/session_storage.dart';
+import 'session.dart';
+import 'session_storage.dart';
+import 'state.dart';
 
+/// Owns Flutter-facing session state on top of the plain auth client bindings.
+///
+/// Admin bindings are deliberately not part of this controller. Create a
+/// `HippobaseAuthAdminClient` separately in admin-only applications.
 final class HippobaseAuthController extends BlocBase {
-  HippobaseAuthController._({
-    required this.client,
-    required this.adminClient,
-    required this.storage,
-  }) {
+  HippobaseAuthController._({required this.client, required this.storage}) {
     unawaited(_restore());
   }
 
@@ -32,21 +31,11 @@ final class HippobaseAuthController extends BlocBase {
       tokenProvider: () => controller.currentSession?.token,
       httpClient: httpClient,
     );
-    final adminClient = HippobaseAuthAdminClient(
-      baseUrl: baseUrl,
-      tokenProvider: () => controller.currentSession?.token,
-      httpClient: httpClient,
-    );
-    controller = HippobaseAuthController._(
-      client: client,
-      adminClient: adminClient,
-      storage: storage,
-    );
+    controller = HippobaseAuthController._(client: client, storage: storage);
     return controller;
   }
 
   final HippobaseAuthClient client;
-  final HippobaseAuthAdminClient adminClient;
   final HippobaseAuthSessionStorage storage;
   final DataSubject<HippobaseAuthState> state = DataSubject.seeded(const HippobaseAuthLoading());
   final Completer<void> _ready = Completer<void>();
@@ -172,7 +161,6 @@ final class HippobaseAuthController extends BlocBase {
   @override
   void dispose() {
     client.close();
-    adminClient.close();
     state.close();
   }
 
