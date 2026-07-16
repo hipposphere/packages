@@ -1,6 +1,6 @@
 name: json_schema_gen
 description: Generator-facing adapters for typed JSON Schema Dart models.
-version: 0.1.0
+version: 0.1.1
 publish_to: https://pub.hippolabs.org
 repository: https://github.com/hipposphere/packages/tree/main/packages/utils/json_schema_gen
 

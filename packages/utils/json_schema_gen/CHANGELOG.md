@@ -1,4 +1,4 @@
-## Next
+## 0.1.1
 
 - Use the shared `hippo_analysis` formatter policy by default while preserving
   builder-level formatter overrides.
