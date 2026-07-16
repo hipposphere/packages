@@ -38,8 +38,6 @@ abstract class AutoUpdaterPlatform extends PlatformInterface {
 
   /// Sets the auto update check interval, default 86400, minimum 3600, 0 to disable update
   Future<void> setScheduledCheckInterval(int interval) async {
-    throw UnimplementedError(
-      'setScheduledCheckInterval() has not been implemented.',
-    );
+    throw UnimplementedError('setScheduledCheckInterval() has not been implemented.');
   }
 }

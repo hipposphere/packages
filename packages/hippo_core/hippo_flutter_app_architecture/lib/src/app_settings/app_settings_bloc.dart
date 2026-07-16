@@ -6,17 +6,15 @@ import 'app_settings.dart';
 class AppSettingsBloc extends BlocBase {
   final StoreController<AppSettings> _storeController;
 
-  AppSettingsBloc({
-    required KeyValueStore keyValueStore,
-    AppSettings? initialAppSettings,
-  }) : _storeController = StoreController<AppSettings>(
-         keyValueStore: keyValueStore,
-         storeKey: 'app_settings',
-         defaultValue: AppSettings.$default,
-         itemDecoder: (data) => AppSettings.fromData(data),
-         itemEncoder: (appSettings) => appSettings.toData(),
-         initialValue: initialAppSettings,
-       );
+  AppSettingsBloc({required KeyValueStore keyValueStore, AppSettings? initialAppSettings})
+    : _storeController = StoreController<AppSettings>(
+        keyValueStore: keyValueStore,
+        storeKey: 'app_settings',
+        defaultValue: AppSettings.$default,
+        itemDecoder: (data) => AppSettings.fromData(data),
+        itemEncoder: (appSettings) => appSettings.toData(),
+        initialValue: initialAppSettings,
+      );
 
   DataSubject<AppSettings?> get settingsSubject => _storeController.subject;
 
@@ -35,6 +33,5 @@ class AppSettingsBloc extends BlocBase {
     _storeController.dispose();
   }
 
-  static AppSettingsBloc of(BuildContext context) =>
-      BlocProvider.of<AppSettingsBloc>(context);
+  static AppSettingsBloc of(BuildContext context) => BlocProvider.of<AppSettingsBloc>(context);
 }

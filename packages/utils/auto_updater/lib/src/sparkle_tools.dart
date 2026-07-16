@@ -13,10 +13,7 @@ enum SparkleTool {
 }
 
 class SparkleToolLookupException implements Exception {
-  const SparkleToolLookupException({
-    required this.tool,
-    required this.searchedPaths,
-  });
+  const SparkleToolLookupException({required this.tool, required this.searchedPaths});
 
   final SparkleTool tool;
   final List<String> searchedPaths;
@@ -63,14 +60,7 @@ String _macOSExecutable(
   final overrideBin = environment['AUTO_UPDATER_SPARKLE_BIN']?.trim();
   final searchedPaths = overrideBin == null || overrideBin.isEmpty
       ? <String>[
-          p.join(
-            projectRoot,
-            'macos',
-            'Pods',
-            'Sparkle',
-            'bin',
-            tool.macosExecutable,
-          ),
+          p.join(projectRoot, 'macos', 'Pods', 'Sparkle', 'bin', tool.macosExecutable),
           p.join(
             projectRoot,
             'build',

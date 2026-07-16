@@ -3,9 +3,7 @@ class AppChangelogState {
 
   const AppChangelogState({required this.lastSeenVersion});
 
-  static const AppChangelogState empty = AppChangelogState(
-    lastSeenVersion: null,
-  );
+  static const AppChangelogState empty = AppChangelogState(lastSeenVersion: null);
 
   factory AppChangelogState.fromData(dynamic data) {
     if (data == null) {

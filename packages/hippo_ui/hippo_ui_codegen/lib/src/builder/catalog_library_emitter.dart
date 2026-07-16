@@ -11,12 +11,13 @@ import 'dart:convert';
 
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
+import 'package:hippo_analysis/hippo_analysis.dart';
 
 import 'catalog_metadata.dart';
 
 class CatalogLibraryEmitter {
   CatalogLibraryEmitter({DartFormatter? formatter})
-    : _formatter = formatter ?? DartFormatter(languageVersion: DartFormatter.latestLanguageVersion);
+    : _formatter = formatter ?? createHippoDartFormatter();
 
   final DartFormatter _formatter;
 

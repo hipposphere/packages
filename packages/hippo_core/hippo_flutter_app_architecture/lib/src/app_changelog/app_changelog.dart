@@ -18,9 +18,7 @@ class AppChangelog {
     required String currentVersion,
     required String? lastSeenVersion,
   }) {
-    final currentReleaseIndex = releases.indexWhere(
-      (release) => release.version == currentVersion,
-    );
+    final currentReleaseIndex = releases.indexWhere((release) => release.version == currentVersion);
     if (currentReleaseIndex == -1) {
       return [];
     }
@@ -31,8 +29,7 @@ class AppChangelog {
     final lastSeenReleaseIndex = releases.indexWhere(
       (release) => release.version == lastSeenVersion,
     );
-    if (lastSeenReleaseIndex == -1 ||
-        lastSeenReleaseIndex <= currentReleaseIndex) {
+    if (lastSeenReleaseIndex == -1 || lastSeenReleaseIndex <= currentReleaseIndex) {
       return [releases[currentReleaseIndex]];
     }
 

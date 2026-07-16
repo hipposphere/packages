@@ -1,5 +1,6 @@
 ## Next
 
+- Format generated catalogs with the shared `hippo_analysis` policy.
 - Generate finite token-to-`const IconData` switches for Flutter icon preview
   options so release builds can tree-shake icon fonts.
 

@@ -1,3 +1,6 @@
+// The public custom constructor intentionally exposes `model` instead of the private field name.
+// ignore_for_file: prefer_initializing_formals
+
 import 'dart:convert';
 
 import 'package:arb_translate/src/flutter_tools/localizations_utils.dart';

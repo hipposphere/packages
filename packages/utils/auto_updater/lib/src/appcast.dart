@@ -7,9 +7,7 @@ class Appcast {
   const Appcast({required this.items});
 
   factory Appcast.fromJson(Map<String, dynamic> json) {
-    json['items'] = (json['items'] as List)
-        .map((e) => (e as Map).cast<String, dynamic>())
-        .toList();
+    json['items'] = (json['items'] as List).map((e) => (e as Map).cast<String, dynamic>()).toList();
     return _$AppcastFromJson(json);
   }
 
@@ -39,8 +37,7 @@ class AppcastItem {
     this.channel,
   });
 
-  factory AppcastItem.fromJson(Map<String, dynamic> json) =>
-      _$AppcastItemFromJson(json);
+  factory AppcastItem.fromJson(Map<String, dynamic> json) => _$AppcastItemFromJson(json);
 
   final String? versionString;
   final String? displayVersionString;

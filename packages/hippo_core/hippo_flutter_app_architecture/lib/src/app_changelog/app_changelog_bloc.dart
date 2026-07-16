@@ -65,9 +65,7 @@ class AppChangelogBloc extends BlocBase {
   }
 
   Future<void> markCurrentVersionSeen() {
-    return _storeController.update(
-      AppChangelogState(lastSeenVersion: currentVersion),
-    );
+    return _storeController.update(AppChangelogState(lastSeenVersion: currentVersion));
   }
 
   Future<void> clearSeenVersion() {
@@ -79,6 +77,5 @@ class AppChangelogBloc extends BlocBase {
     _storeController.dispose();
   }
 
-  static AppChangelogBloc of(BuildContext context) =>
-      BlocProvider.of<AppChangelogBloc>(context);
+  static AppChangelogBloc of(BuildContext context) => BlocProvider.of<AppChangelogBloc>(context);
 }

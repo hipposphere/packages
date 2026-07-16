@@ -21,9 +21,7 @@ void main() {
         sections: [
           AppChangelogSection(
             title: 'Settings',
-            entries: [
-              AppChangelogEntry(title: 'Added a compact settings view.'),
-            ],
+            entries: [AppChangelogEntry(title: 'Added a compact settings view.')],
           ),
         ],
       ),
@@ -113,10 +111,7 @@ void main() {
     await Future<void>.delayed(Duration.zero);
 
     expect(updatedBloc.shouldShowOnLaunch, isTrue);
-    expect(updatedBloc.releasesToShow.map((release) => release.version), [
-      '1.2.0',
-      '1.1.0',
-    ]);
+    expect(updatedBloc.releasesToShow.map((release) => release.version), ['1.2.0', '1.1.0']);
 
     updatedBloc.dispose();
   });
@@ -135,22 +130,19 @@ void main() {
     bloc.dispose();
   });
 
-  test(
-    'always launch policy shows available release notes repeatedly',
-    () async {
-      final bloc = AppChangelogBloc(
-        keyValueStore: MockKeyValueStore(),
-        changelog: changelog,
-        currentVersion: '1.2.0',
-        launchPolicy: AppChangelogLaunchPolicy.always,
-      );
-      await Future<void>.delayed(Duration.zero);
+  test('always launch policy shows available release notes repeatedly', () async {
+    final bloc = AppChangelogBloc(
+      keyValueStore: MockKeyValueStore(),
+      changelog: changelog,
+      currentVersion: '1.2.0',
+      launchPolicy: AppChangelogLaunchPolicy.always,
+    );
+    await Future<void>.delayed(Duration.zero);
 
-      await bloc.markCurrentVersionSeen();
+    await bloc.markCurrentVersionSeen();
 
-      expect(bloc.shouldShowOnLaunch, isTrue);
+    expect(bloc.shouldShowOnLaunch, isTrue);
 
-      bloc.dispose();
-    },
-  );
+    bloc.dispose();
+  });
 }

@@ -31,16 +31,12 @@ class AutoUpdater {
       }
       if (data['appcast'] != null) {
         appcast = Appcast.fromJson(
-          Map<String, dynamic>.from(
-            (data['appcast'] as Map).cast<String, dynamic>(),
-          ),
+          Map<String, dynamic>.from((data['appcast'] as Map).cast<String, dynamic>()),
         );
       }
       if (data['appcastItem'] != null) {
         appcastItem = AppcastItem.fromJson(
-          Map<String, dynamic>.from(
-            (data['appcastItem'] as Map).cast<String, dynamic>(),
-          ),
+          Map<String, dynamic>.from((data['appcastItem'] as Map).cast<String, dynamic>()),
         );
       }
     }

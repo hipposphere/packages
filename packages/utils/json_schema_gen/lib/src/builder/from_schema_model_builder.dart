@@ -6,6 +6,7 @@ import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
+import 'package:hippo_analysis/hippo_analysis.dart';
 import 'package:json_schema/json_schema.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -43,11 +44,7 @@ final class FromSchemaFormatterOptions {
   final TrailingCommas? trailingCommas;
 
   DartFormatter createFormatter() {
-    return DartFormatter(
-      languageVersion: DartFormatter.latestLanguageVersion,
-      pageWidth: pageWidth,
-      trailingCommas: trailingCommas,
-    );
+    return createHippoDartFormatter(pageWidth: pageWidth, trailingCommas: trailingCommas);
   }
 }
 

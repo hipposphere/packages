@@ -29,32 +29,27 @@ AppcastItem _$AppcastItemFromJson(Map<String, dynamic> json) => AppcastItem(
   itemDescriptionFormat: json['itemDescriptionFormat'] as String?,
   fullReleaseNotesURL: json['fullReleaseNotesURL'] as String?,
   minimumSystemVersion: json['minimumSystemVersion'] as String?,
-  minimumOperatingSystemVersionIsOK:
-      json['minimumOperatingSystemVersionIsOK'] as bool?,
+  minimumOperatingSystemVersionIsOK: json['minimumOperatingSystemVersionIsOK'] as bool?,
   maximumSystemVersion: json['maximumSystemVersion'] as String?,
-  maximumOperatingSystemVersionIsOK:
-      json['maximumOperatingSystemVersionIsOK'] as bool?,
+  maximumOperatingSystemVersionIsOK: json['maximumOperatingSystemVersionIsOK'] as bool?,
   channel: json['channel'] as String?,
 );
 
-Map<String, dynamic> _$AppcastItemToJson(AppcastItem instance) =>
-    <String, dynamic>{
-      'versionString': instance.versionString,
-      'displayVersionString': instance.displayVersionString,
-      'fileURL': instance.fileURL,
-      'contentLength': instance.contentLength,
-      'infoURL': instance.infoURL,
-      'title': instance.title,
-      'dateString': instance.dateString,
-      'releaseNotesURL': instance.releaseNotesURL,
-      'itemDescription': instance.itemDescription,
-      'itemDescriptionFormat': instance.itemDescriptionFormat,
-      'fullReleaseNotesURL': instance.fullReleaseNotesURL,
-      'minimumSystemVersion': instance.minimumSystemVersion,
-      'minimumOperatingSystemVersionIsOK':
-          instance.minimumOperatingSystemVersionIsOK,
-      'maximumSystemVersion': instance.maximumSystemVersion,
-      'maximumOperatingSystemVersionIsOK':
-          instance.maximumOperatingSystemVersionIsOK,
-      'channel': instance.channel,
-    };
+Map<String, dynamic> _$AppcastItemToJson(AppcastItem instance) => <String, dynamic>{
+  'versionString': instance.versionString,
+  'displayVersionString': instance.displayVersionString,
+  'fileURL': instance.fileURL,
+  'contentLength': instance.contentLength,
+  'infoURL': instance.infoURL,
+  'title': instance.title,
+  'dateString': instance.dateString,
+  'releaseNotesURL': instance.releaseNotesURL,
+  'itemDescription': instance.itemDescription,
+  'itemDescriptionFormat': instance.itemDescriptionFormat,
+  'fullReleaseNotesURL': instance.fullReleaseNotesURL,
+  'minimumSystemVersion': instance.minimumSystemVersion,
+  'minimumOperatingSystemVersionIsOK': instance.minimumOperatingSystemVersionIsOK,
+  'maximumSystemVersion': instance.maximumSystemVersion,
+  'maximumOperatingSystemVersionIsOK': instance.maximumOperatingSystemVersionIsOK,
+  'channel': instance.channel,
+};

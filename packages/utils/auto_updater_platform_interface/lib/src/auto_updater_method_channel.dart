@@ -6,15 +6,11 @@ import 'package:flutter/services.dart';
 class MethodChannelAutoUpdater extends AutoUpdaterPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
-  final methodChannel = const MethodChannel(
-    'dev.leanflutter.plugins/auto_updater',
-  );
+  final methodChannel = const MethodChannel('dev.leanflutter.plugins/auto_updater');
 
   /// The event channel used to receive events from the native platform.
   @visibleForTesting
-  final eventChannel = const EventChannel(
-    'dev.leanflutter.plugins/auto_updater_event',
-  );
+  final eventChannel = const EventChannel('dev.leanflutter.plugins/auto_updater_event');
 
   @override
   Stream<Map<Object?, Object?>> get sparkleEvents {
@@ -29,9 +25,7 @@ class MethodChannelAutoUpdater extends AutoUpdaterPlatform {
 
   @override
   Future<void> checkForUpdates({bool? inBackground}) async {
-    final Map<String, dynamic> arguments = {
-      'inBackground': inBackground ?? false,
-    };
+    final Map<String, dynamic> arguments = {'inBackground': inBackground ?? false};
     await methodChannel.invokeMethod('checkForUpdates', arguments);
   }
 

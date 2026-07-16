@@ -14,6 +14,9 @@ run:
 dart run build_runner build
 ```
 
+Generated Dart uses the shared `hippo_analysis` formatter policy so repeated
+generation and workspace formatting are idempotent.
+
 The `hippo_ui_catalog` builder writes:
 
 ```text

@@ -34,10 +34,7 @@ Future<SignUpdateResult> signUpdate(List<String> args) async {
   if (match == null) {
     throw Exception('Failed to sign update');
   }
-  return SignUpdateResult(
-    signature: match.group(2)!,
-    length: int.tryParse(match.group(3)!)!,
-  );
+  return SignUpdateResult(signature: match.group(2)!, length: int.tryParse(match.group(3)!)!);
 }
 
 Future<void> main(List<String> args) async {

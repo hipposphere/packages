@@ -50,13 +50,7 @@ void main() {
     });
 
     test('uses the CocoaPods Sparkle tool path when it exists', () {
-      final podTool = touch([
-        'macos',
-        'Pods',
-        'Sparkle',
-        'bin',
-        'generate_keys',
-      ]);
+      final podTool = touch(['macos', 'Pods', 'Sparkle', 'bin', 'generate_keys']);
 
       final executable = sparkleToolExecutable(
         SparkleTool.generateKeys,
@@ -105,11 +99,7 @@ void main() {
                 'message',
                 contains('Could not find Sparkle generate_keys'),
               )
-              .having(
-                (error) => error.toString(),
-                'build hint',
-                contains('flutter build macos'),
-              )
+              .having((error) => error.toString(), 'build hint', contains('flutter build macos'))
               .having(
                 (error) => error.toString(),
                 'override hint',

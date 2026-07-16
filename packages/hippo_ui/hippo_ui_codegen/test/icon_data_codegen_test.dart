@@ -10,6 +10,7 @@
 
 import 'dart:convert';
 
+import 'package:hippo_analysis/hippo_analysis.dart';
 import 'package:hippo_ui_codegen/src/builder/catalog_library_emitter.dart';
 import 'package:hippo_ui_codegen/src/builder/catalog_manifest_emitter.dart';
 import 'package:hippo_ui_codegen/src/builder/catalog_metadata.dart';
@@ -57,9 +58,16 @@ void main() {
 
     expect(source, contains("import 'package:flutter/widgets.dart';"));
     expect(source, contains('icon: switch'));
-    expect(source, contains("const IconData(57686, fontFamily: 'MaterialIcons')"));
-    expect(source, contains("const IconData(57706, fontFamily: 'MaterialIcons')"));
+    expect(
+      source,
+      matches(RegExp(r"const IconData\(\s*57686,\s*fontFamily: 'MaterialIcons',?\s*\)")),
+    );
+    expect(
+      source,
+      matches(RegExp(r"const IconData\(\s*57706,\s*fontFamily: 'MaterialIcons',?\s*\)")),
+    );
     expect(source, isNot(contains('HippoUiIconDataConverter')));
+    expect(createHippoDartFormatter().format(source), source);
   });
 
   test('keeps icon tokens JSON-safe in the manifest', () {

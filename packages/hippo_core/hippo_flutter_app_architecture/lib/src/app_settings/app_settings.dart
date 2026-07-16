@@ -29,9 +29,6 @@ class AppSettings {
   }
 
   AppSettings copyWith({AppThemeMode? themeMode, AppLocale? locale}) {
-    return AppSettings(
-      themeMode: themeMode ?? this.themeMode,
-      locale: locale ?? this.locale,
-    );
+    return AppSettings(themeMode: themeMode ?? this.themeMode, locale: locale ?? this.locale);
   }
 }

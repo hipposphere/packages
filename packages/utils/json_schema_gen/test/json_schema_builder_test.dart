@@ -1,5 +1,6 @@
 import 'package:build/build.dart';
 import 'package:build_test/build_test.dart';
+import 'package:hippo_analysis/hippo_analysis.dart';
 import 'package:json_schema_gen/builder.dart';
 import 'package:test/test.dart';
 
@@ -103,6 +104,10 @@ typedef User = _$User;
             isNot(contains('RequestBody')),
             isNot(contains('ResponseSpec')),
             contains('@override'),
+            predicate<String>(
+              (source) => createHippoDartFormatter().format(source) == source,
+              'uses the shared Hipposphere formatting policy',
+            ),
           ),
         ),
       },
