@@ -11,7 +11,7 @@ environment:
 dependencies:
   dart_edge_core:
     hosted: "https://registry.hippolabs.org/pub/internal-pub/"
-    version: ^0.3.33
+    version: ^0.3.34
   hippobase_auth_models:
     hosted: "https://pub.hippolabs.org"
     version: ^0.1.6
@@ -20,11 +20,11 @@ dependencies:
     version: ^0.1.0
   json_schema:
     hosted: "https://pub.hippolabs.org"
-    version: ^0.1.0
+    version: ^0.1.1
 
 dev_dependencies:
   build_runner: ^2.15.1
   dart_edge_http_server_codegen:
     hosted: "https://registry.hippolabs.org/pub/internal-pub/"
-    version: ^0.3.37
+    version: ^0.3.38
   test: ^1.30.0

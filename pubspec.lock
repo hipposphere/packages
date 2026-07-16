@@ -277,34 +277,34 @@ packages:
     dependency: transitive
     description:
       name: dart_edge_core
-      sha256: b823e8c414546e2e8f112a54b9cd1f35210cca3d53b4199830939cceb5856d63
+      sha256: f125b24dbce401a8182669204f7aeccc2f23df26ef7311cdc84e4a252b8c7251
       url: "https://registry.hippolabs.org/pub/internal-pub/"
     source: hosted
-    version: "0.3.33"
+    version: "0.3.34"
   dart_edge_http_server:
     dependency: transitive
     description:
       name: dart_edge_http_server
-      sha256: "84f3651126a37ba5ba5a28d1129434e87bc357f189f2e0c7271ac1d418f484fe"
+      sha256: ebc35400dca28a4ad891c3b4f283f6383b20a4e4aebe5a49bcf5a6ad1ac22c46
       url: "https://registry.hippolabs.org/pub/internal-pub/"
     source: hosted
-    version: "0.3.17"
+    version: "0.3.18"
   dart_edge_http_server_codegen:
     dependency: transitive
     description:
       name: dart_edge_http_server_codegen
-      sha256: "615a8e5f8cd042134f49e0aebb20c67b04390ba8b218f47667c8dbe82c114234"
+      sha256: ad609029b6ec94219db11d4cade2e9f0ba88954623de1e122ef252a818bd37fc
       url: "https://registry.hippolabs.org/pub/internal-pub/"
     source: hosted
-    version: "0.3.37"
+    version: "0.3.38"
   dart_edge_http_server_runtime:
     dependency: transitive
     description:
       name: dart_edge_http_server_runtime
-      sha256: ee067fec8440766512c3c32f1fef72b9b2765a9fe9f353e1b2b3c442b5be74f2
+      sha256: ecc0bdcbe5e60eb0634adeecf26f6ea3ba789c87d59b219719b40bf9632186d8
       url: "https://registry.hippolabs.org/pub/internal-pub/"
     source: hosted
-    version: "0.3.25"
+    version: "0.3.26"
   dart_edge_native_assets:
     dependency: transitive
     description:
@@ -349,10 +349,10 @@ packages:
     dependency: transitive
     description:
       name: dart_edge_sql_codegen
-      sha256: ece2d3a956eda04b54f49fb31e306b202d783df89cfeaa8f770ed25607427f75
+      sha256: "5d205b38799f95485a8e4b78ca77edbb2ffcdfbf767464cf3f9ac87eafdfb818"
       url: "https://registry.hippolabs.org/pub/internal-pub/"
     source: hosted
-    version: "0.3.40"
+    version: "0.3.41"
   dart_edge_sql_migrator:
     dependency: transitive
     description:
