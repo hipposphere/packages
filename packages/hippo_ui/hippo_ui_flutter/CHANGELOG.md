@@ -1,4 +1,4 @@
-## Next
+## 0.1.6
 
 - Removed runtime `IconData` reconstruction; icon preview options are now
   resolved to compile-time constants by `hippo_ui_codegen`.

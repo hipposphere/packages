@@ -1,6 +1,6 @@
 name: hippo_ui_flutter
 description: Flutter widget preview annotations for Hipposphere UI tooling.
-version: 0.1.5
+version: 0.1.6
 homepage: https://hippolabs.org
 publish_to: "https://pub.hippolabs.org"
 resolution: workspace
