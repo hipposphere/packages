@@ -24,5 +24,7 @@ The list query is the reusable `PaginationConfig` from
 
 Contracts are grouped by mounted router under `lib/src/user`,
 `lib/src/oauth2`, and `lib/src/admin`. Every operation owns a handwritten
-`.dart` contract and a sibling generated `.g.dart`; `routes.dart` and
-`schemas.dart` only aggregate those operation modules.
+`.dart` contract using Dart Edge's HTTP-specific `@FromHttpSchema` annotation
+and a sibling generated `.g.dart`. Schema definitions come directly from the
+standalone `json_schema` package; `routes.dart` and `schemas.dart` only
+aggregate those operation modules.

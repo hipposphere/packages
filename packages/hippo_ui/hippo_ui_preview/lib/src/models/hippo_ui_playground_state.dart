@@ -8,7 +8,7 @@
 // ---------------------------------------------------------------------------
 */
 
-import 'package:dart_edge_core/dart_edge_core.dart';
+import 'package:json_schema/json_schema.dart';
 import 'package:hippo_core/hippo_core.dart';
 import 'package:hippo_ui/hippo_ui.dart';
 

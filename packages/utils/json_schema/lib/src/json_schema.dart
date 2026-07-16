@@ -1,3 +1,5 @@
+import 'json_encodable.dart';
+
 /// JSON Schema primitive type keywords supported by this package.
 enum JsonSchemaType {
   /// JSON object values.
@@ -57,20 +59,16 @@ sealed class DartSchemaType {
   ///
   /// This is useful when the schema constant lives in the same library as the
   /// Dart type and the generator can resolve the type object.
-  const factory DartSchemaType.type(
-    Type type, {
-    DartSchemaConversion conversion,
-  }) = DartConcreteSchemaType;
+  const factory DartSchemaType.type(Type type, {DartSchemaConversion conversion}) =
+      DartConcreteSchemaType;
 
   /// Uses a source-level Dart type name with inferred conversion.
   ///
   /// Prefer [value] or [model] when the conversion is known. This constructor is
   /// kept for schemas that should use Dart Edge's historical schema-shape
   /// inference.
-  const factory DartSchemaType.named(
-    String name, {
-    DartSchemaConversion conversion,
-  }) = DartNamedSchemaType;
+  const factory DartSchemaType.named(String name, {DartSchemaConversion conversion}) =
+      DartNamedSchemaType;
 
   /// Uses a source-level Dart type name as a value wrapper.
   ///
@@ -92,19 +90,15 @@ sealed class DartSchemaType {
 /// Binds a JSON Schema value to a concrete Dart type.
 final class DartConcreteSchemaType extends DartSchemaType {
   /// Creates metadata from a concrete Dart [Type].
-  const DartConcreteSchemaType(
-    this.type, {
-    this.conversion = DartSchemaConversion.infer,
-  }) : name = null;
+  const DartConcreteSchemaType(this.type, {this.conversion = DartSchemaConversion.infer})
+    : name = null;
 
   /// Creates metadata from a concrete Dart type name.
   ///
   /// This constructor is retained for generated code that needs a concrete type
   /// spelling but cannot pass a [Type] object.
-  const DartConcreteSchemaType.named(
-    this.name, {
-    this.conversion = DartSchemaConversion.infer,
-  }) : type = null;
+  const DartConcreteSchemaType.named(this.name, {this.conversion = DartSchemaConversion.infer})
+    : type = null;
 
   /// Concrete Dart type object, when available.
   final Type? type;
@@ -119,18 +113,13 @@ final class DartConcreteSchemaType extends DartSchemaType {
 /// Binds a JSON Schema value to a concrete Dart type by source name.
 final class DartNamedSchemaType extends DartSchemaType {
   /// Creates metadata for a Dart type named [name].
-  const DartNamedSchemaType(
-    this.name, {
-    this.conversion = DartSchemaConversion.infer,
-  });
+  const DartNamedSchemaType(this.name, {this.conversion = DartSchemaConversion.infer});
 
   /// Creates metadata for a value-wrapper Dart type named [name].
-  const DartNamedSchemaType.value(this.name)
-    : conversion = DartSchemaConversion.value;
+  const DartNamedSchemaType.value(this.name) : conversion = DartSchemaConversion.value;
 
   /// Creates metadata for a JSON model Dart type named [name].
-  const DartNamedSchemaType.model(this.name)
-    : conversion = DartSchemaConversion.model;
+  const DartNamedSchemaType.model(this.name) : conversion = DartSchemaConversion.model;
 
   /// Source-level Dart type name.
   final String name;
@@ -153,7 +142,7 @@ final class DartGenericSchemaType extends DartSchemaType {
 /// The model covers a practical, typed subset of JSON Schema suitable for
 /// generated Dart contracts and schema registries.
 /// Use [toJson] when a JSON-compatible schema map is needed for publication.
-sealed class JsonSchema {
+sealed class JsonSchema implements JsonEncodable {
   const JsonSchema._({
     this.id,
     this.title,
@@ -325,8 +314,7 @@ sealed class JsonSchema {
   ///
   /// Prefer typed factories for generated Dart contracts. Use [raw] when a
   /// schema keyword is not represented by the typed model yet.
-  const factory JsonSchema.raw(Map<String, Object?> schema, {String? id}) =
-      JsonRawSchema;
+  const factory JsonSchema.raw(Map<String, Object?> schema, {String? id}) = JsonRawSchema;
 
   /// Optional JSON Schema `$id`.
   final String? id;
@@ -346,6 +334,7 @@ sealed class JsonSchema {
   /// Serializes this schema into a JSON-compatible map.
   ///
   /// Dart-only metadata such as [DartSchemaType] is intentionally omitted.
+  @override
   Map<String, Object?> toJson() {
     return <String, Object?>{
       r'$id': ?id,
@@ -389,12 +378,7 @@ abstract base class _JsonTypedSchema extends JsonSchema {
 /// JSON Schema value that accepts any JSON value.
 final class JsonAnySchema extends JsonSchema {
   /// Creates an unconstrained JSON Schema value.
-  const JsonAnySchema({
-    super.id,
-    super.title,
-    super.description,
-    super.enumValues,
-  }) : super._();
+  const JsonAnySchema({super.id, super.title, super.description, super.enumValues}) : super._();
 
   @override
   Map<String, Object?> toJsonKeywords() => const <String, Object?>{};
@@ -428,8 +412,7 @@ final class JsonObjectSchema extends _JsonTypedSchema {
     return <String, Object?>{
       if (properties.isNotEmpty)
         'properties': <String, Object?>{
-          for (final entry in properties.entries)
-            entry.key: entry.value.toJson(),
+          for (final entry in properties.entries) entry.key: entry.value.toJson(),
         },
       if (required.isNotEmpty) 'required': required.toList(growable: false),
       'additionalProperties': ?additionalProperties,
@@ -454,9 +437,7 @@ final class JsonArraySchema extends _JsonTypedSchema {
 
   @override
   Map<String, Object?> additionalKeywords() {
-    return <String, Object?>{
-      if (items case final items?) 'items': items.toJson(),
-    };
+    return <String, Object?>{if (items case final items?) 'items': items.toJson()};
   }
 }
 
@@ -584,11 +565,7 @@ final class JsonIntegerSchema extends _JsonTypedSchema {
 
   @override
   Map<String, Object?> additionalKeywords() {
-    return <String, Object?>{
-      'format': ?format,
-      'minimum': ?minimum,
-      'maximum': ?maximum,
-    };
+    return <String, Object?>{'format': ?format, 'minimum': ?minimum, 'maximum': ?maximum};
   }
 }
 
@@ -617,11 +594,7 @@ final class JsonNumberSchema extends _JsonTypedSchema {
 
   @override
   Map<String, Object?> additionalKeywords() {
-    return <String, Object?>{
-      'format': ?format,
-      'minimum': ?minimum,
-      'maximum': ?maximum,
-    };
+    return <String, Object?>{'format': ?format, 'minimum': ?minimum, 'maximum': ?maximum};
   }
 }
 
@@ -643,13 +616,8 @@ final class JsonBooleanSchema extends _JsonTypedSchema {
 /// JSON Schema reference value.
 final class JsonReferenceSchema extends JsonSchema {
   /// Creates a reference to [ref].
-  const JsonReferenceSchema(
-    this.ref, {
-    super.id,
-    super.title,
-    super.description,
-    super.enumValues,
-  }) : super._();
+  const JsonReferenceSchema(this.ref, {super.id, super.title, super.description, super.enumValues})
+    : super._();
 
   /// Creates a reference to an OpenAPI component schema.
   const JsonReferenceSchema.component(

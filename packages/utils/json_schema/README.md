@@ -14,4 +14,6 @@ const user = JsonSchema.object(
 
 Use `JsonSchemaRegistry` to collect addressable schemas and `JsonSchema.ref`
 or `JsonSchema.componentRef` to reuse definitions. For Dart model generation,
-pair this package with `json_schema_gen`.
+pair this package with `json_schema_gen`. `JsonSchema` and generated JSON model
+objects implement `JsonEncodable`, the shared contract for values exposing a
+JSON-friendly `toJson()` representation.

@@ -8,9 +8,7 @@ const _fromSchemaChecker = TypeChecker.typeNamedLiterally('FromSchema');
 
 /// Turns portable `@FromSchema` type aliases into plain Dart JSON models.
 final class JsonSchemaBuilderGenerator extends Generator {
-  const JsonSchemaBuilderGenerator({
-    this._formatterOptions = const FromSchemaFormatterOptions(),
-  });
+  const JsonSchemaBuilderGenerator({this._formatterOptions = const FromSchemaFormatterOptions()});
 
   factory JsonSchemaBuilderGenerator.fromOptions(BuilderOptions options) {
     final config = options.config;
@@ -24,21 +22,16 @@ final class JsonSchemaBuilderGenerator extends Generator {
 
   final FromSchemaFormatterOptions _formatterOptions;
 
-  String formatOutput(String code) =>
-      _formatterOptions.createFormatter().format(code);
+  String formatOutput(String code) => _formatterOptions.createFormatter().format(code);
 
   @override
   String? generate(LibraryReader library, BuildStep buildStep) {
-    final models = library.annotatedWith(
-      _fromSchemaChecker,
-      throwOnUnresolved: false,
-    );
+    final models = library.annotatedWith(_fromSchemaChecker, throwOnUnresolved: false);
     if (models.isEmpty) {
       return null;
     }
     return generateFromSchemaModels([
-      for (final model in models)
-        buildFromSchemaModel(model.element, model.annotation),
+      for (final model in models) buildFromSchemaModel(model.element, model.annotation),
     ], formatterOptions: _formatterOptions);
   }
 }
@@ -50,18 +43,11 @@ int? _optionalPositiveInt(Map<String, dynamic> config, String key) {
   throw ArgumentError.value(value, key, 'must be a positive integer');
 }
 
-TrailingCommas? _optionalTrailingCommas(
-  Map<String, dynamic> config,
-  String key,
-) {
+TrailingCommas? _optionalTrailingCommas(Map<String, dynamic> config, String key) {
   return switch (config[key]) {
     null => null,
     'automate' => TrailingCommas.automate,
     'preserve' => TrailingCommas.preserve,
-    final value => throw ArgumentError.value(
-      value,
-      key,
-      'must be "automate" or "preserve"',
-    ),
+    final value => throw ArgumentError.value(value, key, 'must be "automate" or "preserve"'),
   };
 }

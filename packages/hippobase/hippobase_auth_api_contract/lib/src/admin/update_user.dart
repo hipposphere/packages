@@ -1,4 +1,6 @@
-import 'package:dart_edge_core/dart_edge_core.dart';
+import 'package:dart_edge_core/dart_edge_core.dart'
+    show FromHttpSchema, RequestBody, ResponseSpec, readJsonObject;
+import 'package:json_schema/json_schema.dart';
 
 import '../shared/route_contract.dart';
 import '../user/get_user.dart';
@@ -19,10 +21,10 @@ const adminUpdateUserRequestSchema = JsonSchema.object(
   additionalProperties: false,
 );
 
-@FromSchema(adminUpdateUserParamsSchema)
+@FromHttpSchema(adminUpdateUserParamsSchema)
 typedef HippobaseAuthAdminUpdateUserParams = _$HippobaseAuthAdminUpdateUserParams;
 
-@FromSchema(adminUpdateUserRequestSchema)
+@FromHttpSchema(adminUpdateUserRequestSchema)
 typedef HippobaseAuthAdminUpdateUserRequest = _$HippobaseAuthAdminUpdateUserRequest;
 
 typedef HippobaseAuthAdminUpdateUserResponse = HippobaseAuthUserResponse;

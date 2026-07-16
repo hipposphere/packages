@@ -1,4 +1,6 @@
-import 'package:dart_edge_core/dart_edge_core.dart';
+import 'package:dart_edge_core/dart_edge_core.dart'
+    show FromHttpSchema, RequestBody, ResponseSpec, readJsonObject;
+import 'package:json_schema/json_schema.dart';
 
 import '../shared/route_contract.dart';
 
@@ -18,10 +20,10 @@ const successResponseSchema = JsonSchema.object(
   additionalProperties: false,
 );
 
-@FromSchema(emailRequestSchema)
+@FromHttpSchema(emailRequestSchema)
 typedef HippobaseAuthEmailRequest = _$HippobaseAuthEmailRequest;
 
-@FromSchema(successResponseSchema)
+@FromHttpSchema(successResponseSchema)
 typedef HippobaseAuthSuccessResponse = _$HippobaseAuthSuccessResponse;
 
 const hippobaseAuthRequestPasswordResetRoute = HippobaseAuthRouteContract(

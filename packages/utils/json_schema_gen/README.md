@@ -19,4 +19,5 @@ typedef User = _$User;
 
 Add `json_schema_gen` and `build_runner` to the consuming package, then run
 `dart run build_runner build`. Generated models expose schema constants plus
-`fromJson`, `decode`, and `toJson` without importing Dart Edge packages.
+`fromJson`, `decode`, and `toJson`, and implement `JsonEncodable` without
+importing Dart Edge packages.

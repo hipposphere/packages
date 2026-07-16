@@ -8,7 +8,7 @@
 // ---------------------------------------------------------------------------
 */
 
-import 'package:dart_edge_core/dart_edge_core.dart';
+import 'package:json_schema/json_schema.dart';
 
 import 'hippo_ui_preview_addon.dart';
 import 'hippo_ui_preview_session.dart';

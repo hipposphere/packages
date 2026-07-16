@@ -26,10 +26,8 @@ final class JsonSchemaRegistry {
   /// Schemas without an [JsonSchema.id] are skipped because they cannot be
   /// addressed from the map.
   Map<String, Map<String, Object?>> asMap() =>
-      Map<String, Map<String, Object?>>.fromEntries(
-        <MapEntry<String, Map<String, Object?>>>[
-          for (final schema in schemas)
-            if (schema.id case final id?) MapEntry(id, schema.toJson()),
-        ],
-      );
+      Map<String, Map<String, Object?>>.fromEntries(<MapEntry<String, Map<String, Object?>>>[
+        for (final schema in schemas)
+          if (schema.id case final id?) MapEntry(id, schema.toJson()),
+      ]);
 }

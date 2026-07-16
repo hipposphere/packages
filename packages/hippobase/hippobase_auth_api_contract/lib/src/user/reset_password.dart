@@ -1,4 +1,6 @@
-import 'package:dart_edge_core/dart_edge_core.dart';
+import 'package:dart_edge_core/dart_edge_core.dart'
+    show FromHttpSchema, RequestBody, ResponseSpec, readJsonObject;
+import 'package:json_schema/json_schema.dart';
 
 import '../shared/route_contract.dart';
 
@@ -14,7 +16,7 @@ const resetPasswordRequestSchema = JsonSchema.object(
   additionalProperties: false,
 );
 
-@FromSchema(resetPasswordRequestSchema)
+@FromHttpSchema(resetPasswordRequestSchema)
 typedef HippobaseAuthResetPasswordRequest = _$HippobaseAuthResetPasswordRequest;
 
 const hippobaseAuthResetPasswordRoute = HippobaseAuthRouteContract(

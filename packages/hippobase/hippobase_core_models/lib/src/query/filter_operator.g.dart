@@ -3,7 +3,7 @@
 part of 'filter_operator.dart';
 
 // **************************************************************************
-// DartEdgeHttpServerBuilderGenerator
+// JsonSchemaBuilderGenerator
 // **************************************************************************
 
 // ignore_for_file: unused_element, unused_field
@@ -58,10 +58,6 @@ enum _$FilterOperator implements JsonEncodable {
   );
 
   static const schemaRef = JsonSchema.componentRef(schemaId);
-
-  static const RequestBody requestBody = RequestBody.json(schema: schema, decoder: decode);
-
-  static const ResponseSpec response = ResponseSpec.json(status: 200, schema: schema);
 
   @override
   String toJson() => value;

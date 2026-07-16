@@ -3,7 +3,7 @@
 part of 'filter_group.dart';
 
 // **************************************************************************
-// DartEdgeHttpServerBuilderGenerator
+// JsonSchemaBuilderGenerator
 // **************************************************************************
 
 // ignore_for_file: unused_element, unused_field
@@ -28,10 +28,6 @@ final class _$FilterGroup implements JsonEncodable {
 
   static const schemaRef = JsonSchema.componentRef(schemaId);
 
-  static const RequestBody requestBody = RequestBody.json(schema: schema, decoder: decode);
-
-  static const ResponseSpec response = ResponseSpec.json(status: 200, schema: schema);
-
   final FilterCombinator combinator;
 
   final List<FieldFilter> filters;
@@ -48,7 +44,7 @@ final class _$FilterGroup implements JsonEncodable {
   }
 
   static FilterGroup decode(Object? value) {
-    return fromJson(readJsonObject(value));
+    return fromJson(value as Map<String, Object?>);
   }
 
   static FilterGroup fromJson(Map<String, Object?> json) {

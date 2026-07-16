@@ -1,4 +1,6 @@
-import 'package:dart_edge_core/dart_edge_core.dart';
+import 'package:dart_edge_core/dart_edge_core.dart'
+    show FromHttpSchema, RequestBody, ResponseSpec, readJsonObject;
+import 'package:json_schema/json_schema.dart';
 
 part 'error.g.dart';
 
@@ -19,5 +21,5 @@ const hippobaseAuthErrorSchema = JsonSchema.object(
   additionalProperties: false,
 );
 
-@FromSchema(hippobaseAuthErrorSchema)
+@FromHttpSchema(hippobaseAuthErrorSchema)
 typedef HippobaseAuthError = _$HippobaseAuthError;

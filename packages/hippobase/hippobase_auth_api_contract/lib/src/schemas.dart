@@ -1,6 +1,6 @@
-import 'package:dart_edge_core/dart_edge_core.dart';
 import 'package:hippobase_auth_models/hippobase_auth_models.dart';
 import 'package:hippobase_core_models/hippobase_core_models.dart';
+import 'package:json_schema/json_schema.dart';
 
 import 'admin/create_user.dart';
 import 'admin/delete_user.dart';

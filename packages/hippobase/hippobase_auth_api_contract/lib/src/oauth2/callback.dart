@@ -1,4 +1,6 @@
-import 'package:dart_edge_core/dart_edge_core.dart';
+import 'package:dart_edge_core/dart_edge_core.dart'
+    show FromHttpSchema, RequestBody, ResponseSpec, readJsonObject;
+import 'package:json_schema/json_schema.dart';
 
 import '../shared/route_contract.dart';
 
@@ -15,7 +17,7 @@ const oauthCallbackQuerySchema = JsonSchema.object(
   additionalProperties: true,
 );
 
-@FromSchema(oauthCallbackQuerySchema)
+@FromHttpSchema(oauthCallbackQuerySchema)
 typedef HippobaseAuthOAuthCallbackQuery = _$HippobaseAuthOAuthCallbackQuery;
 
 const hippobaseAuthOAuthCallbackRoute = HippobaseAuthRouteContract(

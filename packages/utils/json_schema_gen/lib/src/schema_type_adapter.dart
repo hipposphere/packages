@@ -2,10 +2,7 @@ import 'package:json_schema/json_schema.dart';
 
 /// A Dart type and conversion strategy selected for a JSON Schema value.
 final class SchemaDartType {
-  const SchemaDartType(
-    this.name, {
-    this.conversion = DartSchemaConversion.infer,
-  });
+  const SchemaDartType(this.name, {this.conversion = DartSchemaConversion.infer});
 
   /// Source-level Dart type spelling emitted by a generator.
   final String name;

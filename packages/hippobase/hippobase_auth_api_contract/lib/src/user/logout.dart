@@ -1,5 +1,7 @@
-import 'package:dart_edge_core/dart_edge_core.dart';
+import 'package:dart_edge_core/dart_edge_core.dart'
+    show FromHttpSchema, RequestBody, ResponseSpec, readJsonObject;
 import 'package:hippobase_auth_models/hippobase_auth_models.dart';
+import 'package:json_schema/json_schema.dart';
 
 import '../shared/route_contract.dart';
 
@@ -12,7 +14,7 @@ const hippobaseAuthLogoutResponseSchema = JsonSchema.object(
   additionalProperties: false,
 );
 
-@FromSchema(
+@FromHttpSchema(
   hippobaseAuthLogoutResponseSchema,
   registry: JsonSchemaRegistry(schemas: <JsonSchema>[AuthUserRow.jsonSchema]),
   refs: <SchemaRefModel>[SchemaRefModel(AuthUserRow)],

@@ -46,6 +46,10 @@ sealed class JsonSchema {
   final bool nullable;
 }
 
+abstract interface class JsonEncodable {
+  Object? toJson();
+}
+
 final class JsonObjectSchema extends JsonSchema {
   const JsonObjectSchema({
     super.id,
@@ -94,11 +98,11 @@ typedef User = _$User;
         'test_app|lib/model.json_schema.g.part': decodedMatches(
           allOf(
             contains('static const JsonSchema schema'),
+            contains('implements JsonEncodable'),
             contains('Map<String, Object?> toJson()'),
             isNot(contains('RequestBody')),
             isNot(contains('ResponseSpec')),
-            isNot(contains('JsonEncodable')),
-            isNot(contains('@override')),
+            contains('@override'),
           ),
         ),
       },

@@ -1,4 +1,6 @@
-import 'package:dart_edge_core/dart_edge_core.dart';
+import 'package:dart_edge_core/dart_edge_core.dart'
+    show FromHttpSchema, RequestBody, ResponseSpec, readJsonObject;
+import 'package:json_schema/json_schema.dart';
 
 import '../shared/route_contract.dart';
 
@@ -31,10 +33,10 @@ const signInSsoResponseSchema = JsonSchema.object(
   additionalProperties: false,
 );
 
-@FromSchema(signInSsoRequestSchema)
+@FromHttpSchema(signInSsoRequestSchema)
 typedef HippobaseAuthSignInSsoRequest = _$HippobaseAuthSignInSsoRequest;
 
-@FromSchema(signInSsoResponseSchema)
+@FromHttpSchema(signInSsoResponseSchema)
 typedef HippobaseAuthSignInSsoResponse = _$HippobaseAuthSignInSsoResponse;
 
 const hippobaseAuthSignInSsoRoute = HippobaseAuthRouteContract(

@@ -3,7 +3,7 @@
 part of 'pagination_meta.dart';
 
 // **************************************************************************
-// DartEdgeHttpServerBuilderGenerator
+// JsonSchemaBuilderGenerator
 // **************************************************************************
 
 // ignore_for_file: unused_element, unused_field
@@ -48,10 +48,6 @@ final class _$PaginationMeta implements JsonEncodable {
 
   static const schemaRef = JsonSchema.componentRef(schemaId);
 
-  static const RequestBody requestBody = RequestBody.json(schema: schema, decoder: decode);
-
-  static const ResponseSpec response = ResponseSpec.json(status: 200, schema: schema);
-
   final int offset;
 
   final int limit;
@@ -83,7 +79,7 @@ final class _$PaginationMeta implements JsonEncodable {
   }
 
   static PaginationMeta decode(Object? value) {
-    return fromJson(readJsonObject(value));
+    return fromJson(value as Map<String, Object?>);
   }
 
   static PaginationMeta fromJson(Map<String, Object?> json) {

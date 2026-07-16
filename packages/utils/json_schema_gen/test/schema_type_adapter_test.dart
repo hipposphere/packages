@@ -10,11 +10,7 @@ void main() {
       adapter.map(const JsonSchema.string(format: 'uuid')),
       isA<SchemaDartType>()
           .having((mapping) => mapping.name, 'name', 'Uuid')
-          .having(
-            (mapping) => mapping.conversion,
-            'conversion',
-            DartSchemaConversion.value,
-          ),
+          .having((mapping) => mapping.conversion, 'conversion', DartSchemaConversion.value),
     );
   });
 }

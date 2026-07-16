@@ -3,7 +3,7 @@
 part of 'sort_term.dart';
 
 // **************************************************************************
-// DartEdgeHttpServerBuilderGenerator
+// JsonSchemaBuilderGenerator
 // **************************************************************************
 
 // ignore_for_file: unused_element, unused_field
@@ -20,10 +20,6 @@ enum _$SortDirection implements JsonEncodable {
   static const JsonSchema schema = JsonSchema.string(id: schemaId, enumValues: ['asc', 'desc']);
 
   static const schemaRef = JsonSchema.componentRef(schemaId);
-
-  static const RequestBody requestBody = RequestBody.json(schema: schema, decoder: decode);
-
-  static const ResponseSpec response = ResponseSpec.json(status: 200, schema: schema);
 
   @override
   String toJson() => value;
@@ -58,10 +54,6 @@ final class _$SortTerm implements JsonEncodable {
 
   static const schemaRef = JsonSchema.componentRef(schemaId);
 
-  static const RequestBody requestBody = RequestBody.json(schema: schema, decoder: decode);
-
-  static const ResponseSpec response = ResponseSpec.json(status: 200, schema: schema);
-
   final String field;
 
   final SortDirection direction;
@@ -72,7 +64,7 @@ final class _$SortTerm implements JsonEncodable {
   }
 
   static SortTerm decode(Object? value) {
-    return fromJson(readJsonObject(value));
+    return fromJson(value as Map<String, Object?>);
   }
 
   static SortTerm fromJson(Map<String, Object?> json) {

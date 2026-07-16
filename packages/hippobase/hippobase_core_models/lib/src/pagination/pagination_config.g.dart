@@ -3,7 +3,7 @@
 part of 'pagination_config.dart';
 
 // **************************************************************************
-// DartEdgeHttpServerBuilderGenerator
+// JsonSchemaBuilderGenerator
 // **************************************************************************
 
 // ignore_for_file: unused_element, unused_field
@@ -21,10 +21,6 @@ final class _$PaginationConfig implements JsonEncodable {
 
   static const schemaRef = JsonSchema.componentRef(schemaId);
 
-  static const RequestBody requestBody = RequestBody.json(schema: schema, decoder: decode);
-
-  static const ResponseSpec response = ResponseSpec.json(status: 200, schema: schema);
-
   final int offset;
 
   final int limit;
@@ -35,7 +31,7 @@ final class _$PaginationConfig implements JsonEncodable {
   }
 
   static PaginationConfig decode(Object? value) {
-    return fromJson(readJsonObject(value));
+    return fromJson(value as Map<String, Object?>);
   }
 
   static PaginationConfig fromJson(Map<String, Object?> json) {
