@@ -261,13 +261,14 @@ class AnnotationCatalogReader {
     }
 
     if (type == 'HippoUiIconDataOption') {
-      return GeneratedTextOptionMetadata(
+      final defaultIcon = _iconDataFrom(object.getField('defaultValue')) ?? _emptyIconData;
+      return GeneratedIconDataOptionMetadata(
         key: key,
         label: label,
         description: description,
-        defaultValue: _iconDataStringFrom(object.getField('defaultValue')) ?? '{"codePoint":0}',
+        defaultValue: defaultIcon.token,
+        defaultIcon: defaultIcon,
         values: _iconDataOptionValueList(object.getField('values')),
-        converter: converter,
       );
     }
 
@@ -428,13 +429,15 @@ class AnnotationCatalogReader {
         <GeneratedOptionValueMetadata<int>>[];
   }
 
-  List<GeneratedOptionValueMetadata<String>> _iconDataOptionValueList(DartObject? object) {
+  List<GeneratedOptionValueMetadata<GeneratedIconDataMetadata>> _iconDataOptionValueList(
+    DartObject? object,
+  ) {
     return object
             ?.toListValue()
             ?.map(_iconDataOptionValueFrom)
-            .whereType<GeneratedOptionValueMetadata<String>>()
+            .whereType<GeneratedOptionValueMetadata<GeneratedIconDataMetadata>>()
             .toList() ??
-        <GeneratedOptionValueMetadata<String>>[];
+        <GeneratedOptionValueMetadata<GeneratedIconDataMetadata>>[];
   }
 
   GeneratedOptionValueMetadata<String>? _constantOptionValueFrom(DartObject? object) {
@@ -525,17 +528,19 @@ class AnnotationCatalogReader {
     );
   }
 
-  GeneratedOptionValueMetadata<String>? _iconDataOptionValueFrom(DartObject? object) {
+  GeneratedOptionValueMetadata<GeneratedIconDataMetadata>? _iconDataOptionValueFrom(
+    DartObject? object,
+  ) {
     if (object == null || object.isNull) {
       return null;
     }
 
-    final value = _iconDataStringFrom(object.getField('value') ?? object);
+    final value = _iconDataFrom(object.getField('value') ?? object);
     if (value == null) {
       return null;
     }
 
-    return GeneratedOptionValueMetadata<String>(
+    return GeneratedOptionValueMetadata<GeneratedIconDataMetadata>(
       value,
       label: object.getField('label')?.toStringValue(),
       description: object.getField('description')?.toStringValue(),
@@ -692,12 +697,25 @@ class AnnotationCatalogReader {
     return object?.toDoubleValue() ?? object?.toIntValue()?.toDouble();
   }
 
-  String? _iconDataStringFrom(DartObject? object) {
+  static const _emptyIconDataToken = '{"codePoint":0}';
+
+  static const _emptyIconData = GeneratedIconDataMetadata(token: _emptyIconDataToken, codePoint: 0);
+
+  GeneratedIconDataMetadata? _iconDataFrom(DartObject? object) {
     final encoded = _iconDataMapFrom(object);
     if (encoded == null) {
       return null;
     }
-    return jsonEncode(encoded);
+    return GeneratedIconDataMetadata(
+      token: jsonEncode(encoded),
+      codePoint: encoded['codePoint']! as int,
+      fontFamily: encoded['fontFamily'] as String?,
+      fontPackage: encoded['fontPackage'] as String?,
+      matchTextDirection: encoded['matchTextDirection'] as bool? ?? false,
+      fontFamilyFallback:
+          (encoded['fontFamilyFallback'] as List<Object?>?)?.whereType<String>().toList() ??
+          const <String>[],
+    );
   }
 
   Map<String, Object?>? _iconDataMapFrom(DartObject? object) {

@@ -27,9 +27,12 @@ class CatalogLibraryEmitter {
     final flutterPreviewBridges = catalog.previews
         .where((preview) => preview.createsFlutterPreviewBridge)
         .toList();
+    final hasIconDataOptions = catalog.previews.any(
+      (preview) => preview.options.any((option) => option is GeneratedIconDataOptionMetadata),
+    );
     final imports = <String>{
       if (flutterPreviewBridges.isNotEmpty) 'package:flutter/widget_previews.dart',
-      if (flutterPreviewBridges.isNotEmpty) 'package:flutter/widgets.dart',
+      if (flutterPreviewBridges.isNotEmpty || hasIconDataOptions) 'package:flutter/widgets.dart',
       ...targetImportUris,
       ...converterImportUris,
       ...enumImportUris,
@@ -175,6 +178,17 @@ class CatalogLibraryEmitter {
             ),
         },
       ),
+      GeneratedIconDataOptionMetadata() => _baseOptionExpression(
+        constructor: 'HippoUiGeneratedTextOption',
+        option: option,
+        named: <String, Expression>{
+          if (option.values.isNotEmpty)
+            'values': literalList(
+              option.values.map(_iconDataOptionValueExpression),
+              refer('HippoUiGeneratedOptionValue<String>'),
+            ),
+        },
+      ),
       GeneratedEnumOptionMetadata() => _baseOptionExpression(
         constructor: 'HippoUiGeneratedEnumOption',
         option: option,
@@ -227,6 +241,17 @@ class CatalogLibraryEmitter {
   Expression _optionValueExpression(GeneratedOptionValueMetadata<Object> optionValue) {
     return refer('HippoUiGeneratedOptionValue').newInstance(const <Expression>[], {
       'value': _literalJson(optionValue.value),
+      if (optionValue.label case final label?) 'label': literalString(label),
+      if (optionValue.description case final description?)
+        'description': literalString(description),
+    });
+  }
+
+  Expression _iconDataOptionValueExpression(
+    GeneratedOptionValueMetadata<GeneratedIconDataMetadata> optionValue,
+  ) {
+    return refer('HippoUiGeneratedOptionValue').newInstance(const <Expression>[], {
+      'value': literalString(optionValue.value.token),
       if (optionValue.label case final label?) 'label': literalString(label),
       if (optionValue.description case final description?)
         'description': literalString(description),
@@ -320,7 +345,7 @@ return $target;
         break;
       }
     }
-    if (converter != null) {
+    if (converter != null && option is! GeneratedIconDataOptionMetadata) {
       final converterName = allocate(refer(converter.converterName, converter.converterImportUri));
       return 'const $converterName().convert(configuration[${jsonEncode(option.key)}])';
     }
@@ -331,11 +356,45 @@ return $target;
       GeneratedIntegerOptionMetadata() => '($read as int?) ?? ${option.defaultValue}',
       GeneratedDoubleOptionMetadata() => '($read as double?) ?? ${option.defaultValue}',
       GeneratedTextOptionMetadata() => '($read as String?) ?? ${jsonEncode(option.defaultValue)}',
+      GeneratedIconDataOptionMetadata() => _iconDataValueSource(option, read),
       GeneratedEnumOptionMetadata() => _enumValueSource(option, read, allocate),
       GeneratedObjectOptionMetadata() =>
         '($read as Map<String, Object?>?) ?? ${_sourceFor(_literalJson(option.defaultValue))}',
       GeneratedUnknownOptionMetadata() => read,
     };
+  }
+
+  String _iconDataValueSource(GeneratedIconDataOptionMetadata option, String read) {
+    final iconsByToken = <String, GeneratedIconDataMetadata>{
+      option.defaultIcon.token: option.defaultIcon,
+      for (final value in option.values) value.value.token: value.value,
+    };
+    final cases = iconsByToken.entries
+        .map(
+          (entry) => '${jsonEncode(entry.key)} => ${_sourceFor(_iconDataExpression(entry.value))},',
+        )
+        .join('\n');
+    final fallback = _sourceFor(_iconDataExpression(option.defaultIcon));
+    return '''switch (($read as String?) ?? ${jsonEncode(option.defaultValue)}) {
+$cases
+_ => $fallback,
+}''';
+  }
+
+  Expression _iconDataExpression(GeneratedIconDataMetadata icon) {
+    return refer('IconData').constInstance(
+      <Expression>[literalNum(icon.codePoint)],
+      {
+        if (icon.fontFamily case final fontFamily?) 'fontFamily': literalString(fontFamily),
+        if (icon.fontPackage case final fontPackage?) 'fontPackage': literalString(fontPackage),
+        if (icon.matchTextDirection) 'matchTextDirection': literalBool(true),
+        if (icon.fontFamilyFallback.isNotEmpty)
+          'fontFamilyFallback': literalList(
+            icon.fontFamilyFallback.map(literalString),
+            refer('String'),
+          ),
+      },
+    );
   }
 
   String _enumValueSource(

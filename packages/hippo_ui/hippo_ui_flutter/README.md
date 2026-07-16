@@ -70,6 +70,10 @@ import 'package:flutter/material.dart';
 required IconData icon,
 ```
 
+Icon options remain JSON-safe in preview sessions, while `hippo_ui_codegen`
+emits a finite token-to-`const IconData` switch for the annotated default and
+values. This keeps every selectable glyph visible to Flutter's icon tree shaker.
+
 Additional prebuilt Flutter options are available for common constructor
 parameters:
 

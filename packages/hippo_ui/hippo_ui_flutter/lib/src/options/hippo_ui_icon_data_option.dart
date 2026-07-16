@@ -11,8 +11,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:hippo_ui/hippo_ui.dart';
 
-import '../converters/hippo_ui_icon_data_converter.dart';
-
 final class HippoUiIconDataOption extends HippoUiOption {
   const HippoUiIconDataOption({
     this.key,
@@ -20,7 +18,6 @@ final class HippoUiIconDataOption extends HippoUiOption {
     this.description,
     this.defaultValue = const IconData(0),
     this.values = const <HippoUiOptionValue<IconData>>[],
-    this.converter = const HippoUiIconDataConverter(),
   });
 
   @override
@@ -38,5 +35,5 @@ final class HippoUiIconDataOption extends HippoUiOption {
   final List<HippoUiOptionValue<IconData>> values;
 
   @override
-  final HippoUiOptionConverter<IconData> converter;
+  HippoUiOptionConverter<dynamic>? get converter => null;
 }

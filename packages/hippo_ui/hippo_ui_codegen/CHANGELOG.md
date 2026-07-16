@@ -1,3 +1,8 @@
+## Next
+
+- Generate finite token-to-`const IconData` switches for Flutter icon preview
+  options so release builds can tree-shake icon fonts.
+
 ## 0.1.3
 
 - Added generated Flutter Preview bridge functions for widget classes annotated with

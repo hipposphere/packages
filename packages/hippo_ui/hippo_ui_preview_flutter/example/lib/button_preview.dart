@@ -23,6 +23,17 @@ final class PreviewButton extends StatelessWidget {
     required this.count,
     @HippoWidgetPreviewField(.boolean(label: 'Prominent', defaultValue: true))
     required this.prominent,
+    @HippoWidgetPreviewField(
+      HippoUiIconDataOption(
+        label: 'Icon',
+        defaultValue: Icons.check,
+        values: [
+          HippoUiOptionValue(value: Icons.check, label: 'Check'),
+          HippoUiOptionValue(value: Icons.close, label: 'Close'),
+        ],
+      ),
+    )
+    required this.icon,
     super.key,
   });
 
@@ -31,6 +42,8 @@ final class PreviewButton extends StatelessWidget {
   final int count;
 
   final bool prominent;
+
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +57,7 @@ final class PreviewButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
         ),
         onPressed: () {},
-        icon: Badge.count(count: count),
+        icon: Badge.count(count: count, child: Icon(icon)),
         label: Text(label),
       ),
     );

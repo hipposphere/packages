@@ -22,7 +22,6 @@ export 'src/converters/hippo_ui_cross_axis_alignment_converter.dart';
 export 'src/converters/hippo_ui_curve_converter.dart';
 export 'src/converters/hippo_ui_duration_converter.dart';
 export 'src/converters/hippo_ui_edge_insets_converter.dart';
-export 'src/converters/hippo_ui_icon_data_converter.dart';
 export 'src/converters/hippo_ui_main_axis_alignment_converter.dart';
 export 'src/converters/hippo_ui_size_converter.dart';
 export 'src/converters/hippo_ui_text_align_converter.dart';

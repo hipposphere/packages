@@ -88,6 +88,10 @@ class CatalogManifestEmitter {
         if (option.values.isNotEmpty) {
           json['values'] = _optionValuesJson(option.values);
         }
+      case GeneratedIconDataOptionMetadata():
+        if (option.values.isNotEmpty) {
+          json['values'] = _iconDataOptionValuesJson(option.values);
+        }
       case GeneratedEnumOptionMetadata():
         if (option.enumType case final enumType?) {
           json['enumType'] = enumType;
@@ -112,6 +116,7 @@ class CatalogManifestEmitter {
       GeneratedIntegerOptionMetadata() => 'integer',
       GeneratedDoubleOptionMetadata() => 'double',
       GeneratedTextOptionMetadata() => 'text',
+      GeneratedIconDataOptionMetadata() => 'text',
       GeneratedEnumOptionMetadata() => 'enum',
       GeneratedObjectOptionMetadata() => 'object',
       GeneratedUnknownOptionMetadata() => 'unknown',
@@ -124,6 +129,23 @@ class CatalogManifestEmitter {
     return values
         .map((value) {
           final json = <String, Object?>{'value': value.value};
+          if (value.label case final label?) {
+            json['label'] = label;
+          }
+          if (value.description case final description?) {
+            json['description'] = description;
+          }
+          return json;
+        })
+        .toList(growable: false);
+  }
+
+  List<Map<String, Object?>> _iconDataOptionValuesJson(
+    List<GeneratedOptionValueMetadata<GeneratedIconDataMetadata>> values,
+  ) {
+    return values
+        .map((value) {
+          final json = <String, Object?>{'value': value.value.token};
           if (value.label case final label?) {
             json['label'] = label;
           }

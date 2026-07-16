@@ -158,6 +158,44 @@ final class GeneratedTextOptionMetadata extends GeneratedOptionMetadata {
   final List<GeneratedOptionValueMetadata<String>> values;
 }
 
+final class GeneratedIconDataOptionMetadata extends GeneratedOptionMetadata {
+  const GeneratedIconDataOptionMetadata({
+    required super.key,
+    required String super.defaultValue,
+    required this.defaultIcon,
+    super.label,
+    super.description,
+    this.values = const <GeneratedOptionValueMetadata<GeneratedIconDataMetadata>>[],
+  });
+
+  final GeneratedIconDataMetadata defaultIcon;
+
+  final List<GeneratedOptionValueMetadata<GeneratedIconDataMetadata>> values;
+}
+
+final class GeneratedIconDataMetadata {
+  const GeneratedIconDataMetadata({
+    required this.token,
+    required this.codePoint,
+    this.fontFamily,
+    this.fontPackage,
+    this.matchTextDirection = false,
+    this.fontFamilyFallback = const <String>[],
+  });
+
+  final String token;
+
+  final int codePoint;
+
+  final String? fontFamily;
+
+  final String? fontPackage;
+
+  final bool matchTextDirection;
+
+  final List<String> fontFamilyFallback;
+}
+
 final class GeneratedEnumOptionMetadata extends GeneratedOptionMetadata {
   const GeneratedEnumOptionMetadata({
     required super.key,

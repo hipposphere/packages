@@ -27,6 +27,22 @@
           "type": "boolean",
           "label": "Prominent",
           "defaultValue": true
+        },
+        {
+          "key": "icon",
+          "type": "text",
+          "label": "Icon",
+          "defaultValue": "{\"codePoint\":57686,\"fontFamily\":\"MaterialIcons\"}",
+          "values": [
+            {
+              "value": "{\"codePoint\":57686,\"fontFamily\":\"MaterialIcons\"}",
+              "label": "Check"
+            },
+            {
+              "value": "{\"codePoint\":57706,\"fontFamily\":\"MaterialIcons\"}",
+              "label": "Close"
+            }
+          ]
         }
       ],
       "description": "A configurable button preview rendered from the generated catalog."
