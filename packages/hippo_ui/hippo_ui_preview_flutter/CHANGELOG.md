@@ -1,3 +1,7 @@
+## 0.1.4
+
+- Require `hippo_ui_preview` 0.1.3 for the updated JSON schema dependency.
+
 ## 0.1.3
 
 - Updated the example app to use `HippoWidgetPreviewFlutter` and generated

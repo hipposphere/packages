@@ -1,3 +1,7 @@
+## 0.1.1
+
+* Require `json_schema` and `json_schema_gen` 0.1.1.
+
 ## 0.1.0
 
 * Add schema-backed pagination, sorting, filtering, and paginated response models.

@@ -1,3 +1,7 @@
+## 0.1.1
+
+- Require the updated Hippobase auth contract and model packages.
+
 ## 0.1.0
 
 - Add plain Dart public authentication bindings and an opt-in admin client

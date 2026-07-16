@@ -1,6 +1,6 @@
 name: hippobase_auth_db_schema
 description: Shared Dart Edge SQL schema for Hippobase Better Auth tables.
-version: 0.1.1
+version: 0.1.2
 homepage: https://hippolabs.org
 publish_to: "https://pub.hippolabs.org"
 resolution: workspace

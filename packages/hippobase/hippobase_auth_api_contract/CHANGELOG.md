@@ -1,3 +1,8 @@
+## 0.1.1
+
+* Require Dart Edge Core 0.3.34, HTTP Server Codegen 0.3.38, and the updated
+  Hippobase model packages.
+
 ## 0.1.0
 
 * Add stable public and admin route contracts, DTOs, schemas, and auth errors.

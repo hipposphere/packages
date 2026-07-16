@@ -1,4 +1,4 @@
-## Next
+## 0.1.4
 
 - Format generated catalogs with the shared `hippo_analysis` policy.
 - Generate finite token-to-`const IconData` switches for Flutter icon preview
