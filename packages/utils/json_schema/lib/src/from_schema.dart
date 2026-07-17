@@ -32,6 +32,10 @@ final class FromSchema {
 /// By default the schema id is inferred from [type], so
 /// `SchemaRefModel(UserDto)` binds `JsonSchema.ref('UserDto')` to `UserDto`.
 /// Use [schemaId] when the Dart class name and schema id differ.
+///
+/// When [type] is an imported typedef backed by a private generated class,
+/// provide [schemaId] explicitly. The generators use it as the public model
+/// name when the analyzer cannot resolve the private backing type.
 final class SchemaRefModel {
   const SchemaRefModel(this.type, {this.schemaId});
 
