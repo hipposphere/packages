@@ -12,7 +12,7 @@ environment:
 dependencies:
   dart_edge_core:
     hosted: "https://registry.hippolabs.org/pub/internal-pub/"
-    version: ^0.3.34
+    version: ^0.3.35
   flutter:
     sdk: flutter
   flutter_web_auth_2: ^5.0.3
