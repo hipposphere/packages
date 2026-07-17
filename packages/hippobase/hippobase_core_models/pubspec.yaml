@@ -1,6 +1,6 @@
 name: hippobase_core_models
 description: Shared Hippobase pagination, sorting, and filtering query models.
-version: 0.1.2
+version: 0.1.3
 homepage: https://hippolabs.org
 publish_to: "https://pub.hippolabs.org"
 resolution: workspace

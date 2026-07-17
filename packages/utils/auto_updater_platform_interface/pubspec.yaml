@@ -1,6 +1,6 @@
 name: auto_updater_platform_interface
 description: A common platform interface for the auto_updater plugin.
-version: 1.0.0
+version: 1.0.1
 homepage: https://hippolabs.org
 publish_to: "https://pub.hippolabs.org"
 resolution: workspace

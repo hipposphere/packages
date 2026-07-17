@@ -1,6 +1,6 @@
 name: hippo_cli
 description: Command line interface package for Hipposphere tooling.
-version: 0.1.0
+version: 0.1.1
 homepage: https://hippolabs.org
 publish_to: "https://pub.hippolabs.org"
 resolution: workspace

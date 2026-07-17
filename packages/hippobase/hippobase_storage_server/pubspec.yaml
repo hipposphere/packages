@@ -1,6 +1,6 @@
 name: hippobase_storage_server
 description: Reusable Hippobase server-side storage abstractions.
-version: 0.1.2
+version: 0.1.3
 homepage: https://hippolabs.org
 publish_to: "https://pub.hippolabs.org"
 resolution: workspace

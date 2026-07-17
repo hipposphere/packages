@@ -1,6 +1,6 @@
 name: hippobase_auth_server_sql
 description: Dart Edge SQL persistence adapter for Hippobase Auth servers.
-version: 0.1.1
+version: 0.1.2
 homepage: https://hippolabs.org
 publish_to: "https://pub.hippolabs.org"
 resolution: workspace

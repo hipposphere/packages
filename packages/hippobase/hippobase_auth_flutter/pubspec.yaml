@@ -1,6 +1,6 @@
 name: hippobase_auth_flutter
 description: Flutter integration widgets for Hippobase Auth.
-version: 0.1.1
+version: 0.1.2
 homepage: https://hippolabs.org
 publish_to: "https://pub.hippolabs.org"
 resolution: workspace

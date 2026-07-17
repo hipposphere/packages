@@ -1,6 +1,6 @@
 name: hippo_flutter_app_architecture
 description: Reusable Flutter app architecture widgets and settings primitives for Hipposphere apps.
-version: 0.1.6
+version: 0.1.7
 homepage: https://hippolabs.org
 publish_to: "https://pub.hippolabs.org"
 resolution: workspace

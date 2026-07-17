@@ -1,6 +1,6 @@
 name: hippo_ui_preview
 description: Framework-neutral Hipposphere UI preview package shell.
-version: 0.1.3
+version: 0.1.4
 homepage: https://hippolabs.org
 publish_to: "https://pub.hippolabs.org"
 resolution: workspace

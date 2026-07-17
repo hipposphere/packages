@@ -1,6 +1,6 @@
 name: hippobase_diagnostics_flutter
 description: Flutter capture, storage, export, and viewer helpers for Hippobase diagnostics.
-version: 0.1.1
+version: 0.1.2
 homepage: https://hippolabs.org
 publish_to: "https://pub.hippolabs.org"
 resolution: workspace
