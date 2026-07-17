@@ -15,6 +15,17 @@ void main() {
     expect(options, contains('trailing_commas: ${hippoFormatterTrailingCommas.name}'));
   });
 
+  test('Flutter analysis excludes generated build and platform directories', () async {
+    final optionsUri = await Isolate.resolvePackageUri(
+      Uri.parse('package:hippo_analysis/flutter.yaml'),
+    );
+    final options = File.fromUri(optionsUri!).readAsStringSync();
+
+    for (final directory in ['build', 'android', 'ios', 'web', 'windows', 'macos', 'linux']) {
+      expect(options, contains('- $directory/**'));
+    }
+  });
+
   test('shared formatter uses automatic trailing commas and a 100-column page', () {
     final formatted = createHippoDartFormatter().format('''
 void main() {

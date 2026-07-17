@@ -1,3 +1,15 @@
 include:
   - package:flutter_lints/flutter.yaml
   - base.yaml
+
+analyzer:
+  # Flutter 3.47+ regenerates these directories; platform customization
+  # belongs outside generated scaffolding in Hipposphere projects.
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
