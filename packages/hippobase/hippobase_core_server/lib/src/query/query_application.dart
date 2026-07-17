@@ -10,11 +10,18 @@ extension HippobaseSelectQueryApplication<TRow, TInsert, TUpdate>
   SelectQueryBuilder<TRow, TInsert, TUpdate> applyListQuery(ListQuery query, QuerySpec spec) {
     return applyPagination(
       query.pagination,
-    ).applyFilter(query.filter, spec).applySort(query.sort, spec);
+    ).applyFilter(query.filter, spec).applySort(query.sort ?? const <SortTerm>[], spec);
   }
 
-  SelectQueryBuilder<TRow, TInsert, TUpdate> applyPagination(PaginationConfig pagination) {
-    return offset(pagination.offset).limit(pagination.limit);
+  SelectQueryBuilder<TRow, TInsert, TUpdate> applyPagination(PaginationConfig? pagination) {
+    var builder = this;
+    if (pagination?.offset case final offset?) {
+      builder = builder.offset(offset);
+    }
+    if (pagination?.limit case final limit?) {
+      builder = builder.limit(limit);
+    }
+    return builder;
   }
 
   SelectQueryBuilder<TRow, TInsert, TUpdate> applySort(Iterable<SortTerm> sort, QuerySpec spec) {
@@ -42,11 +49,18 @@ extension HippobaseSelectedQueryApplication<TSelection> on SelectedSelectQueryBu
   SelectedSelectQueryBuilder<TSelection> applyListQuery(ListQuery query, QuerySpec spec) {
     return applyPagination(
       query.pagination,
-    ).applyFilter(query.filter, spec).applySort(query.sort, spec);
+    ).applyFilter(query.filter, spec).applySort(query.sort ?? const <SortTerm>[], spec);
   }
 
-  SelectedSelectQueryBuilder<TSelection> applyPagination(PaginationConfig pagination) {
-    return offset(pagination.offset).limit(pagination.limit);
+  SelectedSelectQueryBuilder<TSelection> applyPagination(PaginationConfig? pagination) {
+    var builder = this;
+    if (pagination?.offset case final offset?) {
+      builder = builder.offset(offset);
+    }
+    if (pagination?.limit case final limit?) {
+      builder = builder.limit(limit);
+    }
+    return builder;
   }
 
   SelectedSelectQueryBuilder<TSelection> applySort(Iterable<SortTerm> sort, QuerySpec spec) {

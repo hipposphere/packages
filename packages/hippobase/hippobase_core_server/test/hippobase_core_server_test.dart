@@ -60,6 +60,19 @@ void main() {
     expect(statement.sql, contains('"public"."users"."createdAt" DESC'));
   });
 
+  test('applies offset without a limit', () {
+    final query = ListQuery(pagination: paginationConfig(offset: 20));
+
+    final statement = executor.typed
+        .from(users)
+        .select(<Object>[users.id])
+        .applyListQuery(query, spec())
+        .toStatement();
+
+    expect(statement.sql, contains('OFFSET 20'));
+    expect(statement.sql, isNot(contains('LIMIT')));
+  });
+
   test('rejects unknown query fields', () {
     final query = ListQuery(
       pagination: paginationConfig(),

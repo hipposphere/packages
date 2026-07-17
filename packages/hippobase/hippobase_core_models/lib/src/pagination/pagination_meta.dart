@@ -40,28 +40,31 @@ PaginationMeta paginationMetaFromConfig({
   required PaginationConfig config,
   required int totalItems,
 }) {
-  if (config.offset < 0) {
-    throw ArgumentError.value(config.offset, 'config.offset', 'must not be negative');
+  final offset = config.offset;
+  final limit = config.limit;
+  if (limit == null) {
+    throw ArgumentError.value(limit, 'config.limit', 'is required for pagination metadata');
   }
-  if (config.limit < 1) {
-    throw ArgumentError.value(config.limit, 'config.limit', 'must be greater than zero');
+  if (offset < 0) {
+    throw ArgumentError.value(offset, 'config.offset', 'must not be negative');
+  }
+  if (limit < 1) {
+    throw ArgumentError.value(limit, 'config.limit', 'must be greater than zero');
   }
   if (totalItems < 0) {
     throw ArgumentError.value(totalItems, 'totalItems', 'cannot be negative');
   }
 
-  final nextOffsetCandidate = config.offset + config.limit;
+  final nextOffsetCandidate = offset + limit;
   final hasMore = nextOffsetCandidate < totalItems;
-  final firstItemIndex = totalItems == 0 || config.offset >= totalItems ? 0 : config.offset + 1;
-  final candidateLastItemIndex = config.offset + config.limit;
+  final firstItemIndex = totalItems == 0 || offset >= totalItems ? 0 : offset + 1;
+  final candidateLastItemIndex = offset + limit;
   final lastItemIndex = candidateLastItemIndex > totalItems ? totalItems : candidateLastItemIndex;
-  final previousOffset = config.offset == 0
-      ? null
-      : (config.offset - config.limit).clamp(0, totalItems);
+  final previousOffset = offset == 0 ? null : (offset - limit).clamp(0, totalItems);
 
   return PaginationMeta(
-    offset: config.offset,
-    limit: config.limit,
+    offset: offset,
+    limit: limit,
     totalItems: totalItems,
     hasMore: hasMore,
     nextOffset: hasMore ? nextOffsetCandidate : null,

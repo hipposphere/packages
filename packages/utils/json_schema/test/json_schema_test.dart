@@ -63,6 +63,19 @@ void main() {
     expect(schema.toJson(), {'type': 'number', 'minimum': -1.5, 'maximum': 2.75});
   });
 
+  test('serializes primitive JSON Schema default annotations', () {
+    expect(const JsonSchema.string(defaultValue: 'draft').toJson(), {
+      'type': 'string',
+      'default': 'draft',
+    });
+    expect(const JsonSchema.integer(defaultValue: 10).toJson(), {'type': 'integer', 'default': 10});
+    expect(const JsonSchema.number(defaultValue: 1.5).toJson(), {'type': 'number', 'default': 1.5});
+    expect(const JsonSchema.boolean(defaultValue: false).toJson(), {
+      'type': 'boolean',
+      'default': false,
+    });
+  });
+
   test('keeps Dart string type metadata out of JSON Schema output', () {
     const schema = JsonStringSchema(format: 'uuid', dartType: DartSchemaType.parameter('TId'));
 

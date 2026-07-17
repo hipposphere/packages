@@ -1,6 +1,6 @@
 name: hippobase_auth_api_contract
 description: API contracts for Hippobase Auth.
-version: 0.1.1
+version: 0.1.2
 homepage: https://hippolabs.org
 publish_to: "https://pub.hippolabs.org"
 resolution: workspace
@@ -17,7 +17,7 @@ dependencies:
     version: ^0.1.7
   hippobase_core_models:
     hosted: "https://pub.hippolabs.org"
-    version: ^0.1.1
+    version: ^0.1.2
   json_schema:
     hosted: "https://pub.hippolabs.org"
     version: ^0.1.1

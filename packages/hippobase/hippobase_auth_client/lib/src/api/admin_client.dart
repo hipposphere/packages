@@ -41,14 +41,14 @@ final class HippobaseAuthAdminClient {
   }
 
   Future<HippobaseAuthAdminListUsersResponse> listUsers({PaginationConfig? pagination}) async {
-    final resolvedPagination = pagination ?? paginationConfig();
+    final resolvedPagination = pagination;
     return HippobaseAuthAdminListUsersResponse.fromJson(
       await _request(
         'GET',
         'v1/admin/users',
         query: <String, String>{
-          'offset': '${resolvedPagination.offset}',
-          'limit': '${resolvedPagination.limit}',
+          if (resolvedPagination?.offset case final offset?) 'offset': '$offset',
+          if (resolvedPagination?.limit case final limit?) 'limit': '$limit',
         },
       ),
     );

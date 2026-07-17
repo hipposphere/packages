@@ -8,7 +8,7 @@ part of 'list_query.dart';
 
 // ignore_for_file: unused_element, unused_field
 final class _$ListQuery implements JsonEncodable {
-  const _$ListQuery({required this.pagination, required this.sort, this.filter});
+  const _$ListQuery({this.pagination, this.sort, this.filter});
 
   static const schemaId = 'ListQuery';
 
@@ -19,23 +19,22 @@ final class _$ListQuery implements JsonEncodable {
       'sort': JsonSchema.array(items: JsonSchema.ref('#/components/schemas/SortTerm')),
       'filter': JsonSchema.ref('#/components/schemas/FilterGroup'),
     },
-    required: <String>['pagination', 'sort'],
     additionalProperties: false,
   );
 
   static const schemaRef = JsonSchema.componentRef(schemaId);
 
-  final PaginationConfig pagination;
+  final PaginationConfig? pagination;
 
-  final List<SortTerm> sort;
+  final List<SortTerm>? sort;
 
   final FilterGroup? filter;
 
   @override
   Map<String, Object?> toJson() {
     return <String, Object?>{
-      "pagination": pagination.toJson(),
-      "sort": sort.map((item) => item.toJson()).toList(),
+      "pagination": pagination?.toJson(),
+      "sort": sort?.map((item) => item.toJson()).toList(),
       "filter": filter?.toJson(),
     };
   }
@@ -46,8 +45,8 @@ final class _$ListQuery implements JsonEncodable {
 
   static ListQuery fromJson(Map<String, Object?> json) {
     return ListQuery(
-      pagination: PaginationConfig.decode(json["pagination"]),
-      sort: (json["sort"]! as List).map((item) => SortTerm.decode(item)).toList(),
+      pagination: json["pagination"] == null ? null : PaginationConfig.decode(json["pagination"]),
+      sort: (json["sort"] as List?)?.map((item) => SortTerm.decode(item)).toList(),
       filter: json["filter"] == null ? null : FilterGroup.decode(json["filter"]),
     );
   }

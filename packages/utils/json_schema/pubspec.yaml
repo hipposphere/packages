@@ -1,6 +1,6 @@
 name: json_schema
 description: Typed, const-friendly JSON Schema contracts for Dart.
-version: 0.1.1
+version: 0.1.2
 publish_to: https://pub.hippolabs.org
 repository: https://github.com/hipposphere/packages/tree/main/packages/utils/json_schema
 

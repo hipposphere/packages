@@ -16,11 +16,10 @@ const listQuerySchema = JsonSchema.object(
     'sort': JsonSchema.array(items: JsonSchema.componentRef(sortTermSchemaId)),
     'filter': JsonSchema.componentRef(filterGroupSchemaId),
   },
-  required: <String>['pagination', 'sort'],
   additionalProperties: false,
 );
 
-/// A generic list query with pagination, sorting, and an optional filter tree.
+/// A generic list query with optional pagination, sorting, and a filter tree.
 @FromSchema(listQuerySchema)
 typedef ListQuery = _$ListQuery;
 

@@ -38,6 +38,7 @@ sealed class JsonSchema {
     String? description,
     List<Object?> enumValues,
     bool nullable,
+    String? defaultValue,
   }) = JsonStringSchema;
 
   final String? id;
@@ -75,7 +76,10 @@ final class JsonStringSchema extends JsonSchema {
     super.description,
     super.enumValues,
     super.nullable,
+    this.defaultValue,
   }) : super._();
+
+  final String? defaultValue;
 }
 
 final class FromSchema {
@@ -87,7 +91,10 @@ final class FromSchema {
 
 const userSchema = JsonSchema.object(
   id: 'User',
-  properties: <String, JsonSchema>{'id': JsonSchema.string()},
+  properties: <String, JsonSchema>{
+    'id': JsonSchema.string(),
+    'name': JsonSchema.string(defaultValue: 'anonymous'),
+  },
   required: <String>['id'],
 );
 
@@ -98,9 +105,14 @@ typedef User = _$User;
       outputs: <String, Matcher>{
         'test_app|lib/model.json_schema.g.part': decodedMatches(
           allOf(
-            contains('static const JsonSchema schema'),
-            contains('implements JsonEncodable'),
-            contains('Map<String, Object?> toJson()'),
+            allOf(
+              contains('static const JsonSchema schema'),
+              contains('implements JsonEncodable'),
+              contains('Map<String, Object?> toJson()'),
+              contains("this.name = 'anonymous'"),
+              contains("JsonSchema.string(defaultValue: 'anonymous')"),
+              contains("json.containsKey(\"name\") ? json[\"name\"]! as String : \"anonymous\""),
+            ),
             isNot(contains('RequestBody')),
             isNot(contains('ResponseSpec')),
             contains('@override'),

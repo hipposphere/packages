@@ -30,18 +30,14 @@ final class HippobaseAuthAdminListUsersRoute<TServices>
     return hippobaseAuthJsonResponse(
       context,
       () async {
-        final pagination =
-            context.req.maybeQuery<PaginationConfig>() ??
-            paginationConfig(limit: dependencies.options.admin.defaultPageLimit);
-        if (pagination.offset < 0 ||
-            pagination.limit < 1 ||
-            pagination.limit > dependencies.options.admin.maxPageLimit) {
+        final requestedPagination = context.req.maybeQuery<PaginationConfig>();
+        final offset = requestedPagination?.offset ?? 0;
+        final limit = requestedPagination?.limit ?? dependencies.options.admin.defaultPageLimit;
+        if (offset < 0 || limit < 1 || limit > dependencies.options.admin.maxPageLimit) {
           throw const FormatException('Invalid pagination query.');
         }
-        final users = await dependencies.repository.listUsers(
-          limit: pagination.limit,
-          offset: pagination.offset,
-        );
+        final pagination = paginationConfig(offset: offset, limit: limit);
+        final users = await dependencies.repository.listUsers(limit: limit, offset: offset);
         final total = await dependencies.repository.countUsers();
         return HippobaseAuthAdminListUsersResponse(
           items: users,

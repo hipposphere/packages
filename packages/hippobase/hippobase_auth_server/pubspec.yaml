@@ -1,6 +1,6 @@
 name: hippobase_auth_server
 description: Server package for Hippobase Auth.
-version: 0.1.1
+version: 0.1.2
 homepage: https://hippolabs.org
 publish_to: "https://pub.hippolabs.org"
 resolution: workspace
@@ -14,7 +14,7 @@ dependencies:
     version: ^0.3.34
   hippobase_auth_api_contract:
     hosted: "https://pub.hippolabs.org"
-    version: ^0.1.1
+    version: ^0.1.2
   hippobase_auth_models:
     hosted: "https://pub.hippolabs.org"
     version: ^0.1.7
@@ -23,7 +23,7 @@ dependencies:
     version: ^0.1.1
   hippobase_core_models:
     hosted: "https://pub.hippolabs.org"
-    version: ^0.1.1
+    version: ^0.1.2
   json_schema:
     hosted: https://pub.hippolabs.org
     version: ^0.1.1

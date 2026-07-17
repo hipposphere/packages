@@ -168,6 +168,7 @@ JsonSchema jsonSchemaFromDartObject(DartObject object, {required Element element
       description: _stringField(object, 'description'),
       enumValues: _objectListField(object, 'enumValues', element: element),
       nullable: _boolField(object, 'nullable') ?? false,
+      defaultValue: _stringField(object, 'defaultValue'),
       format: _stringField(object, 'format'),
       dartType: _dartSchemaTypeField(object, 'dartType', element: element),
     ),
@@ -177,6 +178,7 @@ JsonSchema jsonSchemaFromDartObject(DartObject object, {required Element element
       description: _stringField(object, 'description'),
       enumValues: _objectListField(object, 'enumValues', element: element),
       nullable: _boolField(object, 'nullable') ?? false,
+      defaultValue: _intField(object, 'defaultValue'),
       format: _stringField(object, 'format'),
       minimum: _numField(object, 'minimum'),
       maximum: _numField(object, 'maximum'),
@@ -187,6 +189,7 @@ JsonSchema jsonSchemaFromDartObject(DartObject object, {required Element element
       description: _stringField(object, 'description'),
       enumValues: _objectListField(object, 'enumValues', element: element),
       nullable: _boolField(object, 'nullable') ?? false,
+      defaultValue: _numField(object, 'defaultValue'),
       format: _stringField(object, 'format'),
       minimum: _numField(object, 'minimum'),
       maximum: _numField(object, 'maximum'),
@@ -197,6 +200,7 @@ JsonSchema jsonSchemaFromDartObject(DartObject object, {required Element element
       description: _stringField(object, 'description'),
       enumValues: _objectListField(object, 'enumValues', element: element),
       nullable: _boolField(object, 'nullable') ?? false,
+      defaultValue: _boolField(object, 'defaultValue'),
     ),
     'JsonReferenceSchema' => JsonSchema.ref(
       _stringField(object, 'ref') ?? '',
@@ -271,6 +275,9 @@ Class _objectModel(FromSchemaModelSpec model) {
                     ..named = true
                     ..toThis = true
                     ..required = field.requiredParameter;
+                  if (field.defaultValue != null && !field.requiredParameter) {
+                    parameter.defaultTo = _defaultValueCode(field.defaultValue!);
+                  }
                 }),
             ]);
         }),
@@ -545,34 +552,50 @@ Expression _schemaExpression(JsonSchema schema, {Expression? idExpression}) {
           if (dartType != null) 'dartType': _dartSchemaTypeExpression(dartType),
         },
       ),
-    JsonStringSchema(:final nullable, :final format, :final dartType) =>
+    JsonStringSchema(:final nullable, :final defaultValue, :final format, :final dartType) =>
       refer('JsonSchema').constInstanceNamed('string', const [], {
         ...baseArguments,
         if (nullable) 'nullable': literalBool(nullable),
+        if (defaultValue != null) 'defaultValue': literalString(defaultValue),
         if (format != null) 'format': literalString(format),
         if (dartType != null) 'dartType': _dartSchemaTypeExpression(dartType),
       }),
-    JsonIntegerSchema(:final nullable, :final format, :final minimum, :final maximum) =>
+    JsonIntegerSchema(
+      :final nullable,
+      :final defaultValue,
+      :final format,
+      :final minimum,
+      :final maximum,
+    ) =>
       refer('JsonSchema').constInstanceNamed('integer', const [], {
         ...baseArguments,
         if (nullable) 'nullable': literalBool(nullable),
+        if (defaultValue != null) 'defaultValue': literalNum(defaultValue),
         if (format != null) 'format': literalString(format),
         if (minimum != null) 'minimum': literalNum(minimum),
         if (maximum != null) 'maximum': literalNum(maximum),
       }),
-    JsonNumberSchema(:final nullable, :final format, :final minimum, :final maximum) =>
+    JsonNumberSchema(
+      :final nullable,
+      :final defaultValue,
+      :final format,
+      :final minimum,
+      :final maximum,
+    ) =>
       refer('JsonSchema').constInstanceNamed('number', const [], {
         ...baseArguments,
         if (nullable) 'nullable': literalBool(nullable),
+        if (defaultValue != null) 'defaultValue': literalNum(defaultValue),
         if (format != null) 'format': literalString(format),
         if (minimum != null) 'minimum': literalNum(minimum),
         if (maximum != null) 'maximum': literalNum(maximum),
       }),
-    JsonBooleanSchema(:final nullable) => refer('JsonSchema').constInstanceNamed(
-      'boolean',
-      const [],
-      {...baseArguments, if (nullable) 'nullable': literalBool(nullable)},
-    ),
+    JsonBooleanSchema(:final nullable, :final defaultValue) =>
+      refer('JsonSchema').constInstanceNamed('boolean', const [], {
+        ...baseArguments,
+        if (nullable) 'nullable': literalBool(nullable),
+        if (defaultValue != null) 'defaultValue': literalBool(defaultValue),
+      }),
     JsonReferenceSchema(:final ref) => refer(
       'JsonSchema',
     ).constInstanceNamed('ref', [literalString(ref)], baseArguments),
@@ -657,7 +680,7 @@ Method _objectFromJsonMethod(FromSchemaModelSpec model, List<_SchemaFieldSpec> f
       ..requiredParameters.add(_typedParameter('json', refer('Map<String, Object?>')))
       ..body = Code('''
 return $publicType(
-${fields.map((field) => '${field.name}: ${_decodeValue(field.schema, "json[${_dartString(field.wireName)}]", nullable: field.nullable, refModels: model.refModels, typeParameters: model.typeParameters, path: field.name)},').join('\n')}
+${fields.map((field) => '${field.name}: ${_decodeFieldValue(field, model: model)},').join('\n')}
 );
 ''');
   });
@@ -698,7 +721,7 @@ Constructor _objectFromJsonFactory(FromSchemaModelSpec model, List<_SchemaFieldS
       ..requiredParameters.add(_typedParameter('json', refer('Map<String, Object?>')))
       ..body = Code('''
 return $publicType(
-${fields.map((field) => '${field.name}: ${_decodeValue(field.schema, "json[${_dartString(field.wireName)}]", nullable: field.nullable, refModels: model.refModels, typeParameters: model.typeParameters, path: field.name)},').join('\n')}
+${fields.map((field) => '${field.name}: ${_decodeFieldValue(field, model: model)},').join('\n')}
 );
 ''');
   });
@@ -748,7 +771,8 @@ List<_SchemaFieldSpec> _modelFields(FromSchemaModelSpec model) {
     }
 
     final requiredParameter = required.contains(entry.key);
-    final nullable = !requiredParameter || entry.value.nullable;
+    final defaultValue = _defaultValue(entry.value);
+    final nullable = (!requiredParameter && defaultValue == null) || entry.value.nullable;
     fields.add(
       _SchemaFieldSpec(
         wireName: entry.key,
@@ -763,11 +787,55 @@ List<_SchemaFieldSpec> _modelFields(FromSchemaModelSpec model) {
         schema: entry.value,
         requiredParameter: requiredParameter,
         nullable: nullable,
+        defaultValue: defaultValue,
       ),
     );
   }
 
   return fields;
+}
+
+String _decodeFieldValue(_SchemaFieldSpec field, {required FromSchemaModelSpec model}) {
+  final source = 'json[${_dartString(field.wireName)}]';
+  final decoded = _decodeValue(
+    field.schema,
+    source,
+    nullable: field.nullable,
+    refModels: model.refModels,
+    typeParameters: model.typeParameters,
+    path: field.name,
+  );
+  if (field.defaultValue == null || field.requiredParameter) {
+    return decoded;
+  }
+  return 'json.containsKey(${_dartString(field.wireName)}) ? $decoded : ${_defaultValueSource(field.defaultValue!)}';
+}
+
+Object? _defaultValue(JsonSchema schema) {
+  return switch (schema) {
+    JsonStringSchema(:final defaultValue) => defaultValue,
+    JsonIntegerSchema(:final defaultValue) => defaultValue,
+    JsonNumberSchema(:final defaultValue) => defaultValue,
+    JsonBooleanSchema(:final defaultValue) => defaultValue,
+    _ => null,
+  };
+}
+
+Code _defaultValueCode(Object value) {
+  return switch (value) {
+    String() => literalString(value).code,
+    num() => literalNum(value).code,
+    bool() => literalBool(value).code,
+    _ => throw StateError('Unsupported JSON Schema default value $value.'),
+  };
+}
+
+String _defaultValueSource(Object value) {
+  return switch (value) {
+    String() => _dartString(value),
+    num() || bool() => value.toString(),
+    _ => throw StateError('Unsupported JSON Schema default value $value.'),
+  };
 }
 
 String _schemaDartType(
@@ -1608,6 +1676,14 @@ num? _numField(DartObject object, String name) {
   return value.toIntValue() ?? value.toDoubleValue();
 }
 
+int? _intField(DartObject object, String name) {
+  final value = _field(object, name);
+  if (value == null || value.isNull) {
+    return null;
+  }
+  return value.toIntValue();
+}
+
 DartObject? _field(DartObject object, String name) {
   final field = object.getField(name);
   if (field != null) {
@@ -1822,6 +1898,7 @@ final class _SchemaFieldSpec {
     required this.schema,
     required this.requiredParameter,
     required this.nullable,
+    required this.defaultValue,
   });
 
   final String wireName;
@@ -1830,6 +1907,7 @@ final class _SchemaFieldSpec {
   final JsonSchema schema;
   final bool requiredParameter;
   final bool nullable;
+  final Object? defaultValue;
 }
 
 final class _StringEnumValueSpec {

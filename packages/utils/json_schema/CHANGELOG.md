@@ -1,3 +1,8 @@
+## 0.1.2
+
+- Add typed JSON Schema `default` annotations for strings, integers, numbers,
+  and booleans.
+
 ## 0.1.1
 
 - Own the shared `JsonEncodable` contract and implement it on `JsonSchema`.

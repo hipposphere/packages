@@ -8,14 +8,16 @@ part of 'pagination_config.dart';
 
 // ignore_for_file: unused_element, unused_field
 final class _$PaginationConfig implements JsonEncodable {
-  const _$PaginationConfig({required this.offset, required this.limit});
+  const _$PaginationConfig({this.offset = 0, this.limit});
 
   static const schemaId = 'PaginationConfig';
 
   static const JsonSchema schema = JsonSchema.object(
     id: schemaId,
-    properties: <String, JsonSchema>{'offset': JsonSchema.integer(), 'limit': JsonSchema.integer()},
-    required: <String>['offset', 'limit'],
+    properties: <String, JsonSchema>{
+      'offset': JsonSchema.integer(defaultValue: 0),
+      'limit': JsonSchema.integer(),
+    },
     additionalProperties: false,
   );
 
@@ -23,7 +25,7 @@ final class _$PaginationConfig implements JsonEncodable {
 
   final int offset;
 
-  final int limit;
+  final int? limit;
 
   @override
   Map<String, Object?> toJson() {
@@ -35,6 +37,9 @@ final class _$PaginationConfig implements JsonEncodable {
   }
 
   static PaginationConfig fromJson(Map<String, Object?> json) {
-    return PaginationConfig(offset: json["offset"]! as int, limit: json["limit"]! as int);
+    return PaginationConfig(
+      offset: json.containsKey("offset") ? json["offset"]! as int : 0,
+      limit: json["limit"] as int?,
+    );
   }
 }

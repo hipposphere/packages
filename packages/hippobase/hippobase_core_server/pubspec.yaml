@@ -1,6 +1,6 @@
 name: hippobase_core_server
 description: Server-side query adapters for Hippobase core list models.
-version: 0.1.2
+version: 0.1.3
 homepage: https://hippolabs.org
 publish_to: "https://pub.hippolabs.org"
 resolution: workspace
@@ -11,10 +11,10 @@ environment:
 dependencies:
   dart_edge_sql:
     hosted: "https://registry.hippolabs.org/pub/internal-pub/"
-    version: ^0.3.31
+    version: ^0.3.32
   hippobase_core_models:
     hosted: "https://pub.hippolabs.org"
-    version: ^0.1.1
+    version: ^0.1.2
 
 dev_dependencies:
   test: ^1.30.0

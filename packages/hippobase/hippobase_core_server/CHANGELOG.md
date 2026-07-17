@@ -1,3 +1,7 @@
+## 0.1.3
+
+* Apply optional list-query pagination clauses independently, allowing offset-only queries.
+
 ## 0.1.2
 
 * Require `dart_edge_sql` 0.3.31 and `hippobase_core_models` 0.1.1.

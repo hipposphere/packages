@@ -1,3 +1,7 @@
+## 0.1.2
+
+* Require `hippobase_core_models` 0.1.2 for optional pagination query fields.
+
 ## 0.1.1
 
 * Require Dart Edge Core 0.3.34, HTTP Server Codegen 0.3.38, and the updated

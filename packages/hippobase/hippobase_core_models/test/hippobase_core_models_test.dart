@@ -16,6 +16,11 @@ void main() {
       expect(() => paginationConfig(offset: -1), throwsArgumentError);
       expect(() => paginationConfig(limit: 0), throwsArgumentError);
     });
+
+    test('allows an omitted limit and defaults an omitted offset to zero', () {
+      expect(paginationConfig(offset: 50).toJson(), <String, Object?>{'offset': 50, 'limit': null});
+      expect(paginationConfig(limit: 25).toJson(), <String, Object?>{'offset': 0, 'limit': 25});
+    });
   });
 
   group('PaginationMeta', () {
@@ -41,6 +46,14 @@ void main() {
   });
 
   group('ListQuery', () {
+    test('allows pagination and sort to be omitted', () {
+      final query = ListQuery();
+
+      expect(query.pagination, isNull);
+      expect(query.sort, isNull);
+      expect(query.toJson(), <String, Object?>{'pagination': null, 'sort': null, 'filter': null});
+    });
+
     test('round-trips nested filters and sort terms through JSON', () {
       final query = ListQuery(
         pagination: paginationConfig(offset: 0, limit: 20),
@@ -59,10 +72,10 @@ void main() {
       final json = query.toJson();
       final parsed = ListQuery.fromJson(json);
 
-      expect(parsed.pagination.offset, 0);
-      expect(parsed.pagination.limit, 20);
-      expect(parsed.sort.single.field, 'createdAt');
-      expect(parsed.sort.single.direction, SortDirection.desc);
+      expect(parsed.pagination?.offset, 0);
+      expect(parsed.pagination?.limit, 20);
+      expect(parsed.sort?.single.field, 'createdAt');
+      expect(parsed.sort?.single.direction, SortDirection.desc);
       expect(parsed.filter?.combinator, FilterCombinator.and);
       expect(parsed.filter?.filters.single.operator, FilterOperator.eq);
       expect(parsed.filter?.childGroups.single.combinator, FilterCombinator.or);

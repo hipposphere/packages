@@ -238,13 +238,15 @@ sealed class JsonSchema implements JsonEncodable {
   /// generators understand formats such as `date-time`, `binary`, `uuid`,
   /// `decimal`, and `int64` where relevant. [dartType] can bind the string to a
   /// richer Dart type, for example a string-backed extension type, without
-  /// changing the serialized JSON Schema.
+  /// changing the serialized JSON Schema. [defaultValue] is serialized as the
+  /// JSON Schema `default` annotation.
   const factory JsonSchema.string({
     String? id,
     String? title,
     String? description,
     List<Object?> enumValues,
     bool nullable,
+    String? defaultValue,
     String? format,
     DartSchemaType? dartType,
   }) = JsonStringSchema;
@@ -252,13 +254,15 @@ sealed class JsonSchema implements JsonEncodable {
   /// Describes a JSON integer.
   ///
   /// [format] is serialized as the JSON Schema `format` keyword. [minimum] and
-  /// [maximum] are inclusive numeric bounds.
+  /// [maximum] are inclusive numeric bounds. [defaultValue] is serialized as
+  /// the JSON Schema `default` annotation.
   const factory JsonSchema.integer({
     String? id,
     String? title,
     String? description,
     List<Object?> enumValues,
     bool nullable,
+    int? defaultValue,
     String? format,
     num? minimum,
     num? maximum,
@@ -267,25 +271,29 @@ sealed class JsonSchema implements JsonEncodable {
   /// Describes a JSON number.
   ///
   /// [format] is serialized as the JSON Schema `format` keyword. [minimum] and
-  /// [maximum] are inclusive numeric bounds.
+  /// [maximum] are inclusive numeric bounds. [defaultValue] is serialized as
+  /// the JSON Schema `default` annotation.
   const factory JsonSchema.number({
     String? id,
     String? title,
     String? description,
     List<Object?> enumValues,
     bool nullable,
+    num? defaultValue,
     String? format,
     num? minimum,
     num? maximum,
   }) = JsonNumberSchema;
 
-  /// Describes a JSON boolean.
+  /// Describes a JSON boolean. [defaultValue] is serialized as the JSON Schema
+  /// `default` annotation.
   const factory JsonSchema.boolean({
     String? id,
     String? title,
     String? description,
     List<Object?> enumValues,
     bool nullable,
+    bool? defaultValue,
   }) = JsonBooleanSchema;
 
   /// Describes a JSON Schema `$ref`.
@@ -524,6 +532,7 @@ final class JsonStringSchema extends _JsonTypedSchema {
     super.description,
     super.enumValues,
     super.nullable = false,
+    this.defaultValue,
     this.format,
     this.dartType,
   }) : super(type: JsonSchemaType.string);
@@ -531,12 +540,15 @@ final class JsonStringSchema extends _JsonTypedSchema {
   /// Optional JSON Schema string `format`.
   final String? format;
 
+  /// Optional JSON Schema `default` annotation.
+  final String? defaultValue;
+
   /// Optional Dart-only type metadata for string code generation.
   final DartSchemaType? dartType;
 
   @override
   Map<String, Object?> additionalKeywords() {
-    return <String, Object?>{'format': ?format};
+    return <String, Object?>{'default': ?defaultValue, 'format': ?format};
   }
 }
 
@@ -549,6 +561,7 @@ final class JsonIntegerSchema extends _JsonTypedSchema {
     super.description,
     super.enumValues,
     super.nullable = false,
+    this.defaultValue,
     this.format,
     this.minimum,
     this.maximum,
@@ -556,6 +569,9 @@ final class JsonIntegerSchema extends _JsonTypedSchema {
 
   /// Optional JSON Schema integer `format`.
   final String? format;
+
+  /// Optional JSON Schema `default` annotation.
+  final int? defaultValue;
 
   /// Inclusive lower bound for accepted integer values.
   final num? minimum;
@@ -565,7 +581,12 @@ final class JsonIntegerSchema extends _JsonTypedSchema {
 
   @override
   Map<String, Object?> additionalKeywords() {
-    return <String, Object?>{'format': ?format, 'minimum': ?minimum, 'maximum': ?maximum};
+    return <String, Object?>{
+      'default': ?defaultValue,
+      'format': ?format,
+      'minimum': ?minimum,
+      'maximum': ?maximum,
+    };
   }
 }
 
@@ -578,6 +599,7 @@ final class JsonNumberSchema extends _JsonTypedSchema {
     super.description,
     super.enumValues,
     super.nullable = false,
+    this.defaultValue,
     this.format,
     this.minimum,
     this.maximum,
@@ -585,6 +607,9 @@ final class JsonNumberSchema extends _JsonTypedSchema {
 
   /// Optional JSON Schema number `format`.
   final String? format;
+
+  /// Optional JSON Schema `default` annotation.
+  final num? defaultValue;
 
   /// Inclusive lower bound for accepted number values.
   final num? minimum;
@@ -594,7 +619,12 @@ final class JsonNumberSchema extends _JsonTypedSchema {
 
   @override
   Map<String, Object?> additionalKeywords() {
-    return <String, Object?>{'format': ?format, 'minimum': ?minimum, 'maximum': ?maximum};
+    return <String, Object?>{
+      'default': ?defaultValue,
+      'format': ?format,
+      'minimum': ?minimum,
+      'maximum': ?maximum,
+    };
   }
 }
 
@@ -607,10 +637,14 @@ final class JsonBooleanSchema extends _JsonTypedSchema {
     super.description,
     super.enumValues,
     super.nullable = false,
+    this.defaultValue,
   }) : super(type: JsonSchemaType.boolean);
 
+  /// Optional JSON Schema `default` annotation.
+  final bool? defaultValue;
+
   @override
-  Map<String, Object?> additionalKeywords() => const <String, Object?>{};
+  Map<String, Object?> additionalKeywords() => <String, Object?>{'default': ?defaultValue};
 }
 
 /// JSON Schema reference value.

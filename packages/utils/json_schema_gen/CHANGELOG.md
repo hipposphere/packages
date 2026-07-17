@@ -1,3 +1,8 @@
+## 0.1.2
+
+- Preserve primitive JSON Schema defaults and apply them to generated optional
+  model fields when the JSON key is absent.
+
 ## 0.1.1
 
 - Use the shared `hippo_analysis` formatter policy by default while preserving

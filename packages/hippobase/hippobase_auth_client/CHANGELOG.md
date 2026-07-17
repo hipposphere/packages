@@ -1,3 +1,8 @@
+## 0.1.2
+
+* Omit unspecified admin pagination query parameters.
+* Require the optional-pagination auth contract.
+
 ## 0.1.1
 
 - Require the updated Hippobase auth contract and model packages.
