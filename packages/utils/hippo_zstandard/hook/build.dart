@@ -1,6 +1,7 @@
 import 'package:code_assets/code_assets.dart';
 import 'package:hooks/hooks.dart';
-import 'package:native_toolchain_rust/native_toolchain_rust.dart';
+
+import '../hook_helpers/prebuilt_rust_builder.dart';
 
 void main(List<String> args) async {
   await build(args, (input, output) async {
@@ -8,7 +9,7 @@ void main(List<String> args) async {
       return;
     }
 
-    await const RustBuilder(
+    await const HippoZstandardPrebuiltRustBuilder(
       assetName: 'src/native_bindings.g.dart',
       cratePath: 'native',
     ).run(input: input, output: output);
