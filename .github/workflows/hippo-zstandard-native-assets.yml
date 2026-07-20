@@ -162,8 +162,23 @@ jobs:
         run: |
           set -euo pipefail
           ndk_version="27.2.12479018"
-          sdkmanager "ndk;$ndk_version"
-          echo "ANDROID_NDK_HOME=$ANDROID_SDK_ROOT/ndk/$ndk_version" >> "$GITHUB_ENV"
+          android_sdk="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
+          if [[ -z "$android_sdk" ]]; then
+            echo "::error::ANDROID_SDK_ROOT and ANDROID_HOME are both unset."
+            exit 1
+          fi
+
+          sdkmanager_path="$android_sdk/cmdline-tools/latest/bin/sdkmanager"
+          if [[ ! -x "$sdkmanager_path" ]]; then
+            sdkmanager_path="$(find "$android_sdk/cmdline-tools" -type f -path '*/bin/sdkmanager' -perm -111 -print 2>/dev/null | sort -V | tail -n 1)"
+          fi
+          if [[ -z "$sdkmanager_path" || ! -x "$sdkmanager_path" ]]; then
+            echo "::error::Could not locate sdkmanager below $android_sdk/cmdline-tools."
+            exit 1
+          fi
+
+          "$sdkmanager_path" "ndk;$ndk_version"
+          echo "ANDROID_NDK_HOME=$android_sdk/ndk/$ndk_version" >> "$GITHUB_ENV"
 
       - name: Build native library
         shell: bash
