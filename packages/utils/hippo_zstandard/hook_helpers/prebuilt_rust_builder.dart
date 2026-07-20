@@ -13,7 +13,7 @@ final class HippoZstandardPrebuiltRustBuilder {
   const HippoZstandardPrebuiltRustBuilder({
     required this.assetName,
     this.cratePath = 'native',
-    this.releaseBaseUrl = 'https://storage.hippolabs.org/native/hippo_zstandard',
+    this.releaseBaseUrl = 'https://github.com/hipposphere/native-artifacts/releases/download',
   });
 
   final String assetName;
@@ -196,7 +196,7 @@ final class HippoZstandardPrebuiltRustBuilder {
     if (override != null && override.isNotEmpty) {
       return override.replaceFirst(RegExp(r'/$'), '');
     }
-    return '$releaseBaseUrl/$nativeVersion';
+    return '$releaseBaseUrl/hippo_zstandard-native-v$nativeVersion';
   }
 
   String _cacheRoot(BuildInput input) {

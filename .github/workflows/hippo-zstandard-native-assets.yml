@@ -13,11 +13,8 @@ permissions:
 env:
   PACKAGE: hippo_zstandard
   PACKAGE_DIRECTORY: packages/utils/hippo_zstandard
-  S3_ENDPOINT_URL: https://storage.hippolabs.org
-  STORAGE_BUCKET: artifacts
-  AWS_ACCESS_KEY_ID: ${{ secrets.STORAGE_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.STORAGE_SECRET_ACCESS_KEY }}
-  AWS_DEFAULT_REGION: auto
+  ARTIFACT_REPOSITORY: hipposphere/native-artifacts
+  RELEASE_BASE_URL: https://github.com/hipposphere/native-artifacts/releases/download
 
 jobs:
   prepare:
@@ -78,11 +75,11 @@ jobs:
             local kind="$6"
             local android_abi="${7:-}"
             local artifact="$PACKAGE-$version-$name-$library"
-            local base_url="$S3_ENDPOINT_URL/native/$PACKAGE/$version"
+            local base_url="$RELEASE_BASE_URL/${PACKAGE}-native-v${version}"
 
-            if curl --fail --silent --show-error --head \
+            if curl --fail --silent --show-error --location --head \
                 "$base_url/$artifact" >/dev/null && \
-              curl --fail --silent --show-error --head \
+              curl --fail --silent --show-error --location --head \
                 "$base_url/$artifact.sha256" >/dev/null; then
               echo "Skipping existing artifact: $artifact"
               return
@@ -247,7 +244,6 @@ jobs:
       - build
     if: ${{ needs.prepare.outputs.missing_count != '0' && needs.build.result == 'success' }}
     runs-on: ubuntu-22.04
-    environment: cli-artifacts
     steps:
       - name: Download workflow artifacts
         uses: actions/download-artifact@v4
@@ -255,32 +251,37 @@ jobs:
           path: artifacts
           merge-multiple: true
 
-      - name: Install AWS CLI
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 -m pip install --user awscli
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-
-      - name: Publish immutable native artifacts
+      - name: Publish GitHub release assets
         env:
+          GH_TOKEN: ${{ secrets.NATIVE_ARTIFACTS_TOKEN }}
           NATIVE_VERSION: ${{ needs.prepare.outputs.version }}
         shell: bash
         run: |
           set -euo pipefail
 
-          find artifacts -type f -print0 | while IFS= read -r -d '' file; do
-            name="$(basename "$file")"
-            key="native/$PACKAGE/$NATIVE_VERSION/$name"
-            echo "Uploading $key"
-            aws s3api put-object \
-              --bucket "$STORAGE_BUCKET" \
-              --key "$key" \
-              --body "$file" \
-              --endpoint-url "$S3_ENDPOINT_URL" \
-              --acl public-read \
-              --cache-control "public, max-age=31536000, immutable" \
-              --cli-connect-timeout 30 \
-              --cli-read-timeout 120 \
-              >/dev/null
-          done
+          if [[ -z "${GH_TOKEN:-}" ]]; then
+            echo "::error::Add NATIVE_ARTIFACTS_TOKEN as an Actions secret. It needs Contents: write access to $ARTIFACT_REPOSITORY."
+            exit 1
+          fi
+
+          target_sha="$(
+            gh api "repos/$ARTIFACT_REPOSITORY/commits?per_page=1" \
+              --jq '.[0].sha' 2>/dev/null || true
+          )"
+          if [[ -z "$target_sha" ]]; then
+            echo "::error::$ARTIFACT_REPOSITORY has no commit. Initialize its default branch before publishing the first release."
+            exit 1
+          fi
+
+          tag="${PACKAGE}-native-v${NATIVE_VERSION}"
+          if ! gh release view "$tag" --repo "$ARTIFACT_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$tag" \
+              --repo "$ARTIFACT_REPOSITORY" \
+              --target "$target_sha" \
+              --title "$tag" \
+              --notes "Precompiled native assets for $PACKAGE native version $NATIVE_VERSION."
+          fi
+
+          gh release upload "$tag" artifacts/* \
+            --repo "$ARTIFACT_REPOSITORY" \
+            --clobber
