@@ -1,6 +1,6 @@
 name: hippobase_auth_models
 description: Shared Hippobase Better Auth table models and JSON schemas.
-version: 0.1.8
+version: 0.1.9
 homepage: https://hippolabs.org
 publish_to: "https://pub.hippolabs.org"
 resolution: workspace
@@ -19,7 +19,7 @@ dependencies:
 dev_dependencies:
   dart_edge_sql:
     hosted: "https://registry.hippolabs.org/pub/internal-pub/"
-    version: 0.3.33
+    version: ^0.3.34
   dart_edge_sql_codegen:
     hosted: "https://registry.hippolabs.org/pub/internal-pub/"
     version: ^0.3.42
