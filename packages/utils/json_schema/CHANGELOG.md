@@ -1,3 +1,8 @@
+## Unreleased
+
+- Add an immutable RFC 6901 `JsonPointer`, decoded JSON lookup helpers, and a
+  reusable JSON Schema contract.
+
 ## 0.1.2
 
 - Add typed JSON Schema `default` annotations for strings, integers, numbers,
