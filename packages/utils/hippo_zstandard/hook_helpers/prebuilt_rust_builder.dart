@@ -21,7 +21,14 @@ final class HippoZstandardPrebuiltRustBuilder {
   final String releaseBaseUrl;
 
   Future<void> run({required BuildInput input, required BuildOutputBuilder output}) async {
-    if (Platform.environment['HIPPO_ZSTANDARD_BUILD_RUST_FROM_SOURCE'] == '1') {
+    final buildFromSource = input.userDefines['build_from_source'];
+    if (buildFromSource is! bool?) {
+      throw const FormatException(
+        'hooks.user_defines.hippo_zstandard.build_from_source must be a '
+        'boolean or omitted.',
+      );
+    }
+    if (buildFromSource == true) {
       await RustBuilder(
         assetName: assetName,
         cratePath: cratePath,
@@ -35,8 +42,8 @@ final class HippoZstandardPrebuiltRustBuilder {
       throw UnsupportedError(
         'hippo_zstandard has no prebuilt binary for '
         '${codeConfig.targetOS.name}-${codeConfig.targetArchitecture.name}. '
-        'Set HIPPO_ZSTANDARD_BUILD_RUST_FROM_SOURCE=1 only when developing '
-        'the package with a local Rust toolchain.',
+        'Package developers can set '
+        'hooks.user_defines.hippo_zstandard.build_from_source to true.',
       );
     }
 
@@ -54,7 +61,9 @@ final class HippoZstandardPrebuiltRustBuilder {
         .libraryFileName('hippo_zstandard_native', linkMode)
         .replaceAll('-', '_');
     final artifactName = '${input.packageName}-$nativeVersion-${target.name}-$libraryName';
-    final cacheDirectory = Directory('${_cacheRoot()}/${input.packageName}/$nativeVersion');
+    final cacheDirectory = Directory(
+      '${_cacheRoot(input)}/${input.packageName}/$nativeVersion',
+    );
     final cachedArtifact = File('${cacheDirectory.path}/$artifactName');
     final cachedChecksum = File('${cachedArtifact.path}.sha256');
 
@@ -62,6 +71,7 @@ final class HippoZstandardPrebuiltRustBuilder {
       await _deleteIfExists(cachedArtifact);
       await _deleteIfExists(cachedChecksum);
       await _download(
+        input: input,
         nativeVersion: nativeVersion,
         artifactName: artifactName,
         artifact: cachedArtifact,
@@ -89,12 +99,13 @@ final class HippoZstandardPrebuiltRustBuilder {
   }
 
   Future<void> _download({
+    required BuildInput input,
     required String nativeVersion,
     required String artifactName,
     required File artifact,
     required File checksum,
   }) async {
-    final baseUrl = _baseUrl(nativeVersion);
+    final baseUrl = _baseUrl(input, nativeVersion);
     final artifactUri = Uri.parse('$baseUrl/$artifactName');
     final checksumUri = Uri.parse('$baseUrl/$artifactName.sha256');
     final temporaryDirectory = Directory(
@@ -123,8 +134,9 @@ final class HippoZstandardPrebuiltRustBuilder {
         'Could not obtain the prebuilt hippo_zstandard native asset from '
         '$artifactUri. Consumers do not need Rust; ensure the matching native '
         'artifact workflow completed before publishing the Dart package. '
-        'Package developers can explicitly opt into a source build with '
-        'HIPPO_ZSTANDARD_BUILD_RUST_FROM_SOURCE=1. Cause: $error',
+        'Package developers can explicitly set '
+        'hooks.user_defines.hippo_zstandard.build_from_source to true. '
+        'Cause: $error',
       );
     } finally {
       await _deleteIfExists(temporaryDirectory, recursive: true);
@@ -175,18 +187,24 @@ final class HippoZstandardPrebuiltRustBuilder {
     return match.group(1)!;
   }
 
-  String _baseUrl(String nativeVersion) {
-    final override = Platform.environment['HIPPO_ZSTANDARD_PREBUILT_BASE_URL'];
+  String _baseUrl(BuildInput input, String nativeVersion) {
+    final override = input.userDefines['prebuilt_base_url'];
+    if (override is! String?) {
+      throw const FormatException(
+        'hooks.user_defines.hippo_zstandard.prebuilt_base_url must be a '
+        'string or omitted.',
+      );
+    }
     if (override != null && override.isNotEmpty) {
       return override.replaceFirst(RegExp(r'/$'), '');
     }
     return '$releaseBaseUrl/$nativeVersion';
   }
 
-  String _cacheRoot() {
-    final override = Platform.environment['HIPPO_ZSTANDARD_NATIVE_CACHE'];
-    if (override != null && override.isNotEmpty) {
-      return override;
+  String _cacheRoot(BuildInput input) {
+    final override = input.userDefines.path('native_cache');
+    if (override != null) {
+      return Directory.fromUri(override).path;
     }
 
     final pubCache = Platform.environment['PUB_CACHE'];

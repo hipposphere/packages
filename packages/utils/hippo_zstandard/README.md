@@ -33,9 +33,19 @@ version pinned in `native/rust-toolchain.toml` and publishes them under the Rust
 crate version from `native/Cargo.toml`. Native source or ABI changes must bump
 that crate version before the package is released.
 
-Package developers can explicitly build from source by setting
-`HIPPO_ZSTANDARD_BUILD_RUST_FROM_SOURCE=1`. That is the only mode requiring
-`rustup`.
+Package developers can explicitly build from source with a hook user-define in
+the consuming workspace root. That is the only mode requiring `rustup`:
+
+```yaml
+hooks:
+  user_defines:
+    hippo_zstandard:
+      build_from_source: true
+```
+
+For local artifact testing, the same block accepts `prebuilt_base_url` and a
+relative `native_cache` path. Hook configuration uses user-defines because Dart
+hooks intentionally filter arbitrary environment variables.
 
 The checked-in web module can be rebuilt with:
 
