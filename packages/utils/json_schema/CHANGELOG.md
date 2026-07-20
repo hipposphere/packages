@@ -1,4 +1,4 @@
-## Unreleased
+## 0.1.4
 
 - Add an immutable RFC 6901 `JsonPointer`, decoded JSON lookup helpers, and a
   reusable JSON Schema contract.
