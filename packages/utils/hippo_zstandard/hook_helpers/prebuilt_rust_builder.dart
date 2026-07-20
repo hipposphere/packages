@@ -61,9 +61,7 @@ final class HippoZstandardPrebuiltRustBuilder {
         .libraryFileName('hippo_zstandard_native', linkMode)
         .replaceAll('-', '_');
     final artifactName = '${input.packageName}-$nativeVersion-${target.name}-$libraryName';
-    final cacheDirectory = Directory(
-      '${_cacheRoot(input)}/${input.packageName}/$nativeVersion',
-    );
+    final cacheDirectory = Directory('${_cacheRoot(input)}/${input.packageName}/$nativeVersion');
     final cachedArtifact = File('${cacheDirectory.path}/$artifactName');
     final cachedChecksum = File('${cachedArtifact.path}.sha256');
 

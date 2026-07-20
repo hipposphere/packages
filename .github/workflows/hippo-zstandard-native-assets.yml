@@ -38,6 +38,31 @@ jobs:
       missing_count: ${{ steps.plan.outputs.missing_count }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Require a native version bump for native changes
+        if: ${{ github.event_name == 'push' && github.event.before != '0000000000000000000000000000000000000000' }}
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          manifest="$PACKAGE_DIRECTORY/native/Cargo.toml"
+          if ! git cat-file -e "$BEFORE_SHA:$manifest" 2>/dev/null; then
+            exit 0
+          fi
+
+          if ! git diff --quiet "$BEFORE_SHA" "$GITHUB_SHA" -- \
+              "$PACKAGE_DIRECTORY/native" \
+              "$PACKAGE_DIRECTORY/tool/build_web.dart"; then
+            previous_version="$(git show "$BEFORE_SHA:$manifest" | sed -nE 's/^version[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' | head -n 1)"
+            current_version="$(sed -nE 's/^version[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' "$manifest" | head -n 1)"
+            if [[ "$previous_version" == "$current_version" ]]; then
+              echo "::error::Native inputs changed without bumping native/Cargo.toml from $current_version."
+              exit 1
+            fi
+          fi
 
       - name: Resolve native artifact matrix
         id: plan
