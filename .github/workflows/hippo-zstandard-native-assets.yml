@@ -1,15 +1,7 @@
 name: hippo_zstandard native assets
 
 on:
-  workflow_call:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/hippo-zstandard-native-assets.yml"
-      - "packages/utils/hippo_zstandard/native/**"
-      - "packages/utils/hippo_zstandard/tool/build_web.dart"
 
 concurrency:
   group: hippo-zstandard-native-${{ github.ref }}
