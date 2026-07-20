@@ -11,50 +11,12 @@ on:
 env:
   FLUTTER_VERSION: 3.44.2
 
-permissions:
-  contents: read
-
 jobs:
-  native_assets:
-    if: ${{ github.event.inputs.package == '' || github.event.inputs.package == 'hippo_zstandard' }}
-    uses: ./.github/workflows/hippo-zstandard-native-assets.yml
-    secrets: inherit
-
   release:
-    needs: native_assets
-    if: ${{ always() && (needs.native_assets.result == 'success' || needs.native_assets.result == 'skipped') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Use precompiled hippo_zstandard WebAssembly
-        if: ${{ github.event.inputs.package == '' || github.event.inputs.package == 'hippo_zstandard' }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          package_directory="packages/utils/hippo_zstandard"
-          version="$(sed -nE 's/^version[[:space:]]*=[[:space:]]*"([^"]+)".*/\1/p' "$package_directory/native/Cargo.toml" | head -n 1)"
-          artifact="hippo_zstandard-$version-web-wasm-hippo_zstandard_native.wasm"
-          base_url="https://storage.hippolabs.org/native/hippo_zstandard/$version"
-          temporary_artifact="$RUNNER_TEMP/$artifact"
-          temporary_checksum="$temporary_artifact.sha256"
-
-          curl --fail --silent --show-error --location \
-            "$base_url/$artifact" \
-            --output "$temporary_artifact"
-          curl --fail --silent --show-error --location \
-            "$base_url/$artifact.sha256" \
-            --output "$temporary_checksum"
-
-          expected="$(cut -d ' ' -f 1 "$temporary_checksum")"
-          actual="$(sha256sum "$temporary_artifact" | cut -d ' ' -f 1)"
-          if [[ "$expected" != "$actual" ]]; then
-            echo "::error::hippo_zstandard WebAssembly checksum mismatch."
-            exit 1
-          fi
-
-          cp "$temporary_artifact" "$package_directory/web/hippo_zstandard.wasm"
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
