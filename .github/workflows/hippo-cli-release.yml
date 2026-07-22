@@ -16,11 +16,7 @@ permissions:
 
 env:
   FLUTTER_VERSION: 3.44.2
-  S3_ENDPOINT_URL: https://storage.hippolabs.org
-  STORAGE_BUCKET: artifacts
-  AWS_ACCESS_KEY_ID: ${{ secrets.STORAGE_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.STORAGE_SECRET_ACCESS_KEY }}
-  AWS_DEFAULT_REGION: auto
+  NATIVE_ARTIFACTS_REPOSITORY: hipposphere/native-artifacts
 
 jobs:
   prepare:
@@ -169,112 +165,50 @@ jobs:
           if-no-files-found: error
 
   publish:
-    name: Publish to storage.hippolabs.org
+    name: Publish to native-artifacts
     needs:
       - prepare
       - build
     runs-on: ubuntu-latest
     environment: cli-artifacts
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
       - name: Download workflow artifacts
         uses: actions/download-artifact@v4
         with:
           path: dist/artifacts
           merge-multiple: true
 
-      - name: Install AWS CLI
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 -m pip install --user awscli
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-
-      - name: Generate latest metadata
+      - name: Publish GitHub Release assets
         env:
+          GH_TOKEN: ${{ secrets.NATIVE_ARTIFACTS_TOKEN }}
           VERSION: ${{ needs.prepare.outputs.version }}
-          TARGETS: ${{ needs.prepare.outputs.targets }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          cp tool/install-hippo-cli.sh dist/artifacts/install-hippo-cli.sh
-          printf '%s\n' "$VERSION" > dist/artifacts/hippo-cli-latest.txt
-          jq -n \
-            --arg version "$VERSION" \
-            --arg baseUrl "https://storage.hippolabs.org" \
-            --argjson targets "$TARGETS" \
-            '{
-              version: $version,
-              baseUrl: $baseUrl,
-              artifacts: ($targets | map({
-                os,
-                arch,
-                archive,
-                url: ($baseUrl + "/" + .archive),
-                checksumUrl: ($baseUrl + "/" + .archive + ".sha256")
-              }))
-            }' > dist/artifacts/hippo-cli-latest.json
-
-      - name: Publish versioned artifacts
         shell: bash
         run: |
           set -euo pipefail
 
-          put_artifact() {
-            local file="$1"
-            local key="$2"
-            echo "Uploading $key"
-            aws s3api put-object \
-              --bucket "$STORAGE_BUCKET" \
-              --key "$key" \
-              --body "$file" \
-              --endpoint-url "$S3_ENDPOINT_URL" \
-              --acl public-read \
-              --cache-control "public, max-age=31536000, immutable" \
-              --cli-connect-timeout 30 \
-              --cli-read-timeout 120 \
-              >/dev/null
-          }
+          if [[ -z "${GH_TOKEN:-}" ]]; then
+            echo "::error::Set NATIVE_ARTIFACTS_TOKEN with contents:write access to $NATIVE_ARTIFACTS_REPOSITORY."
+            exit 1
+          fi
 
-          find dist/artifacts -type f \
-            ! -name 'hippo-cli-latest.*' \
-            ! -name 'install-hippo-cli.sh' \
-            -print0 | while IFS= read -r -d '' file; do
-              put_artifact "$file" "$(basename "$file")"
-            done
+          tag="hippo_cli-native-v$VERSION"
+          if ! gh release view "$tag" --repo "$NATIVE_ARTIFACTS_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$tag" \
+              --repo "$NATIVE_ARTIFACTS_REPOSITORY" \
+              --title "$tag" \
+              --notes "Hippo CLI $VERSION native release assets."
+          fi
 
-      - name: Publish latest metadata
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          put_artifact() {
-            local file="$1"
-            local key="$2"
-            echo "Uploading $key"
-            aws s3api put-object \
-              --bucket "$STORAGE_BUCKET" \
-              --key "$key" \
-              --body "$file" \
-              --endpoint-url "$S3_ENDPOINT_URL" \
-              --acl public-read \
-              --cache-control "public, max-age=300" \
-              --cli-connect-timeout 30 \
-              --cli-read-timeout 120 \
-              >/dev/null
-          }
-
-          put_artifact dist/artifacts/hippo-cli-latest.txt hippo-cli-latest.txt
-          put_artifact dist/artifacts/hippo-cli-latest.json hippo-cli-latest.json
-          put_artifact dist/artifacts/install-hippo-cli.sh install-hippo-cli.sh
+          gh release upload "$tag" dist/artifacts/* \
+            --repo "$NATIVE_ARTIFACTS_REPOSITORY" \
+            --clobber
 
       - name: Print public URLs
         shell: bash
         run: |
           set -euo pipefail
+          tag="hippo_cli-native-v${{ needs.prepare.outputs.version }}"
           find dist/artifacts -type f | sort | while read -r file; do
             name="$(basename "$file")"
-            echo "https://storage.hippolabs.org/$name"
+            echo "https://github.com/$NATIVE_ARTIFACTS_REPOSITORY/releases/download/$tag/$name"
           done

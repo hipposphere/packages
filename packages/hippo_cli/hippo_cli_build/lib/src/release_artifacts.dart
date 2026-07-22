@@ -1,6 +1,8 @@
 import 'package:hippo_cli_core/hippo_cli_core.dart';
 
-const hippoCliArtifactBaseUrl = 'https://storage.hippolabs.org';
+const hippoCliArtifactRepository = 'hipposphere/native-artifacts';
+const hippoCliArtifactReleaseBaseUrl =
+    'https://github.com/$hippoCliArtifactRepository/releases/download';
 
 final class HippoCliReleaseTarget {
   const HippoCliReleaseTarget({
@@ -19,17 +21,20 @@ final class HippoCliReleaseTarget {
     return 'hippo-cli-$version-$os-$arch.$archiveExtension';
   }
 
-  Uri publicUri(String version, {String baseUrl = hippoCliArtifactBaseUrl}) {
-    return Uri.parse('${baseUrl.replaceAll(RegExp(r'/+$'), '')}/${archiveName(version)}');
+  Uri publicUri(String version, {String baseUrl = hippoCliArtifactReleaseBaseUrl}) {
+    final normalizedBaseUrl = baseUrl.replaceAll(RegExp(r'/+$'), '');
+    return Uri.parse('$normalizedBaseUrl/${hippoCliReleaseTag(version)}/${archiveName(version)}');
   }
 
-  Map<String, String> toMap(String version, {String baseUrl = hippoCliArtifactBaseUrl}) => {
+  Map<String, String> toMap(String version, {String baseUrl = hippoCliArtifactReleaseBaseUrl}) => {
     'os': os,
     'arch': arch,
     'archive': archiveName(version),
     'url': publicUri(version, baseUrl: baseUrl).toString(),
   };
 }
+
+String hippoCliReleaseTag(String version) => 'hippo_cli-native-v$version';
 
 const hippoCliReleaseTargets = <HippoCliReleaseTarget>[
   HippoCliReleaseTarget(

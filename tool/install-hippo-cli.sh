@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -eu
 
-BASE_URL="${HIPPO_CLI_BASE_URL:-https://storage.hippolabs.org}"
+RELEASE_REPOSITORY="${HIPPO_CLI_RELEASE_REPOSITORY:-hipposphere/native-artifacts}"
 INSTALL_DIR="${HIPPO_CLI_INSTALL_DIR:-$HOME/.local/bin}"
 VERSION="${HIPPO_CLI_VERSION:-}"
 
@@ -15,7 +15,9 @@ Usage:
 Environment:
   HIPPO_CLI_VERSION      Install a specific version instead of latest.
   HIPPO_CLI_INSTALL_DIR  Install directory. Defaults to ~/.local/bin.
-  HIPPO_CLI_BASE_URL     Artifact base URL. Defaults to storage.hippolabs.org.
+  HIPPO_CLI_RELEASE_REPOSITORY
+                        GitHub repository containing release assets.
+                        Defaults to hipposphere/native-artifacts.
 USAGE
 }
 
@@ -67,6 +69,12 @@ download() {
     echo "Required command not found: curl or wget" >&2
     exit 1
   fi
+}
+
+latest_version() {
+  releases_file="$1"
+  download "https://api.github.com/repos/$RELEASE_REPOSITORY/releases?per_page=100" "$releases_file"
+  sed -nE 's/.*"tag_name"[[:space:]]*:[[:space:]]*"hippo_cli-native-v([^"]+)".*/\1/p' "$releases_file" | head -n 1
 }
 
 sha256_file() {
@@ -130,8 +138,7 @@ esac
 
 if [ -z "$VERSION" ]; then
   latest_file="$(mktemp)"
-  download "$BASE_URL/hippo-cli-latest.txt" "$latest_file"
-  VERSION="$(tr -d '[:space:]' < "$latest_file")"
+  VERSION="$(latest_version "$latest_file")"
   rm -f "$latest_file"
 fi
 
@@ -141,7 +148,8 @@ if [ -z "$VERSION" ]; then
 fi
 
 archive="hippo-cli-$VERSION-$target_os-$arch.$archive_ext"
-archive_url="$BASE_URL/$archive"
+release_tag="hippo_cli-native-v$VERSION"
+archive_url="https://github.com/$RELEASE_REPOSITORY/releases/download/$release_tag/$archive"
 checksum_url="$archive_url.sha256"
 work_dir="$(mktemp -d)"
 

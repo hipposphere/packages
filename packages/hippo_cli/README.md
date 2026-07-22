@@ -26,11 +26,12 @@ SDK.
 
 ### Native Installer
 
-Recommended installation should download the latest release asset for the host
-platform from `https://storage.hippolabs.org/` and place it on `PATH`.
+Recommended installation downloads the latest release asset for the host
+platform from the `hipposphere/native-artifacts` GitHub Releases repository
+and places it on `PATH`.
 
 ```sh
-curl -fsSL https://storage.hippolabs.org/install-hippo-cli.sh | sh
+curl -fsSL https://raw.githubusercontent.com/hipposphere/packages/main/tool/install-hippo-cli.sh | sh
 ```
 
 Windows:
@@ -44,8 +45,9 @@ The installer should:
 - Detect OS and architecture.
 - Download the matching signed release asset.
 - Verify checksum.
-- Install to `~/.hippo/bin/hippo` or `%USERPROFILE%\.hippo\bin\hippo.exe`.
-- Add the directory to the shell profile when possible.
+- Install to `~/.local/bin/hippo` by default, or an explicitly supplied
+  installation directory.
+- Tell the user to add the directory to `PATH` when needed.
 - Print the installed version and next command.
 
 ### Package Managers
@@ -67,14 +69,15 @@ native binary.
 
 ## Release Artifacts
 
-Every Hippo CLI release should upload public artifacts to
-`https://storage.hippolabs.org/`:
+Every Hippo CLI release should upload public artifacts to the
+`hipposphere/native-artifacts` GitHub Release tagged
+`hippo_cli-native-v<version>`:
 
 ```text
-https://storage.hippolabs.org/hippo-cli-<version>-linux-x64.tar.gz
-https://storage.hippolabs.org/hippo-cli-<version>-linux-arm64.tar.gz
-https://storage.hippolabs.org/hippo-cli-<version>-macos-arm64.tar.gz
-https://storage.hippolabs.org/hippo-cli-<version>-windows-x64.zip
+https://github.com/hipposphere/native-artifacts/releases/download/hippo_cli-native-v<version>/hippo-cli-<version>-linux-x64.tar.gz
+https://github.com/hipposphere/native-artifacts/releases/download/hippo_cli-native-v<version>/hippo-cli-<version>-linux-arm64.tar.gz
+https://github.com/hipposphere/native-artifacts/releases/download/hippo_cli-native-v<version>/hippo-cli-<version>-macos-arm64.tar.gz
+https://github.com/hipposphere/native-artifacts/releases/download/hippo_cli-native-v<version>/hippo-cli-<version>-windows-x64.zip
 ```
 
 Each archive should also have a sibling checksum file at the same public path
@@ -99,19 +102,11 @@ completions/
   _hippo
 ```
 
-The release workflow should compile with `dart compile exe`, test the produced
-binary with `hippo self version`, generate shell completions, sign or notarize
-where needed, publish checksums, and upload everything under the public
-`storage.hippolabs.org/hippo-cli-...` path.
-
-The release workflow also publishes the install script and latest-version
-metadata:
-
-```text
-https://storage.hippolabs.org/install-hippo-cli.sh
-https://storage.hippolabs.org/hippo-cli-latest.txt
-https://storage.hippolabs.org/hippo-cli-latest.json
-```
+The release workflow compiles with `dart compile exe`, tests the produced
+binary with `hippo self version`, generates checksums, and publishes every
+archive and checksum as GitHub Release assets. The installer discovers the
+most recent `hippo_cli-native-v*` release through the GitHub API; the installer
+script itself is served from this repository's default branch.
 
 ## Command Shape
 
@@ -506,7 +501,7 @@ Release pipeline:
 5. Archive per platform.
 6. Generate checksums.
 7. Sign checksums.
-8. Upload artifacts to `storage.hippolabs.org`.
+8. Upload artifacts to the `hipposphere/native-artifacts` GitHub Release.
 9. Print the public download URLs.
 10. Publish Homebrew/Scoop/WinGet metadata.
 
