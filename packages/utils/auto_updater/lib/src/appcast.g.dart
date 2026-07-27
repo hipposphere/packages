@@ -20,7 +20,7 @@ AppcastItem _$AppcastItemFromJson(Map<String, dynamic> json) => AppcastItem(
   versionString: json['versionString'] as String?,
   displayVersionString: json['displayVersionString'] as String?,
   fileURL: json['fileURL'] as String?,
-  contentLength: json['contentLength'] as int?,
+  contentLength: (json['contentLength'] as num?)?.toInt(),
   infoURL: json['infoURL'] as String?,
   title: json['title'] as String?,
   dateString: json['dateString'] as String?,
@@ -33,6 +33,10 @@ AppcastItem _$AppcastItemFromJson(Map<String, dynamic> json) => AppcastItem(
   maximumSystemVersion: json['maximumSystemVersion'] as String?,
   maximumOperatingSystemVersionIsOK: json['maximumOperatingSystemVersionIsOK'] as bool?,
   channel: json['channel'] as String?,
+  operatingSystem: json['operatingSystem'] as String?,
+  architecture: json['architecture'] as String?,
+  contentType: json['contentType'] as String?,
+  edSignature: json['edSignature'] as String?,
 );
 
 Map<String, dynamic> _$AppcastItemToJson(AppcastItem instance) => <String, dynamic>{
@@ -52,4 +56,8 @@ Map<String, dynamic> _$AppcastItemToJson(AppcastItem instance) => <String, dynam
   'maximumSystemVersion': instance.maximumSystemVersion,
   'maximumOperatingSystemVersionIsOK': instance.maximumOperatingSystemVersionIsOK,
   'channel': instance.channel,
+  'operatingSystem': instance.operatingSystem,
+  'architecture': instance.architecture,
+  'contentType': instance.contentType,
+  'edSignature': instance.edSignature,
 };

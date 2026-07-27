@@ -9,7 +9,9 @@
 */
 import 'package:flutter/widgets.dart';
 
-import '../common/limited_container.dart';
+import '../layout/box_as_sliver.dart';
+import '../layout/content_lane.dart';
+import '../layout/content_layout.dart';
 
 class SliverChild extends StatelessWidget {
   final EdgeInsets padding;
@@ -27,10 +29,9 @@ class SliverChild extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: LimitedContainerPadded(
-        padding: padding,
-        maxWidth: maxWidth,
+    return ContentLane.sliver(
+      layout: ContentLayout(maxWidth: maxWidth, gutters: padding),
+      sliver: BoxAsSliver(
         child: Column(
           crossAxisAlignment: crossAxisAlignment,
           children: [

@@ -35,7 +35,7 @@ dev_dependencies:
     version: ^0.3.21
   dart_edge_sql:
     hosted: "https://registry.hippolabs.org/pub/internal-pub/"
-    version: ^0.3.34
+    version: ^0.3.35
   dart_edge_sql_migrator:
     hosted: "https://registry.hippolabs.org/pub/internal-pub/"
     version: ^0.3.19

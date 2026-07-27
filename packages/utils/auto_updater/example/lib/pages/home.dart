@@ -12,7 +12,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with UpdaterListener {
-  final String _feedURL = 'http://localhost:5002/appcast.xml';
+  final String _feedURL = const String.fromEnvironment(
+    'AUTO_UPDATER_FEED_URL',
+    defaultValue: 'http://localhost:5002/appcast.xml',
+  );
 
   bool _isFeedURLSetted = false;
 
@@ -29,7 +32,10 @@ class _HomePageState extends State<HomePage> with UpdaterListener {
   }
 
   Future<void> _handleClickSetFeedURL() async {
-    await autoUpdater.setFeedURL(_feedURL);
+    await autoUpdater.setFeedURL(
+      _feedURL,
+      ed25519PublicKey: const String.fromEnvironment('AUTO_UPDATER_ED_PUBLIC_KEY'),
+    );
     _isFeedURLSetted = true;
   }
 

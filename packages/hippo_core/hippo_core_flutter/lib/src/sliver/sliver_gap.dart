@@ -9,7 +9,7 @@
 */
 import 'package:flutter/widgets.dart';
 
-import '../common/gap.dart';
+import '../layout/sliver_sequence.dart';
 
 class SliverGap extends StatelessWidget {
   final double gap;
@@ -18,6 +18,6 @@ class SliverGap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverToBoxAdapter(child: Gap(gap));
+    return SliverSpace(gap);
   }
 }

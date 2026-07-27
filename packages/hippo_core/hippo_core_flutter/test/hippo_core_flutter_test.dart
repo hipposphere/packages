@@ -74,6 +74,68 @@ void main() {
     expect(find.text('limited child'), findsOneWidget);
   });
 
+  testWidgets('ContentLane applies the same width policy to box and sliver content', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1000, 500));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    const layout = ContentLayout(maxWidth: 600, gutters: EdgeInsets.symmetric(horizontal: 20));
+    const boxKey = Key('box-content');
+    const sliverKey = Key('sliver-content');
+
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: Column(
+          children: [
+            ContentLane.box(
+              layout: layout,
+              child: SizedBox(key: boxKey, height: 20),
+            ),
+            Expanded(
+              child: CustomScrollView(
+                slivers: [
+                  ContentLane.sliver(
+                    layout: layout,
+                    sliver: BoxAsSliver(child: SizedBox(key: sliverKey, height: 20)),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    expect(tester.getSize(find.byKey(boxKey)).width, 600);
+    expect(tester.getSize(find.byKey(sliverKey)).width, 600);
+  });
+
+  testWidgets('SliverSequence preserves slivers and inserts main-axis spacing', (tester) async {
+    const firstKey = Key('first-sliver');
+    const secondKey = Key('second-sliver');
+
+    await tester.pumpWidget(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: CustomScrollView(
+          slivers: [
+            SliverSequence(
+              spacing: 12,
+              slivers: [
+                BoxAsSliver(child: SizedBox(key: firstKey, height: 10)),
+                BoxAsSliver(child: SizedBox(key: secondKey, height: 10)),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+
+    expect(tester.getTopLeft(find.byKey(secondKey)).dy, 22);
+  });
+
   test('MockKeyValueStore stores and removes values', () async {
     final store = MockKeyValueStore();
 

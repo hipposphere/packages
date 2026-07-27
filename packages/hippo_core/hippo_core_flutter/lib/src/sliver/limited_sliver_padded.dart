@@ -7,9 +7,10 @@
 // SPDX-License-Identifier: LicenseRef-Hipposphere-Proprietary
 // ---------------------------------------------------------------------------
 */
-import 'dart:math' as math;
-
 import 'package:flutter/widgets.dart';
+
+import '../layout/content_lane.dart';
+import '../layout/content_layout.dart';
 
 class LimitedSliverPadded extends StatelessWidget {
   final Widget sliver;
@@ -25,22 +26,9 @@ class LimitedSliverPadded extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverLayoutBuilder(
-      builder: (context, constraints) {
-        final crossAxisPadding = padding.left + padding.right;
-        final availableWidth = math.max(0, constraints.crossAxisExtent - crossAxisPadding);
-        final extraPadding = math.max(0, (availableWidth - maxWidth) / 2);
-
-        return SliverPadding(
-          padding: EdgeInsets.only(
-            left: padding.left + extraPadding,
-            top: padding.top,
-            right: padding.right + extraPadding,
-            bottom: padding.bottom,
-          ),
-          sliver: sliver,
-        );
-      },
+    return ContentLane.sliver(
+      layout: ContentLayout(maxWidth: maxWidth, gutters: padding),
+      sliver: sliver,
     );
   }
 }

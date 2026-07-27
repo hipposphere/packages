@@ -1,3 +1,7 @@
+## 1.1.0
+
+* Add optional Ed25519 public-key configuration for Linux updates.
+
 ## 1.0.1
 
 * chore: Require Dart `>=3.11.0` and Flutter `>=3.41.0`.

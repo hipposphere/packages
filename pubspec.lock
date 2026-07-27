@@ -293,10 +293,10 @@ packages:
     dependency: transitive
     description:
       name: dart_edge_http_server_codegen
-      sha256: "55709320149ca00dc3f32d970fd4711f4b7a238bb4d65a8d26472b523854c236"
+      sha256: a2c92d6acd7aa6f1eb027c5c644c30c813c5573d6e5635f8bcc2e0767a92cdf3
       url: "https://registry.hippolabs.org/pub/internal-pub/"
     source: hosted
-    version: "0.3.39"
+    version: "0.3.40"
   dart_edge_http_server_runtime:
     dependency: transitive
     description:
@@ -341,10 +341,10 @@ packages:
     dependency: transitive
     description:
       name: dart_edge_sql
-      sha256: "5a9fc40eadce47e33d05dba74da9ea67010d9c96ed3e277466f9052055b20505"
+      sha256: ded32b3d90a84419e2f4706e629c31ad17c232761594c6e9ba12ded381261186
       url: "https://registry.hippolabs.org/pub/internal-pub/"
     source: hosted
-    version: "0.3.34"
+    version: "0.3.35"
   dart_edge_sql_codegen:
     dependency: transitive
     description:

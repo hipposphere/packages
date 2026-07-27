@@ -35,6 +35,10 @@ class AppcastItem {
     this.maximumSystemVersion,
     this.maximumOperatingSystemVersionIsOK,
     this.channel,
+    this.operatingSystem,
+    this.architecture,
+    this.contentType,
+    this.edSignature,
   });
 
   factory AppcastItem.fromJson(Map<String, dynamic> json) => _$AppcastItemFromJson(json);
@@ -55,6 +59,10 @@ class AppcastItem {
   final String? maximumSystemVersion;
   final bool? maximumOperatingSystemVersionIsOK;
   final String? channel;
+  final String? operatingSystem;
+  final String? architecture;
+  final String? contentType;
+  final String? edSignature;
 
   Map<String, dynamic> toJson() => _$AppcastItemToJson(this);
 }

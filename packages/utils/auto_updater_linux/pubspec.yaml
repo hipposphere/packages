@@ -1,0 +1,33 @@
+name: auto_updater_linux
+description: Linux AppImage implementation of the auto_updater plugin.
+version: 1.0.0
+homepage: https://hippolabs.org
+publish_to: "https://pub.hippolabs.org"
+resolution: workspace
+
+environment:
+  sdk: ">=3.12.0 <4.0.0"
+  flutter: ">=3.44.0"
+
+dependencies:
+  auto_updater_platform_interface:
+    hosted: https://pub.hippolabs.org
+    version: ^1.1.0
+  cryptography: ^2.7.0
+  flutter:
+    sdk: flutter
+  path: ^1.9.0
+  xml: ^7.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lints: ^6.1.0
+
+flutter:
+  plugin:
+    implements: auto_updater
+    platforms:
+      linux:
+        dartPluginClass: AutoUpdaterLinux
+        pluginClass: AutoUpdaterLinuxPlugin

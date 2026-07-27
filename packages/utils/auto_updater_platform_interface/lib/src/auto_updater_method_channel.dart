@@ -18,8 +18,11 @@ class MethodChannelAutoUpdater extends AutoUpdaterPlatform {
   }
 
   @override
-  Future<void> setFeedURL(String feedUrl) async {
-    final Map<String, dynamic> arguments = {'feedURL': feedUrl};
+  Future<void> setFeedURL(String feedUrl, {String? ed25519PublicKey}) async {
+    final Map<String, dynamic> arguments = {
+      'feedURL': feedUrl,
+      'ed25519PublicKey': ?ed25519PublicKey,
+    };
     await methodChannel.invokeMethod('setFeedURL', arguments);
   }
 

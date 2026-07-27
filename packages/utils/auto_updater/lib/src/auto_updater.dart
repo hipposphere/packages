@@ -74,9 +74,12 @@ class AutoUpdater {
     _listeners.remove(listener);
   }
 
-  /// Sets the url and initialize the auto updater.
-  Future<void> setFeedURL(String feedUrl) {
-    return _platform.setFeedURL(feedUrl);
+  /// Sets the feed URL and initializes the auto updater.
+  ///
+  /// Linux requires the base64-encoded Sparkle Ed25519 [ed25519PublicKey].
+  /// Native Sparkle implementations ignore this argument.
+  Future<void> setFeedURL(String feedUrl, {String? ed25519PublicKey}) {
+    return _platform.setFeedURL(feedUrl, ed25519PublicKey: ed25519PublicKey);
   }
 
   /// Asks the server whether there is an update. You must call setFeedURL before using this API.

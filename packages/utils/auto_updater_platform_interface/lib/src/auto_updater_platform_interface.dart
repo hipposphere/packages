@@ -26,8 +26,8 @@ abstract class AutoUpdaterPlatform extends PlatformInterface {
     throw UnimplementedError('sparkleEvents getter has not been implemented.');
   }
 
-  /// Sets the url and initialize the auto updater.
-  Future<void> setFeedURL(String feedUrl) async {
+  /// Sets the feed URL and initializes the auto updater.
+  Future<void> setFeedURL(String feedUrl, {String? ed25519PublicKey}) async {
     throw UnimplementedError('setFeedURL() has not been implemented.');
   }
 

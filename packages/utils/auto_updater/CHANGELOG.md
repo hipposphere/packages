@@ -1,3 +1,10 @@
+## 1.1.0
+
+* feat(linux): Add signed AppImage updates for x86_64 and ARM64.
+* feat: Allow an Ed25519 public key when configuring the feed.
+* feat: Sign AppImages with Sparkle-compatible Ed25519 keys on Linux.
+* chore: Require Flutter `>=3.44.0`.
+
 ## 1.0.1
 
 * feat(macos): Add Swift Package Manager support for Sparkle.

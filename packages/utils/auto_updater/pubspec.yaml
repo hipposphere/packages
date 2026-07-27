@@ -1,11 +1,12 @@
 name: auto_updater
-description: This plugin allows Flutter desktop apps to automatically update themselves (based on sparkle and winsparkle).
-version: 1.0.2
+description: Automatic updates for Flutter desktop apps using Sparkle, WinSparkle, and signed Linux AppImages.
+version: 1.1.0
 homepage: https://hippolabs.org
 publish_to: "https://pub.hippolabs.org"
 resolution: workspace
 
 platforms:
+  linux:
   macos:
   windows:
 
@@ -14,9 +15,12 @@ topics:
 
 environment:
   sdk: ">=3.12.0 <4.0.0"
-  flutter: ">=3.41.0"
+  flutter: ">=3.44.0"
 
 dependencies:
+  auto_updater_linux:
+    hosted: https://pub.hippolabs.org
+    version: ^1.0.0
   auto_updater_macos: 
     hosted: https://pub.hippolabs.org
     version: ^1.0.0
@@ -26,9 +30,10 @@ dependencies:
   auto_updater_windows:
     hosted: https://pub.hippolabs.org
     version: ^1.0.1
+  cryptography: ^2.7.0
   flutter:
     sdk: flutter
-  json_annotation: ^4.8.0
+  json_annotation: ^4.12.0
   path: ^1.8.3
 
 dev_dependencies:
@@ -41,6 +46,8 @@ dev_dependencies:
 flutter:
   plugin:
     platforms:
+      linux:
+        default_package: auto_updater_linux
       macos:
         default_package: auto_updater_macos
       windows:
