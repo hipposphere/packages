@@ -7,11 +7,11 @@ import 'package:hippo_core/hippo_core.dart';
 import 'package:hippo_core_flutter/hippo_core_flutter.dart';
 
 class _TestBloc extends BlocBase {
-  var disposed = false;
+  var disposeCount = 0;
 
   @override
   void dispose() {
-    disposed = true;
+    disposeCount++;
   }
 }
 
@@ -30,6 +30,61 @@ void main() {
         ),
       ),
     );
+  });
+
+  testWidgets('OwnedBlocProvider creates once across rebuilds and disposes on unmount', (
+    tester,
+  ) async {
+    var createCount = 0;
+    late _TestBloc bloc;
+
+    Widget buildProvider(String label) {
+      return OwnedBlocProvider<_TestBloc>(
+        create: () {
+          createCount++;
+          return bloc = _TestBloc();
+        },
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: Builder(
+            builder: (context) {
+              expect(BlocProvider.of<_TestBloc>(context), same(bloc));
+              return Text(label);
+            },
+          ),
+        ),
+      );
+    }
+
+    await tester.pumpWidget(buildProvider('first'));
+    expect(createCount, 1);
+    expect(bloc.disposeCount, 0);
+
+    await tester.pumpWidget(buildProvider('second'));
+    expect(createCount, 1);
+    expect(bloc.disposeCount, 0);
+    expect(find.text('second'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    expect(bloc.disposeCount, 1);
+  });
+
+  testWidgets('OwnedBlocProvider.builder passes the exposed owned instance', (tester) async {
+    late _TestBloc bloc;
+
+    await tester.pumpWidget(
+      OwnedBlocProvider<_TestBloc>.builder(
+        create: () => bloc = _TestBloc(),
+        builder: (context, ownedBloc) {
+          expect(ownedBloc, same(bloc));
+          expect(BlocProvider.of<_TestBloc>(context), same(bloc));
+          return const SizedBox.shrink();
+        },
+      ),
+    );
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    expect(bloc.disposeCount, 1);
   });
 
   testWidgets('DataSubjectBuilder rebuilds when subject changes', (tester) async {

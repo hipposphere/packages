@@ -5,12 +5,28 @@ Flutter bindings and storage implementations for `hippo_core`.
 This package contains:
 
 - `DataSubjectBuilder`, combined subject builders, and text editing helpers.
-- `BlocProvider`, `BlocDefiner`, and `MultiBlocProvider`.
+- `BlocProvider`, `OwnedBlocProvider`, `BlocDefiner`, and `MultiBlocProvider`.
 - `ContentLane`, `ContentLayout`, `BoxAsSliver`, and `SliverSequence` for
   consistent box and sliver layouts without hiding their protocol boundary.
 - `SharedPreferencesKeyValueStore`, `SecureKeyValueStore`, and `MockKeyValueStore`.
 - `ApplicationSupportObjectStore` and `SecureKeyValueObjectStoreKeyring` for encrypted
   file-backed object caches.
+
+## Bloc ownership
+
+Use `BlocProvider` to expose a bloc whose lifecycle is owned by a caller. Use
+`OwnedBlocProvider` for a route or feature subtree that should create the bloc
+once and dispose it automatically when that subtree unmounts:
+
+```dart
+OwnedBlocProvider<EditorBloc>.builder(
+  create: () => EditorBloc(repository: repository),
+  builder: (context, bloc) => EditorPage(bloc: bloc),
+);
+```
+
+Ordinary rebuilds preserve the owned bloc. Give the provider a new key when an
+intentional identity change should recreate it.
 
 ## Content layouts
 

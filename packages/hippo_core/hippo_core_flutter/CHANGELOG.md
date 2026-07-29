@@ -1,3 +1,8 @@
+## 0.1.9
+
+- Add `OwnedBlocProvider` for route- and feature-scoped bloc creation and
+  automatic disposal.
+
 ## 0.1.5
 
 - Add `ApplicationSupportObjectStore` and secure key-value object-store keyring implementations.
