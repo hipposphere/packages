@@ -1,3 +1,9 @@
+## 0.1.5
+
+- Add typed `JsonSchemaPath` traversal, serialized JSON Pointer conversion,
+  immutable node replacement, and depth-first schema walking.
+- Add subtype-preserving `copyWith` methods to JSON Schema values.
+
 ## 0.1.4
 
 - Add an immutable RFC 6901 `JsonPointer`, decoded JSON lookup helpers, and a
