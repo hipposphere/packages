@@ -1,3 +1,7 @@
+## 0.1.7
+
+* Add `LruResourceCache` for bounded, lifecycle-aware resource ownership.
+
 ## 0.1.5
 
 * Add `BinaryObjectStore` primitives with JSON, memory, and encrypted wrappers.

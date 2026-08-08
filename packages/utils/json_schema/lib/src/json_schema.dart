@@ -339,6 +339,18 @@ sealed class JsonSchema implements JsonEncodable {
   /// Whether this schema also allows JSON `null`.
   final bool nullable;
 
+  /// Returns a schema of the same runtime type with selected values replaced.
+  ///
+  /// A `null` argument keeps the existing value. Construct a schema directly
+  /// when a nullable value needs to be cleared.
+  JsonSchema copyWith({
+    String? id,
+    String? title,
+    String? description,
+    List<Object?>? enumValues,
+    bool? nullable,
+  });
+
   /// Serializes this schema into a JSON-compatible map.
   ///
   /// Dart-only metadata such as [DartSchemaType] is intentionally omitted.
@@ -389,6 +401,20 @@ final class JsonAnySchema extends JsonSchema {
   const JsonAnySchema({super.id, super.title, super.description, super.enumValues}) : super._();
 
   @override
+  JsonAnySchema copyWith({
+    String? id,
+    String? title,
+    String? description,
+    List<Object?>? enumValues,
+    bool? nullable,
+  }) => JsonAnySchema(
+    id: id ?? this.id,
+    title: title ?? this.title,
+    description: description ?? this.description,
+    enumValues: enumValues ?? this.enumValues,
+  );
+
+  @override
   Map<String, Object?> toJsonKeywords() => const <String, Object?>{};
 }
 
@@ -414,6 +440,27 @@ final class JsonObjectSchema extends _JsonTypedSchema {
 
   /// Whether fields outside [properties] are accepted.
   final bool? additionalProperties;
+
+  @override
+  JsonObjectSchema copyWith({
+    String? id,
+    String? title,
+    String? description,
+    List<Object?>? enumValues,
+    bool? nullable,
+    Map<String, JsonSchema>? properties,
+    List<String>? required,
+    bool? additionalProperties,
+  }) => JsonObjectSchema(
+    id: id ?? this.id,
+    title: title ?? this.title,
+    description: description ?? this.description,
+    enumValues: enumValues ?? this.enumValues,
+    nullable: nullable ?? this.nullable,
+    properties: properties ?? this.properties,
+    required: required ?? this.required,
+    additionalProperties: additionalProperties ?? this.additionalProperties,
+  );
 
   @override
   Map<String, Object?> additionalKeywords() {
@@ -444,6 +491,23 @@ final class JsonArraySchema extends _JsonTypedSchema {
   final JsonSchema? items;
 
   @override
+  JsonArraySchema copyWith({
+    String? id,
+    String? title,
+    String? description,
+    List<Object?>? enumValues,
+    bool? nullable,
+    JsonSchema? items,
+  }) => JsonArraySchema(
+    id: id ?? this.id,
+    title: title ?? this.title,
+    description: description ?? this.description,
+    enumValues: enumValues ?? this.enumValues,
+    nullable: nullable ?? this.nullable,
+    items: items ?? this.items,
+  );
+
+  @override
   Map<String, Object?> additionalKeywords() {
     return <String, Object?>{if (items case final items?) 'items': items.toJson()};
   }
@@ -471,6 +535,45 @@ sealed class JsonCompositeSchema extends JsonSchema {
 
   /// Optional Dart-only type metadata for generators.
   final DartSchemaType? dartType;
+
+  @override
+  JsonCompositeSchema copyWith({
+    String? id,
+    String? title,
+    String? description,
+    List<Object?>? enumValues,
+    bool? nullable,
+    List<JsonSchema>? schemas,
+    DartSchemaType? dartType,
+  }) => switch (this) {
+    JsonAnyOfSchema() => JsonAnyOfSchema(
+      schemas ?? this.schemas,
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      enumValues: enumValues ?? this.enumValues,
+      nullable: nullable ?? this.nullable,
+      dartType: dartType ?? this.dartType,
+    ),
+    JsonOneOfSchema() => JsonOneOfSchema(
+      schemas ?? this.schemas,
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      enumValues: enumValues ?? this.enumValues,
+      nullable: nullable ?? this.nullable,
+      dartType: dartType ?? this.dartType,
+    ),
+    JsonAllOfSchema() => JsonAllOfSchema(
+      schemas ?? this.schemas,
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      enumValues: enumValues ?? this.enumValues,
+      nullable: nullable ?? this.nullable,
+      dartType: dartType ?? this.dartType,
+    ),
+  };
 
   @override
   Map<String, Object?> toJsonKeywords() {
@@ -547,6 +650,27 @@ final class JsonStringSchema extends _JsonTypedSchema {
   final DartSchemaType? dartType;
 
   @override
+  JsonStringSchema copyWith({
+    String? id,
+    String? title,
+    String? description,
+    List<Object?>? enumValues,
+    bool? nullable,
+    String? defaultValue,
+    String? format,
+    DartSchemaType? dartType,
+  }) => JsonStringSchema(
+    id: id ?? this.id,
+    title: title ?? this.title,
+    description: description ?? this.description,
+    enumValues: enumValues ?? this.enumValues,
+    nullable: nullable ?? this.nullable,
+    defaultValue: defaultValue ?? this.defaultValue,
+    format: format ?? this.format,
+    dartType: dartType ?? this.dartType,
+  );
+
+  @override
   Map<String, Object?> additionalKeywords() {
     return <String, Object?>{'default': ?defaultValue, 'format': ?format};
   }
@@ -578,6 +702,29 @@ final class JsonIntegerSchema extends _JsonTypedSchema {
 
   /// Inclusive upper bound for accepted integer values.
   final num? maximum;
+
+  @override
+  JsonIntegerSchema copyWith({
+    String? id,
+    String? title,
+    String? description,
+    List<Object?>? enumValues,
+    bool? nullable,
+    int? defaultValue,
+    String? format,
+    num? minimum,
+    num? maximum,
+  }) => JsonIntegerSchema(
+    id: id ?? this.id,
+    title: title ?? this.title,
+    description: description ?? this.description,
+    enumValues: enumValues ?? this.enumValues,
+    nullable: nullable ?? this.nullable,
+    defaultValue: defaultValue ?? this.defaultValue,
+    format: format ?? this.format,
+    minimum: minimum ?? this.minimum,
+    maximum: maximum ?? this.maximum,
+  );
 
   @override
   Map<String, Object?> additionalKeywords() {
@@ -618,6 +765,29 @@ final class JsonNumberSchema extends _JsonTypedSchema {
   final num? maximum;
 
   @override
+  JsonNumberSchema copyWith({
+    String? id,
+    String? title,
+    String? description,
+    List<Object?>? enumValues,
+    bool? nullable,
+    num? defaultValue,
+    String? format,
+    num? minimum,
+    num? maximum,
+  }) => JsonNumberSchema(
+    id: id ?? this.id,
+    title: title ?? this.title,
+    description: description ?? this.description,
+    enumValues: enumValues ?? this.enumValues,
+    nullable: nullable ?? this.nullable,
+    defaultValue: defaultValue ?? this.defaultValue,
+    format: format ?? this.format,
+    minimum: minimum ?? this.minimum,
+    maximum: maximum ?? this.maximum,
+  );
+
+  @override
   Map<String, Object?> additionalKeywords() {
     return <String, Object?>{
       'default': ?defaultValue,
@@ -644,6 +814,23 @@ final class JsonBooleanSchema extends _JsonTypedSchema {
   final bool? defaultValue;
 
   @override
+  JsonBooleanSchema copyWith({
+    String? id,
+    String? title,
+    String? description,
+    List<Object?>? enumValues,
+    bool? nullable,
+    bool? defaultValue,
+  }) => JsonBooleanSchema(
+    id: id ?? this.id,
+    title: title ?? this.title,
+    description: description ?? this.description,
+    enumValues: enumValues ?? this.enumValues,
+    nullable: nullable ?? this.nullable,
+    defaultValue: defaultValue ?? this.defaultValue,
+  );
+
+  @override
   Map<String, Object?> additionalKeywords() => <String, Object?>{'default': ?defaultValue};
 }
 
@@ -667,6 +854,22 @@ final class JsonReferenceSchema extends JsonSchema {
   final String ref;
 
   @override
+  JsonReferenceSchema copyWith({
+    String? id,
+    String? title,
+    String? description,
+    List<Object?>? enumValues,
+    bool? nullable,
+    String? ref,
+  }) => JsonReferenceSchema(
+    ref ?? this.ref,
+    id: id ?? this.id,
+    title: title ?? this.title,
+    description: description ?? this.description,
+    enumValues: enumValues ?? this.enumValues,
+  );
+
+  @override
   Map<String, Object?> toJsonKeywords() => <String, Object?>{r'$ref': ref};
 }
 
@@ -677,6 +880,23 @@ final class JsonRawSchema extends JsonSchema {
 
   /// JSON-compatible schema map.
   final Map<String, Object?> schema;
+
+  @override
+  JsonRawSchema copyWith({
+    String? id,
+    String? title,
+    String? description,
+    List<Object?>? enumValues,
+    bool? nullable,
+    Map<String, Object?>? schema,
+  }) {
+    final updated = <String, Object?>{...schema ?? this.schema};
+    if (title != null) updated['title'] = title;
+    if (description != null) updated['description'] = description;
+    if (enumValues != null) updated['enum'] = enumValues;
+    if (nullable != null) updated['nullable'] = nullable;
+    return JsonRawSchema(updated, id: id ?? this.id);
+  }
 
   @override
   String? get id => super.id ?? _stringValue(r'$id');

@@ -40,3 +40,23 @@ The root pointer is available as `JsonPointer.root` or
 `const JsonPointer.empty()`. URI fragment identifiers such as `#/users/0` are
 not accepted. `JsonPointer.schema` exposes the corresponding JSON Schema for
 registries and generated API contracts.
+
+## Schema paths
+
+`JsonSchemaPath` navigates the typed schema tree and converts to a JSON Pointer
+into the serialized schema document:
+
+```dart
+final path = JsonSchemaPath.root.property('id');
+final idSchema = path.read(user);
+
+print(path.toJsonPointer()); // /properties/id
+print(path.toUriFragment()); // #/properties/id
+```
+
+Paths also support immutable node replacement. `walkJsonSchema` visits the
+root and every typed property, item schema, and composition branch.
+
+Every concrete schema provides a subtype-preserving `copyWith`. A `null`
+argument keeps the existing value; use a constructor when a nullable field
+must be cleared explicitly.

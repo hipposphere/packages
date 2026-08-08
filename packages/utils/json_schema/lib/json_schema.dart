@@ -5,5 +5,6 @@ export 'src/from_schema.dart';
 export 'src/json_encodable.dart';
 export 'src/json_pointer.dart';
 export 'src/json_schema.dart';
+export 'src/json_schema_path.dart';
 export 'src/json_schema_ref.dart';
 export 'src/json_schema_registry.dart';

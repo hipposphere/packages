@@ -160,4 +160,60 @@ void main() {
       'enum': ['draft', 'published'],
     });
   });
+
+  test('copyWith preserves subtype and unchanged values', () {
+    const schema = JsonStringSchema(
+      id: 'Identifier',
+      title: 'Old title',
+      nullable: true,
+      format: 'uuid',
+      dartType: DartSchemaType.value('Identifier'),
+    );
+
+    final copied = schema.copyWith(title: 'New title', enumValues: <Object?>['known']);
+
+    expect(copied, isA<JsonStringSchema>());
+    expect(copied.id, 'Identifier');
+    expect(copied.title, 'New title');
+    expect(copied.nullable, isTrue);
+    expect(copied.format, 'uuid');
+    expect(copied.dartType, same(schema.dartType));
+    expect(copied.enumValues, ['known']);
+  });
+
+  test('subtype copyWith updates structural values', () {
+    const schema = JsonObjectSchema(
+      properties: <String, JsonSchema>{'old': JsonSchema.string()},
+      required: <String>['old'],
+      additionalProperties: true,
+    );
+
+    final copied = schema.copyWith(
+      properties: const <String, JsonSchema>{'new': JsonSchema.integer()},
+      required: const <String>['new'],
+      additionalProperties: false,
+    );
+
+    expect(copied.properties, contains('new'));
+    expect(copied.required, ['new']);
+    expect(copied.additionalProperties, isFalse);
+  });
+
+  test('composite copyWith preserves its concrete keyword', () {
+    const schema = JsonSchema.oneOf(<JsonSchema>[JsonSchema.string()]);
+
+    final copied = (schema as JsonOneOfSchema).copyWith(
+      schemas: const <JsonSchema>[JsonSchema.boolean()],
+      nullable: true,
+    );
+
+    expect(copied, isA<JsonOneOfSchema>());
+    expect(copied.schemas.single, isA<JsonBooleanSchema>());
+    expect(copied.toJson(), {
+      'oneOf': [
+        {'type': 'boolean'},
+      ],
+      'nullable': true,
+    });
+  });
 }
