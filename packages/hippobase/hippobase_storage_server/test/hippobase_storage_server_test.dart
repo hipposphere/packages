@@ -6,6 +6,21 @@ import 'package:test/test.dart';
 
 void main() {
   group('StorageClient', () {
+    test('download stream delegates explicit close', () async {
+      var closeCount = 0;
+      final download = StorageDownloadStream(
+        metadata: const StorageObjectMetadata(),
+        body: const Stream<List<int>>.empty(),
+        onClose: () {
+          closeCount += 1;
+        },
+      );
+
+      await download.close();
+
+      expect(closeCount, 1);
+    });
+
     test('delegates close to the provider', () async {
       final provider = _CloseTrackingStorageProvider();
       final client = StorageClient(provider: provider);

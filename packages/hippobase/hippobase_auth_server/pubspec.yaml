@@ -32,7 +32,7 @@ dev_dependencies:
   crypto: ^3.0.7
   dart_edge_http_server:
     hosted: "https://registry.hippolabs.org/pub/internal-pub/"
-    version: ^0.3.22
+    version: ^0.3.23
   dart_edge_sql:
     hosted: "https://registry.hippolabs.org/pub/internal-pub/"
     version: ^0.3.36

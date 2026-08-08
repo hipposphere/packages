@@ -37,7 +37,11 @@ final class S3StorageProvider implements StorageProvider {
   Future<StorageDownloadStream> downloadStream(String key) async {
     validateStorageKey(key);
     final object = await client.getObjectStream(S3ObjectRef(bucket: bucket, key: key));
-    return StorageDownloadStream(body: object.body, metadata: _metadataFromS3(object.metadata));
+    return StorageDownloadStream(
+      body: object.body,
+      metadata: _metadataFromS3(object.metadata),
+      onClose: object.close,
+    );
   }
 
   @override
