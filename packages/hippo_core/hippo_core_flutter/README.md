@@ -12,6 +12,48 @@ This package contains:
 - `SharedPreferencesKeyValueStore`, `SecureKeyValueStore`, and `MockKeyValueStore`.
 - `ApplicationSupportObjectStore` and `SecureKeyValueObjectStoreKeyring` for encrypted
   file-backed object caches.
+- `FrameRateTickerProvider` for ambient animations whose content frame rate is
+  lower than the display refresh rate.
+
+## Frame-rate-limited animations
+
+Use `FrameRateTickerProvider` with Flutter's regular `AnimationController` to
+avoid scheduling the complete Flutter frame pipeline at the display refresh
+rate when an animation only needs a lower content rate:
+
+```dart
+class _AmbientVisualState extends State<AmbientVisual> {
+  final _tickerProvider = FrameRateTickerProvider(framesPerSecond: 30);
+  AnimationController? _controller;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _tickerProvider.bind(context);
+    _controller ??= AnimationController(
+      vsync: _tickerProvider,
+      duration: const Duration(seconds: 4),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller?.dispose();
+    _tickerProvider.dispose();
+    super.dispose();
+  }
+}
+```
+
+The provider follows `TickerMode` and the current Flutter view's display refresh
+rate. It preserves `AnimationController` timing semantics by delivering ticks
+on Flutter frames; delayed work drops intermediate visual frames instead of
+slowing the animation.
+
+This optimization only helps when `framesPerSecond` is below the display refresh
+rate. It does not provide an independently composited widget subtree. Timer-
+parked tickers are also invisible to `WidgetTester.pumpAndSettle`, so animation
+tests should advance time explicitly with `pump`.
 
 ## Bloc ownership
 

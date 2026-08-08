@@ -1,3 +1,8 @@
+## 0.1.11
+
+- Add `FrameRateTickerProvider` for driving standard Flutter animation
+  controllers at a deliberate maximum engine frame rate.
+
 ## 0.1.10
 
 - Add `ResourceLeaseBuilder` for identity-scoped resource acquisition and release.
