@@ -4,6 +4,7 @@ import 'package:hippobase_storage_models/hippobase_storage_models.dart';
 
 import 'key_validation.dart';
 import 'storage_provider.dart';
+import 'storage_download_stream.dart';
 
 /// Facade for storage operations that keeps provider details out of callers.
 final class StorageClient {
@@ -23,6 +24,12 @@ final class StorageClient {
   Future<StorageObject> download(String key) {
     validateStorageKey(key);
     return provider.download(key);
+  }
+
+  /// Downloads an object as a demand-driven stream.
+  Future<StorageDownloadStream> downloadStream(String key) {
+    validateStorageKey(key);
+    return provider.downloadStream(key);
   }
 
   Future<bool> exists(String key) {

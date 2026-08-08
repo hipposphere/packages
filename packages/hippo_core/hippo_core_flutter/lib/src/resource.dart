@@ -7,5 +7,4 @@
 // SPDX-License-Identifier: LicenseRef-Hipposphere-Proprietary
 // ---------------------------------------------------------------------------
 */
-export 'cache/lru_resource_cache.dart';
-export 'cache/resource_lease.dart';
+export 'resource/resource_lease_builder.dart';

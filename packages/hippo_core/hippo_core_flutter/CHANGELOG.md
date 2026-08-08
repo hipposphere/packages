@@ -1,3 +1,7 @@
+## 0.1.10
+
+- Add `ResourceLeaseBuilder` for identity-scoped resource acquisition and release.
+
 ## 0.1.9
 
 - Add `OwnedBlocProvider` for route- and feature-scoped bloc creation and

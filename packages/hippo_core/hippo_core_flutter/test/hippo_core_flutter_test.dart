@@ -87,6 +87,49 @@ void main() {
     expect(bloc.disposeCount, 1);
   });
 
+  testWidgets('ResourceLeaseBuilder scopes leases to mounted resource identity', (tester) async {
+    final disposed = <String>[];
+    final cache = LruResourceCache<String, String>(
+      capacity: 1,
+      disposeResource: (key, _) => disposed.add(key),
+    );
+    var acquireCount = 0;
+
+    Widget buildResource(String identity, String label) {
+      return Directionality(
+        textDirection: TextDirection.ltr,
+        child: ResourceLeaseBuilder<String>(
+          identity: identity,
+          acquire: () {
+            acquireCount++;
+            return cache.getOrCreateLease(identity, () => identity.toUpperCase());
+          },
+          builder: (context, value) => Text('$value:$label'),
+        ),
+      );
+    }
+
+    await tester.pumpWidget(buildResource('a', 'first'));
+    expect(acquireCount, 1);
+    expect(cache.isLeased('a'), isTrue);
+    expect(find.text('A:first'), findsOneWidget);
+
+    await tester.pumpWidget(buildResource('a', 'rebuilt'));
+    expect(acquireCount, 1);
+    expect(find.text('A:rebuilt'), findsOneWidget);
+
+    await tester.pumpWidget(buildResource('b', 'replacement'));
+    expect(acquireCount, 2);
+    expect(cache.isLeased('a'), isFalse);
+    expect(cache.isLeased('b'), isTrue);
+    expect(disposed, ['a']);
+    expect(find.text('B:replacement'), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    expect(cache.isLeased('b'), isFalse);
+    cache.dispose();
+  });
+
   testWidgets('DataSubjectBuilder rebuilds when subject changes', (tester) async {
     final subject = DataSubject.seeded('first');
 

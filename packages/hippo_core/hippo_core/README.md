@@ -9,3 +9,7 @@ object/document caches, with JSON and encrypted-store wrappers.
 resources. It supports recency promotion, pinned entries, dynamic eviction eligibility, and
 deterministic disposal. If every eviction candidate is pinned or busy, it temporarily exceeds
 its capacity until `trim()` can safely release older resources.
+
+Use `acquire()` or `getOrCreateLease()` for temporary consumers. A `ResourceLease` prevents
+capacity eviction until its idempotent `release()` is called; releasing the final lease
+automatically trims accumulated overflow. Explicit pins remain available for permanent policies.

@@ -98,7 +98,7 @@ final class _GatedDiagnosticsStore implements DiagnosticsStore {
     }
     try {
       await _queryGate?.future;
-      return _inner.query(query);
+      return await _inner.query(query);
     } finally {
       _activeQueries--;
     }

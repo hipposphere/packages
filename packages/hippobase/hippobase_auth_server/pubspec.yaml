@@ -32,16 +32,16 @@ dev_dependencies:
   crypto: ^3.0.7
   dart_edge_http_server:
     hosted: "https://registry.hippolabs.org/pub/internal-pub/"
-    version: ^0.3.21
+    version: ^0.3.22
   dart_edge_sql:
     hosted: "https://registry.hippolabs.org/pub/internal-pub/"
-    version: ^0.3.35
+    version: ^0.3.36
   dart_edge_sql_migrator:
     hosted: "https://registry.hippolabs.org/pub/internal-pub/"
     version: ^0.3.19
   dart_edge_sql_pglite:
     hosted: "https://registry.hippolabs.org/pub/internal-pub/"
-    version: ^0.1.16
+    version: ^0.1.17
   hippobase_auth_db_schema:
     hosted: "https://pub.hippolabs.org"
     version: ^0.1.2

@@ -6,6 +6,7 @@ import 'package:hippobase_storage_models/hippobase_storage_models.dart';
 
 import '../key_validation.dart';
 import '../storage_provider.dart';
+import '../storage_download_stream.dart';
 
 /// Stores objects as files below [baseDirectory].
 final class FileSystemStorageProvider implements StorageProvider {
@@ -40,6 +41,14 @@ final class FileSystemStorageProvider implements StorageProvider {
       bytes: bytes,
       metadata: metadata.copyWith(contentLength: bytes.length),
     );
+  }
+
+  @override
+  Future<StorageDownloadStream> downloadStream(String key) async {
+    validateStorageKey(key);
+    final file = _fileForKey(key);
+    final metadata = await getMetadata(key);
+    return StorageDownloadStream(metadata: metadata, body: file.openRead());
   }
 
   @override

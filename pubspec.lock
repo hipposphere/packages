@@ -277,18 +277,18 @@ packages:
     dependency: transitive
     description:
       name: dart_edge_core
-      sha256: "0e537cc372306cf03b151fd2cdc4f1f167a10f5af6fb75bdf27da279ca24e05d"
+      sha256: "6278a0f0f4415501ab2103aa807e67c90cc992b9a91cbd9d2cffd82fe4cb72a2"
       url: "https://registry.hippolabs.org/pub/internal-pub/"
     source: hosted
-    version: "0.3.36"
+    version: "0.3.37"
   dart_edge_http_server:
     dependency: transitive
     description:
       name: dart_edge_http_server
-      sha256: c0b932e3510c74399c5d4e55c1042ef3e661f0f1563060769bdf62c556fd007e
+      sha256: "4ee1a6887745b558059e0f7008548f4bb33d4e0cfadc6d715e21b88778652a65"
       url: "https://registry.hippolabs.org/pub/internal-pub/"
     source: hosted
-    version: "0.3.21"
+    version: "0.3.22"
   dart_edge_http_server_codegen:
     dependency: transitive
     description:
@@ -301,10 +301,10 @@ packages:
     dependency: transitive
     description:
       name: dart_edge_http_server_runtime
-      sha256: "08dca57321927d48742c05b28bc0469ca84a7834b1bccbea391f92dca9f0a04b"
+      sha256: "04b98c5704a232a98e4a04fbfe9bc76ec291eb39d2d0e94b658b9207ad3a7f23"
       url: "https://registry.hippolabs.org/pub/internal-pub/"
     source: hosted
-    version: "0.3.31"
+    version: "0.3.32"
   dart_edge_native_assets:
     dependency: transitive
     description:
@@ -333,18 +333,18 @@ packages:
     dependency: transitive
     description:
       name: dart_edge_s3_client
-      sha256: "976c428afaef767463e3c9106e94dd550c291a06b88d42ef75a6f54fb3cef07d"
+      sha256: "71f9af71c4d28755a43dba5872d96adb2d5564fcce19ccf04fc0e10e2aea289f"
       url: "https://registry.hippolabs.org/pub/internal-pub/"
     source: hosted
-    version: "0.3.13"
+    version: "0.3.14"
   dart_edge_sql:
     dependency: transitive
     description:
       name: dart_edge_sql
-      sha256: ded32b3d90a84419e2f4706e629c31ad17c232761594c6e9ba12ded381261186
+      sha256: "90b2a3a28fe4a63e597fcc9997f82844c60e12a8c585d64635d8f197a415125e"
       url: "https://registry.hippolabs.org/pub/internal-pub/"
     source: hosted
-    version: "0.3.35"
+    version: "0.3.36"
   dart_edge_sql_codegen:
     dependency: transitive
     description:
@@ -365,10 +365,10 @@ packages:
     dependency: transitive
     description:
       name: dart_edge_sql_pglite
-      sha256: c0cb5ca09fcf1c653cf6c4d73c10f70053055d5daee4b4d07f70012b459f095e
+      sha256: bb3cbcb80224c16c5400c9b9769e935cfe24c83da40790bc8cdac836b0212dd7
       url: "https://registry.hippolabs.org/pub/internal-pub/"
     source: hosted
-    version: "0.1.16"
+    version: "0.1.17"
   dart_style:
     dependency: transitive
     description:

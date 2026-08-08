@@ -40,6 +40,10 @@ void main() {
       expect(object.bytes, orderedEquals('hello'.codeUnits));
       expect(object.metadata.contentLength, 5);
 
+      final streamed = await client.downloadStream('workspaces/alpha/report.txt');
+      expect(streamed.metadata.contentLength, 5);
+      expect(await streamed.body.expand((chunk) => chunk).toList(), 'hello'.codeUnits);
+
       await client.delete('workspaces/alpha/report.txt');
       expect(await client.exists('workspaces/alpha/report.txt'), isFalse);
     });
@@ -77,6 +81,9 @@ void main() {
       expect(object.metadata.contentType, 'application/json');
       expect(object.metadata.cacheControl, 'no-store');
 
+      final streamed = await client.downloadStream('exports/data.json');
+      expect(await streamed.body.expand((chunk) => chunk).toList(), <int>[123, 125]);
+
       await client.delete('exports/data.json');
       expect(await client.exists('exports/data.json'), isFalse);
     });
@@ -98,6 +105,11 @@ final class _CloseTrackingStorageProvider implements StorageProvider {
 
   @override
   Future<StorageObject> download(String key) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<StorageDownloadStream> downloadStream(String key) {
     throw UnimplementedError();
   }
 

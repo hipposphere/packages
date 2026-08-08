@@ -2,6 +2,8 @@ import 'dart:typed_data';
 
 import 'package:hippobase_storage_models/hippobase_storage_models.dart';
 
+import 'storage_download_stream.dart';
+
 /// Backend contract implemented by concrete storage providers.
 abstract interface class StorageProvider {
   /// Releases resources held by this provider.
@@ -10,6 +12,8 @@ abstract interface class StorageProvider {
   Future<void> close();
 
   Future<StorageObject> download(String key);
+
+  Future<StorageDownloadStream> downloadStream(String key);
 
   Future<StorageObjectMetadata> getMetadata(String key);
 

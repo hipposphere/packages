@@ -4,6 +4,7 @@ import 'package:hippobase_storage_models/hippobase_storage_models.dart';
 
 import '../key_validation.dart';
 import '../storage_provider.dart';
+import '../storage_download_stream.dart';
 
 /// In-memory storage provider for tests and ephemeral runtime state.
 final class InMemoryStorageProvider implements StorageProvider {
@@ -30,6 +31,12 @@ final class InMemoryStorageProvider implements StorageProvider {
     }
 
     return StorageObject(bytes: Uint8List.fromList(object.bytes), metadata: object.metadata);
+  }
+
+  @override
+  Future<StorageDownloadStream> downloadStream(String key) async {
+    final object = await download(key);
+    return StorageDownloadStream(metadata: object.metadata, body: Stream.value(object.bytes));
   }
 
   @override

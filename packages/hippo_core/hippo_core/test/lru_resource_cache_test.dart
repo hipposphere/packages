@@ -68,6 +68,71 @@ void main() {
     expect(disposed, ['primary']);
   });
 
+  test('leased resources survive capacity eviction until the final release', () {
+    final disposed = <String>[];
+    final cache = LruResourceCache<String, String>(
+      capacity: 1,
+      disposeResource: (key, _) => disposed.add(key),
+    );
+
+    cache.put('a', 'A');
+    final firstLease = cache.acquire('a')!;
+    final secondLease = cache.acquire('a')!;
+    cache.put('b', 'B');
+
+    expect(cache.keys, ['a', 'b']);
+    expect(cache.isLeased('a'), isTrue);
+    expect(firstLease.value, 'A');
+
+    firstLease.release();
+    firstLease.release();
+    expect(cache.keys, ['a', 'b']);
+
+    secondLease.release();
+    expect(cache.keys, ['b']);
+    expect(cache.isLeased('a'), isFalse);
+    expect(disposed, ['a']);
+    expect(() => secondLease.value, throwsStateError);
+  });
+
+  test('replacement invalidates old leases without affecting the new entry', () {
+    final disposed = <String>[];
+    final cache = LruResourceCache<String, String>(
+      capacity: 1,
+      disposeResource: (_, value) => disposed.add(value),
+    );
+
+    final oldLease = cache.getOrCreateLease('a', () => 'A1');
+    cache.put('a', 'A2');
+    final newLease = cache.acquire('a')!;
+
+    expect(oldLease.isReleased, isTrue);
+    expect(() => oldLease.value, throwsStateError);
+    expect(newLease.value, 'A2');
+    expect(cache.isLeased('a'), isTrue);
+
+    oldLease.release();
+    expect(cache.isLeased('a'), isTrue);
+    newLease.release();
+    expect(disposed, ['A1']);
+  });
+
+  test('clear and disposal invalidate leases and tolerate late release', () {
+    final cache = LruResourceCache<String, String>(capacity: 1, disposeResource: (_, _) {});
+
+    final clearedLease = cache.getOrCreateLease('a', () => 'A');
+    cache.clear();
+    expect(clearedLease.isReleased, isTrue);
+    clearedLease.release();
+    clearedLease.release();
+
+    final disposedLease = cache.getOrCreateLease('b', () => 'B');
+    cache.dispose();
+    expect(disposedLease.isReleased, isTrue);
+    disposedLease.release();
+    disposedLease.release();
+  });
+
   test('replacement, removal, clear, and dispose release owned resources', () {
     final disposed = <String>[];
     final cache = LruResourceCache<String, String>(

@@ -6,6 +6,7 @@ This package contains:
 
 - `DataSubjectBuilder`, combined subject builders, and text editing helpers.
 - `BlocProvider`, `OwnedBlocProvider`, `BlocDefiner`, and `MultiBlocProvider`.
+- `ResourceLeaseBuilder` for mounted, identity-scoped access to leased resources.
 - `ContentLane`, `ContentLayout`, `BoxAsSliver`, and `SliverSequence` for
   consistent box and sliver layouts without hiding their protocol boundary.
 - `SharedPreferencesKeyValueStore`, `SecureKeyValueStore`, and `MockKeyValueStore`.
@@ -27,6 +28,21 @@ OwnedBlocProvider<EditorBloc>.builder(
 
 Ordinary rebuilds preserve the owned bloc. Give the provider a new key when an
 intentional identity change should recreate it.
+
+## Resource leases
+
+Use `ResourceLeaseBuilder` when a mounted subtree should temporarily retain a cached resource:
+
+```dart
+ResourceLeaseBuilder<EditorBloc>(
+  identity: documentId,
+  acquire: () => editorCache.getOrCreateLease(documentId, () => EditorBloc(documentId)),
+  builder: (context, bloc) => EditorPage(bloc: bloc),
+);
+```
+
+Ordinary rebuilds preserve the lease. Changing `identity` acquires the replacement before
+releasing the previous lease, and unmounting releases the active lease.
 
 ## Content layouts
 

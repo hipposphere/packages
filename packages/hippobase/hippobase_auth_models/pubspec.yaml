@@ -19,7 +19,7 @@ dependencies:
 dev_dependencies:
   dart_edge_sql:
     hosted: "https://registry.hippolabs.org/pub/internal-pub/"
-    version: ^0.3.35
+    version: ^0.3.36
   dart_edge_sql_codegen:
     hosted: "https://registry.hippolabs.org/pub/internal-pub/"
     version: ^0.3.42
@@ -28,7 +28,7 @@ dev_dependencies:
     version: ^0.3.19
   dart_edge_sql_pglite:
     hosted: "https://registry.hippolabs.org/pub/internal-pub/"
-    version: ^0.1.16
+    version: ^0.1.17
   hippobase_auth_db_schema:
     hosted: "https://pub.hippolabs.org"
     version: ^0.1.2

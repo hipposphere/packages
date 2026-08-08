@@ -5,6 +5,7 @@ import 'package:hippobase_storage_models/hippobase_storage_models.dart';
 
 import '../key_validation.dart';
 import '../storage_provider.dart';
+import '../storage_download_stream.dart';
 
 /// Storage provider backed by an S3-compatible bucket.
 final class S3StorageProvider implements StorageProvider {
@@ -30,6 +31,13 @@ final class S3StorageProvider implements StorageProvider {
     final object = await client.getObjectBytes(S3ObjectRef(bucket: bucket, key: key));
 
     return StorageObject(bytes: object.bytes, metadata: _metadataFromS3(object.metadata));
+  }
+
+  @override
+  Future<StorageDownloadStream> downloadStream(String key) async {
+    validateStorageKey(key);
+    final object = await client.getObjectStream(S3ObjectRef(bucket: bucket, key: key));
+    return StorageDownloadStream(body: object.body, metadata: _metadataFromS3(object.metadata));
   }
 
   @override

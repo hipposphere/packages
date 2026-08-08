@@ -1,3 +1,7 @@
+## 0.1.8
+
+* Add `ResourceLease` and reference-counted leases to `LruResourceCache`.
+
 ## 0.1.7
 
 * Add `LruResourceCache` for bounded, lifecycle-aware resource ownership.
