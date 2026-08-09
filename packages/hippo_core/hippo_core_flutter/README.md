@@ -5,6 +5,7 @@ Flutter bindings and storage implementations for `hippo_core`.
 This package contains:
 
 - `DataSubjectBuilder`, combined subject builders, and text editing helpers.
+- `DataValueBuilder` for nullable-safe read-only reactive values and derived view state.
 - `BlocProvider`, `OwnedBlocProvider`, `BlocDefiner`, and `MultiBlocProvider`.
 - `ResourceLeaseBuilder` for mounted, identity-scoped access to leased resources.
 - `ContentLane`, `ContentLayout`, `BoxAsSliver`, and `SliverSequence` for
@@ -17,21 +18,20 @@ This package contains:
 
 ## Frame-rate-limited animations
 
-Use `FrameRateTickerProvider` with Flutter's regular `AnimationController` to
+Use `FrameRateTickerProviderStateMixin` with Flutter's regular `AnimationController` to
 avoid scheduling the complete Flutter frame pipeline at the display refresh
 rate when an animation only needs a lower content rate:
 
 ```dart
-class _AmbientVisualState extends State<AmbientVisual> {
-  final _tickerProvider = FrameRateTickerProvider(framesPerSecond: 30);
+class _AmbientVisualState extends State<AmbientVisual>
+    with FrameRateTickerProviderStateMixin<AmbientVisual> {
   AnimationController? _controller;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _tickerProvider.bind(context);
     _controller ??= AnimationController(
-      vsync: _tickerProvider,
+      vsync: this,
       duration: const Duration(seconds: 4),
     )..repeat();
   }
@@ -39,7 +39,6 @@ class _AmbientVisualState extends State<AmbientVisual> {
   @override
   void dispose() {
     _controller?.dispose();
-    _tickerProvider.dispose();
     super.dispose();
   }
 }
@@ -54,6 +53,44 @@ This optimization only helps when `framesPerSecond` is below the display refresh
 rate. It does not provide an independently composited widget subtree. Timer-
 parked tickers are also invisible to `WidgetTester.pumpAndSettle`, so animation
 tests should advance time explicitly with `pump`.
+
+## Reactive values
+
+Use `DataValueBuilder` when a widget only reads reactive state. A bloc can expose
+one typed view value instead of forcing the widget to nest several builders:
+
+```dart
+late final selection = DataValues.combine2(rangeSubject, productSubject);
+
+DataValueBuilder(
+  value: bloc.selection,
+  builder: (context, selection) {
+    final (range, product) = selection;
+    return SelectionView(range: range, product: product);
+  },
+);
+```
+
+The builder distinguishes an absent value from a valid seeded `null`, forwards
+error stack traces, and resubscribes when its `DataValue` changes. Existing
+`DataSubjectBuilder` and combined builders remain compatibility wrappers.
+
+For a combination used only by one widget, use the cached widget-layer helper:
+
+```dart
+CombinedDataValueBuilder<UsageRange, UsageProduct>(
+  value1: bloc.rangeSubject,
+  value2: bloc.productSubject,
+  builder: (context, range, product) {
+    return UsageView(range: range, product: product);
+  },
+);
+```
+
+`CombinedDataValueBuilder3` and `CombinedDataValueBuilder4` cover three and four
+inputs. They preserve the derived value across parent rebuilds and replace it
+only when an input identity changes. Keep combinations in the bloc with
+`DataValues.combine*` when they form reusable view or business state.
 
 ## Bloc ownership
 

@@ -1,3 +1,11 @@
+## 0.1.12
+
+- Add `DataValueBuilder` and cached two-, three-, and four-value builders.
+- Keep existing subject builders as deprecated compatibility wrappers.
+- Add `FrameRateTickerProviderStateMixin` for reusable throttled animations.
+- Correct builder source replacement, nullable-value, error, and lifecycle
+  behavior.
+
 ## 0.1.11
 
 - Add `FrameRateTickerProvider` for driving standard Flutter animation

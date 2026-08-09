@@ -11,7 +11,10 @@ import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
 
-class DataSubject<T> {
+import 'data_value.dart';
+
+/// A writable reactive value backed by a [BehaviorSubject].
+class DataSubject<T> implements DataValue<T> {
   final BehaviorSubject<T> _subject = BehaviorSubject<T>();
 
   DataSubject.empty();
@@ -24,28 +27,40 @@ class DataSubject<T> {
     _subject.addStream(stream);
   }
 
+  @Deprecated('Use DataSubject directly. The underlying BehaviorSubject will become private.')
   BehaviorSubject<T> get subject => _subject;
+
+  @override
   Stream<T> get stream => _subject.stream;
-  T get value => _subject.value;
+
+  @override
+  T get value {
+    if (!_subject.hasValue) {
+      throw StateError('The DataSubject does not have a value yet.');
+    }
+    return _subject.value;
+  }
+
+  @override
+  T? get valueOrNull => _subject.valueOrNull;
 
   void add(T data) {
     _subject.add(data);
   }
 
-  void addError(dynamic error) {
-    _subject.addError(error);
+  void addError(Object error, [StackTrace? stackTrace]) {
+    _subject.addError(error, stackTrace);
   }
 
   Future<void> addStream(Stream<T> stream) async {
     await _subject.addStream(stream);
   }
 
-  void close() {
-    _subject.close();
-  }
+  Future<void> close() => _subject.close();
 
   bool get isClosed => _subject.isClosed;
 
+  @override
   bool get hasValue => _subject.hasValue;
 
   StreamSubscription<T> listen(
