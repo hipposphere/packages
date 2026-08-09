@@ -21,7 +21,7 @@ dependencies:
     version: ^0.1.5
   hippo_core_flutter:
     hosted: https://pub.hippolabs.org
-    version: ^0.2.0
+    version: ^0.1.6
   hippobase_auth_client:
     hosted: https://pub.hippolabs.org
     version: ^0.1.1

@@ -1,4 +1,4 @@
-## 0.2.0
+## 0.1.12
 
 - Move `SharedPreferencesKeyValueStore` to `hippo_core_flutter_shared_preferences`.
 - Move `SecureKeyValueStore` to `hippo_core_flutter_secure_storage`.

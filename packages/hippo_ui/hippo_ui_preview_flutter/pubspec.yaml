@@ -17,7 +17,7 @@ dependencies:
     version: ^0.1.0
   hippo_core_flutter:
     hosted: https://pub.hippolabs.org
-    version: ^0.2.0
+    version: ^0.1.0
   hippo_ui_flutter:
     hosted: https://pub.hippolabs.org
     version: ^0.1.0
