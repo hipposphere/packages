@@ -1,16 +1,14 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:hippo_core/hippo_core.dart';
 
 /// A controller for a key-value store that manages a single value of type [T].
-/// Json encoding and decoding is used to store complex data structures as strings in the key-value store.
+///
+/// JSON encoding and decoding is used to store complex data structures as
+/// strings. Values are published optimistically before their corresponding
+/// writes complete, while persistence operations are kept in invocation order.
 class StoreController<T> {
-  final KeyValueStore _keyValueStore;
-  final ItemDecoder<T> _itemDecoder;
-  final ItemEncoder<T> _itemEncoder;
-  final String _storeKey;
-  final T _defaultValue;
-
   StoreController({
     required this._keyValueStore,
     required this._storeKey,
@@ -20,34 +18,76 @@ class StoreController<T> {
     T? initialValue,
     bool initializeOnCreation = true,
   }) {
-    if (initialValue != null) {
-      subject.add(initialValue);
-    } else {
-      subject.add(null);
+    subject.add(initialValue);
+    if (initializeOnCreation) {
+      final initialization = initialize();
+      // Loading errors are also emitted by [subject] and remain observable
+      // through [ready]. Avoid reporting the automatically started future as
+      // an additional unhandled asynchronous error.
+      unawaited(initialization.then<void>((_) {}, onError: (Object _, StackTrace _) {}));
     }
-    initialize();
   }
 
+  final KeyValueStore _keyValueStore;
+  final ItemDecoder<T> _itemDecoder;
+  final ItemEncoder<T> _itemEncoder;
+  final String _storeKey;
+  final T _defaultValue;
   final subject = DataSubject<T?>.empty();
+  Future<void>? _initialization;
+  Future<void> _writeQueue = Future<void>.value();
+  var _revision = 0;
+  var _disposed = false;
 
-  /// Throws if the current value is null. This can happen if the value has not been initialized yet or if the stored value was null.
+  /// Completes after the stored value has been loaded.
+  ///
+  /// Accessing this starts initialization when [initializeOnCreation] was
+  /// disabled. Initialization is performed at most once.
+  Future<void> get ready => initialize();
+
+  /// Throws if the current value is null.
+  ///
+  /// This can happen before initialization completes when no [initialValue]
+  /// was supplied.
   T get currentValue => subject.value!;
 
   bool get hasValue => subject.hasValue;
 
-  Future<void> initialize() async {
-    final value = await _getStoredValue();
-    subject.add(value);
+  /// Loads the persisted value once.
+  ///
+  /// A value passed to [update] while loading remains authoritative when the
+  /// read completes, preventing stale storage from replacing newer state.
+  Future<void> initialize() {
+    _ensureNotDisposed();
+    return _initialization ??= _initialize();
   }
 
-  Future<void> update(T newValue) async {
+  /// Publishes [newValue] immediately and persists it in invocation order.
+  Future<void> update(T newValue) {
+    _ensureNotDisposed();
+    _revision += 1;
     subject.add(newValue);
-    await _storeValue(newValue);
+    return _enqueueWrite(() => _storeValue(newValue));
   }
 
-  Future<void> updateBuilder({required T Function(T currentValue) builder}) async {
+  Future<void> updateBuilder({required T Function(T currentValue) builder}) {
     final newValue = builder(currentValue);
-    await update(newValue);
+    return update(newValue);
+  }
+
+  Future<void> _initialize() async {
+    final revision = _revision;
+    try {
+      final value = await _getStoredValue();
+      if (!_disposed && revision == _revision) {
+        subject.add(value);
+      }
+    } on Object catch (error, stackTrace) {
+      if (!_disposed && revision == _revision) {
+        subject.addError(error, stackTrace);
+      }
+      rethrow;
+    }
   }
 
   Future<T> _getStoredValue() async {
@@ -62,7 +102,23 @@ class StoreController<T> {
     await _keyValueStore.setString(_storeKey, jsonEncode(_itemEncoder(value)));
   }
 
+  Future<void> _enqueueWrite(Future<void> Function() operation) {
+    final result = _writeQueue.then((_) => operation());
+    _writeQueue = result.then<void>((_) {}, onError: (Object _, StackTrace _) {});
+    return result;
+  }
+
   void dispose() {
+    if (_disposed) {
+      return;
+    }
+    _disposed = true;
     subject.close();
+  }
+
+  void _ensureNotDisposed() {
+    if (_disposed) {
+      throw StateError('StoreController has been disposed.');
+    }
   }
 }

@@ -1,3 +1,10 @@
+## 0.1.9
+
+* Add read-only `DataValue` and typed lazy derived-value APIs.
+* Correct `StoreController` initialization, write ordering, stale-load, error,
+  and disposal behavior.
+* Improve `DataSubject` nullable-value, error stack-trace, and close semantics.
+
 ## 0.1.8
 
 * Add `ResourceLease` and reference-counted leases to `LruResourceCache`.

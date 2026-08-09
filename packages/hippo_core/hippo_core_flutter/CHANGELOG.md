@@ -3,6 +3,11 @@
 - Move `SharedPreferencesKeyValueStore` to `hippo_core_flutter_shared_preferences`.
 - Move `SecureKeyValueStore` to `hippo_core_flutter_secure_storage`.
 - Remove the `shared_preferences` and `flutter_secure_storage` dependencies.
+- Add `DataValueBuilder` and cached two-, three-, and four-value builders.
+- Keep existing subject builders as deprecated compatibility wrappers.
+- Add `FrameRateTickerProviderStateMixin` for reusable throttled animations.
+- Correct builder source replacement, nullable-value, error, and lifecycle
+  behavior.
 
 ## 0.1.11
 

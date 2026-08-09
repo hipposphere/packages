@@ -8,3 +8,4 @@
 // ---------------------------------------------------------------------------
 */
 export 'animation/frame_rate_ticker_provider.dart';
+export 'animation/frame_rate_ticker_provider_state_mixin.dart';

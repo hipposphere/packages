@@ -10,6 +10,7 @@
 export 'src/bloc.dart';
 export 'src/cache.dart';
 export 'src/data_subject/data_subject.dart';
+export 'src/data_subject/data_value.dart';
 export 'src/filter/filter.dart';
 export 'src/filter/filter_controller.dart';
 export 'src/object_store.dart';
