@@ -36,9 +36,18 @@ final class StorageClient {
 
   /// Opens a single-owner native body when the provider supports native
   /// streaming, or returns `null` without starting a download otherwise.
-  Future<StorageNativeDownloadStream?> downloadNativeStream(String key) {
+  Future<StorageNativeDownloadStream?> downloadNativeStream(
+    String key, {
+    StorageByteRange? range,
+  }) {
     validateStorageKey(key);
     final provider = this.provider;
+    if (range != null) {
+      if (provider case NativeRangedStreamingStorageProvider rangedProvider) {
+        return rangedProvider.downloadNativeRangeStream(key, range);
+      }
+      return Future.value();
+    }
     if (provider case NativeStreamingStorageProvider nativeProvider) {
       return nativeProvider.downloadNativeStream(key);
     }
@@ -47,10 +56,17 @@ final class StorageClient {
 
   /// Downloads directly to [outputPath] when the provider supports native file
   /// transfer, or returns `null` without starting a download otherwise.
-  Future<StorageNativeFileDownload?> downloadToNativeFile(String key, String outputPath) {
+  Future<StorageNativeFileDownload?> downloadToNativeFile(
+    String key,
+    String outputPath,
+  ) {
     validateStorageKey(key);
     if (outputPath.trim().isEmpty) {
-      throw ArgumentError.value(outputPath, 'outputPath', 'Output path cannot be empty.');
+      throw ArgumentError.value(
+        outputPath,
+        'outputPath',
+        'Output path cannot be empty.',
+      );
     }
     final provider = this.provider;
     if (provider case NativeFileStorageProvider nativeProvider) {

@@ -2,6 +2,7 @@
 final class StorageObjectMetadata {
   const StorageObjectMetadata({
     this.contentLength,
+    this.objectLength,
     this.versionId,
     this.eTag,
     this.contentType,
@@ -14,6 +15,9 @@ final class StorageObjectMetadata {
 
   /// Number of bytes stored for the object, when known.
   final int? contentLength;
+
+  /// Total stored object length, including bytes outside a ranged download.
+  final int? objectLength;
 
   final String? versionId;
   final String? eTag;
@@ -28,6 +32,7 @@ final class StorageObjectMetadata {
 
   StorageObjectMetadata copyWith({
     int? contentLength,
+    int? objectLength,
     String? versionId,
     String? eTag,
     String? contentType,
@@ -39,6 +44,7 @@ final class StorageObjectMetadata {
   }) {
     return StorageObjectMetadata(
       contentLength: contentLength ?? this.contentLength,
+      objectLength: objectLength ?? this.objectLength,
       versionId: versionId ?? this.versionId,
       eTag: eTag ?? this.eTag,
       contentType: contentType ?? this.contentType,

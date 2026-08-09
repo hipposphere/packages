@@ -1,6 +1,6 @@
 name: hippobase_storage_server
 description: Reusable Hippobase server-side storage abstractions.
-version: 0.1.6
+version: 0.1.7
 homepage: https://hippolabs.org
 publish_to: "https://pub.hippolabs.org"
 resolution: workspace
@@ -9,15 +9,18 @@ environment:
   sdk: ">=3.12.0 <4.0.0"
 
 dependencies:
+  dart_edge_core:
+    hosted: "https://registry.hippolabs.org/pub/internal-pub/"
+    version: ^0.3.40
   dart_edge_native_bridge:
     hosted: "https://registry.hippolabs.org/pub/internal-pub/"
     version: ^0.1.4
   dart_edge_s3_client:
     hosted: "https://registry.hippolabs.org/pub/internal-pub/"
-    version: ^0.3.16
+    version: ^0.3.17
   hippobase_storage_models:
     hosted: "https://pub.hippolabs.org"
-    version: ^0.1.0
+    version: ^0.1.2
 
 dev_dependencies:
   test: ^1.30.0

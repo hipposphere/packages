@@ -1,3 +1,9 @@
+## 0.1.7
+
+* Add optional provider-neutral native byte-range downloads.
+* Forward S3 ranges directly into native S3 GET streams and expose the total
+  object length without moving response bytes through the Dart heap.
+
 ## 0.1.6
 
 * Add optional native streaming and native file provider capabilities without

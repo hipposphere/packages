@@ -55,9 +55,14 @@ void main() {
       expect(object.bytes, orderedEquals('hello'.codeUnits));
       expect(object.metadata.contentLength, 5);
 
-      final streamed = await client.downloadStream('workspaces/alpha/report.txt');
+      final streamed = await client.downloadStream(
+        'workspaces/alpha/report.txt',
+      );
       expect(streamed.metadata.contentLength, 5);
-      expect(await streamed.body.expand((chunk) => chunk).toList(), 'hello'.codeUnits);
+      expect(
+        await streamed.body.expand((chunk) => chunk).toList(),
+        'hello'.codeUnits,
+      );
 
       await client.delete('workspaces/alpha/report.txt');
       expect(await client.exists('workspaces/alpha/report.txt'), isFalse);
@@ -67,17 +72,44 @@ void main() {
       final client = StorageClient(provider: InMemoryStorageProvider());
 
       expect(await client.downloadNativeStream('recordings/audio.wav'), isNull);
-      expect(await client.downloadToNativeFile('recordings/audio.wav', '/tmp/audio.wav'), isNull);
+      expect(
+        await client.downloadNativeStream(
+          'recordings/audio.wav',
+          range: const StorageByteRange.closed(0, 1023),
+        ),
+        isNull,
+      );
+      expect(
+        await client.downloadToNativeFile(
+          'recordings/audio.wav',
+          '/tmp/audio.wav',
+        ),
+        isNull,
+      );
     });
 
     test('delegates optional native download capabilities', () async {
       final provider = _NativeCapabilityStorageProvider();
       final client = StorageClient(provider: provider);
 
-      expect(() => client.downloadNativeStream('recordings/audio.wav'), throwsStateError);
-      final file = await client.downloadToNativeFile('recordings/audio.wav', '/native/audio.wav');
+      expect(
+        () => client.downloadNativeStream('recordings/audio.wav'),
+        throwsStateError,
+      );
+      expect(
+        () => client.downloadNativeStream(
+          'recordings/audio.wav',
+          range: const StorageByteRange.suffix(4096),
+        ),
+        throwsStateError,
+      );
+      final file = await client.downloadToNativeFile(
+        'recordings/audio.wav',
+        '/native/audio.wav',
+      );
 
       expect(provider.nativeStreamKey, 'recordings/audio.wav');
+      expect(provider.nativeRange?.suffixLength, 4096);
       expect(provider.nativeFileKey, 'recordings/audio.wav');
       expect(file?.outputPath, '/native/audio.wav');
       expect(file?.metadata.contentLength, 18);
@@ -94,7 +126,9 @@ void main() {
 
   group('FileSystemStorageProvider', () {
     test('persists bytes and metadata under a base directory', () async {
-      final tempDirectory = await Directory.systemTemp.createTemp('hippobase_storage_test_');
+      final tempDirectory = await Directory.systemTemp.createTemp(
+        'hippobase_storage_test_',
+      );
       addTearDown(() => tempDirectory.delete(recursive: true));
 
       final client = StorageClient(
@@ -117,7 +151,10 @@ void main() {
       expect(object.metadata.cacheControl, 'no-store');
 
       final streamed = await client.downloadStream('exports/data.json');
-      expect(await streamed.body.expand((chunk) => chunk).toList(), <int>[123, 125]);
+      expect(await streamed.body.expand((chunk) => chunk).toList(), <int>[
+        123,
+        125,
+      ]);
 
       await client.delete('exports/data.json');
       expect(await client.exists('exports/data.json'), isFalse);
@@ -168,10 +205,15 @@ class _CloseTrackingStorageProvider implements StorageProvider {
   }
 }
 
-final class _NativeCapabilityStorageProvider extends _CloseTrackingStorageProvider
-    implements NativeStreamingStorageProvider, NativeFileStorageProvider {
+final class _NativeCapabilityStorageProvider
+    extends _CloseTrackingStorageProvider
+    implements
+        NativeStreamingStorageProvider,
+        NativeRangedStreamingStorageProvider,
+        NativeFileStorageProvider {
   String? nativeStreamKey;
   String? nativeFileKey;
+  StorageByteRange? nativeRange;
 
   @override
   Future<StorageNativeDownloadStream> downloadNativeStream(String key) {
@@ -180,7 +222,20 @@ final class _NativeCapabilityStorageProvider extends _CloseTrackingStorageProvid
   }
 
   @override
-  Future<StorageNativeFileDownload> downloadToNativeFile(String key, String outputPath) async {
+  Future<StorageNativeDownloadStream> downloadNativeRangeStream(
+    String key,
+    StorageByteRange range,
+  ) {
+    nativeStreamKey = key;
+    nativeRange = range;
+    throw StateError('Native range stream test sentinel.');
+  }
+
+  @override
+  Future<StorageNativeFileDownload> downloadToNativeFile(
+    String key,
+    String outputPath,
+  ) async {
     nativeFileKey = key;
     return StorageNativeFileDownload(
       outputPath: outputPath,
