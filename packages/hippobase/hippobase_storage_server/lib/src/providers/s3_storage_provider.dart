@@ -6,9 +6,11 @@ import 'package:hippobase_storage_models/hippobase_storage_models.dart';
 import '../key_validation.dart';
 import '../storage_provider.dart';
 import '../storage_download_stream.dart';
+import '../storage_native_download.dart';
+import '../storage_native_provider.dart';
 
 /// Storage provider backed by an S3-compatible bucket.
-final class S3StorageProvider implements StorageProvider {
+final class S3StorageProvider implements StorageProvider, NativeStreamingStorageProvider {
   const S3StorageProvider({required this.client, required this.bucket});
 
   final DartEdgeS3Client client;
@@ -41,6 +43,16 @@ final class S3StorageProvider implements StorageProvider {
       body: object.body,
       metadata: _metadataFromS3(object.metadata),
       onClose: object.close,
+    );
+  }
+
+  @override
+  Future<StorageNativeDownloadStream> downloadNativeStream(String key) async {
+    validateStorageKey(key);
+    final object = await client.getObjectNativeStream(S3ObjectRef(bucket: bucket, key: key));
+    return StorageNativeDownloadStream(
+      body: object.body,
+      metadata: _metadataFromS3(object.metadata),
     );
   }
 

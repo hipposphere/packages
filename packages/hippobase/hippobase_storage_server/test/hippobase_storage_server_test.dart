@@ -63,6 +63,26 @@ void main() {
       expect(await client.exists('workspaces/alpha/report.txt'), isFalse);
     });
 
+    test('returns null for unsupported native download capabilities', () async {
+      final client = StorageClient(provider: InMemoryStorageProvider());
+
+      expect(await client.downloadNativeStream('recordings/audio.wav'), isNull);
+      expect(await client.downloadToNativeFile('recordings/audio.wav', '/tmp/audio.wav'), isNull);
+    });
+
+    test('delegates optional native download capabilities', () async {
+      final provider = _NativeCapabilityStorageProvider();
+      final client = StorageClient(provider: provider);
+
+      expect(() => client.downloadNativeStream('recordings/audio.wav'), throwsStateError);
+      final file = await client.downloadToNativeFile('recordings/audio.wav', '/native/audio.wav');
+
+      expect(provider.nativeStreamKey, 'recordings/audio.wav');
+      expect(provider.nativeFileKey, 'recordings/audio.wav');
+      expect(file?.outputPath, '/native/audio.wav');
+      expect(file?.metadata.contentLength, 18);
+    });
+
     test('rejects empty, absolute, and parent-traversal keys', () async {
       final client = StorageClient(provider: InMemoryStorageProvider());
 
@@ -105,7 +125,7 @@ void main() {
   });
 }
 
-final class _CloseTrackingStorageProvider implements StorageProvider {
+class _CloseTrackingStorageProvider implements StorageProvider {
   var closeCount = 0;
 
   @override
@@ -145,5 +165,26 @@ final class _CloseTrackingStorageProvider implements StorageProvider {
     StorageWriteOptions options = const StorageWriteOptions(),
   }) {
     throw UnimplementedError();
+  }
+}
+
+final class _NativeCapabilityStorageProvider extends _CloseTrackingStorageProvider
+    implements NativeStreamingStorageProvider, NativeFileStorageProvider {
+  String? nativeStreamKey;
+  String? nativeFileKey;
+
+  @override
+  Future<StorageNativeDownloadStream> downloadNativeStream(String key) {
+    nativeStreamKey = key;
+    throw StateError('Native stream test sentinel.');
+  }
+
+  @override
+  Future<StorageNativeFileDownload> downloadToNativeFile(String key, String outputPath) async {
+    nativeFileKey = key;
+    return StorageNativeFileDownload(
+      outputPath: outputPath,
+      metadata: const StorageObjectMetadata(contentLength: 18),
+    );
   }
 }

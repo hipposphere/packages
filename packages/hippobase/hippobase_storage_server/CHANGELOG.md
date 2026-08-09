@@ -1,3 +1,10 @@
+## 0.1.6
+
+* Add optional native streaming and native file provider capabilities without
+  changing the base `StorageProvider` contract.
+* Implement native streaming for `S3StorageProvider` and require
+  `dart_edge_s3_client` 0.3.16.
+
 ## 0.1.5
 
 * Propagate explicit close callbacks for storage download streams so resources
