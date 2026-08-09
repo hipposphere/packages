@@ -1,6 +1,6 @@
-name: hippo_core_flutter
-description: Flutter bindings and storage implementations for hippo_core primitives.
-version: 0.2.0
+name: hippo_core_flutter_secure_storage
+description: A flutter_secure_storage-backed KeyValueStore adapter for hippo_core.
+version: 0.1.0
 homepage: https://hippolabs.org
 publish_to: "https://pub.hippolabs.org"
 resolution: workspace
@@ -12,11 +12,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_secure_storage: ^11.0.0
   hippo_core:
     hosted: https://pub.hippolabs.org
     version: ^0.1.8
-  path_provider: ^2.1.5
-  rxdart: ^0.28.0
 
 dev_dependencies:
   flutter_test:

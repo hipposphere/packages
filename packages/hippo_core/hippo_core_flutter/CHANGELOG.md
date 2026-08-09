@@ -1,3 +1,9 @@
+## 0.2.0
+
+- Move `SharedPreferencesKeyValueStore` to `hippo_core_flutter_shared_preferences`.
+- Move `SecureKeyValueStore` to `hippo_core_flutter_secure_storage`.
+- Remove the `shared_preferences` and `flutter_secure_storage` dependencies.
+
 ## 0.1.11
 
 - Add `FrameRateTickerProvider` for driving standard Flutter animation

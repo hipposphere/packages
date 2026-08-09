@@ -9,11 +9,17 @@ This package contains:
 - `ResourceLeaseBuilder` for mounted, identity-scoped access to leased resources.
 - `ContentLane`, `ContentLayout`, `BoxAsSliver`, and `SliverSequence` for
   consistent box and sliver layouts without hiding their protocol boundary.
-- `SharedPreferencesKeyValueStore`, `SecureKeyValueStore`, and `MockKeyValueStore`.
+- `MockKeyValueStore` for tests and in-memory app state.
 - `ApplicationSupportObjectStore` and `SecureKeyValueObjectStoreKeyring` for encrypted
   file-backed object caches.
 - `FrameRateTickerProvider` for ambient animations whose content frame rate is
   lower than the display refresh rate.
+
+Persistent `KeyValueStore` adapters are opt-in packages so applications only
+include the plugins they use:
+
+- `hippo_core_flutter_shared_preferences` provides `SharedPreferencesKeyValueStore`.
+- `hippo_core_flutter_secure_storage` provides `SecureKeyValueStore`.
 
 ## Frame-rate-limited animations
 
