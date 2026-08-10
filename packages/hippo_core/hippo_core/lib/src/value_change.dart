@@ -7,14 +7,13 @@
 // SPDX-License-Identifier: LicenseRef-Hipposphere-Proprietary
 // ---------------------------------------------------------------------------
 */
-export 'src/bloc.dart';
-export 'src/cache.dart';
-export 'src/data_subject/data_subject.dart';
-export 'src/data_subject/data_value.dart';
-export 'src/filter/filter.dart';
-export 'src/filter/filter_controller.dart';
-export 'src/object_store.dart';
-export 'src/store/key_value_store.dart';
-export 'src/store/store_controller.dart';
-export 'src/typedefs/typedefs.dart';
-export 'src/value_change.dart';
+
+/// An explicit value update, including an explicit `null` value.
+///
+/// This is useful for APIs such as `copyWith`, where `null` means "set the
+/// value to null" and a nullable argument means "leave the value unchanged".
+final class ValueChange<T> {
+  const ValueChange(this.value);
+
+  final T value;
+}

@@ -1,3 +1,7 @@
+## 0.1.10
+
+* Add `ValueChange` for explicit nullable value updates.
+
 ## 0.1.9
 
 * Add read-only `DataValue` and typed lazy derived-value APIs.
