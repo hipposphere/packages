@@ -20,7 +20,7 @@ class AppSettings {
     }
     return AppSettings(
       themeMode: AppThemeMode.values.byName(data['theme_mode']),
-      locale: AppLocale.values.byName(data['locale']),
+      locale: data['locale'] == 'en' ? AppLocale.enUs : AppLocale.values.byName(data['locale']),
     );
   }
 

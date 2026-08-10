@@ -2,25 +2,28 @@ part of '../app_settings.dart';
 
 enum AppLocale {
   system,
-  en,
+  enUs,
+  enUk,
   de,
+  es,
+  pt,
+  ja,
+  fr,
+  nl,
   zh;
 
   Locale toLocale(Locale systemLocale) {
     return switch (this) {
       system => systemLocale,
-      en => Locale('en'),
+      enUs => Locale('en', 'US'),
+      enUk => Locale('en', 'GB'),
       de => Locale('de'),
+      es => Locale('es'),
+      pt => Locale('pt'),
+      ja => Locale('ja'),
+      fr => Locale('fr'),
+      nl => Locale('nl'),
       zh => Locale('zh'),
-    };
-  }
-
-  String toLocaleName(BuildContext context) {
-    return switch (this) {
-      system => 'System',
-      en => 'English',
-      de => 'Deutsch',
-      zh => '中文',
     };
   }
 }
