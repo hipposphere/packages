@@ -1,3 +1,7 @@
+## 0.1.13
+
+- Fix frame-rate ticker interval calculation on Flutter web.
+
 ## 0.1.12
 
 - Move `SharedPreferencesKeyValueStore` to `hippo_core_flutter_shared_preferences`.

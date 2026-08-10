@@ -34,6 +34,9 @@ import 'package:flutter/widgets.dart';
 /// not give a widget subtree an independent compositor or make a target rate
 /// equal to the display refresh rate cheaper.
 final class FrameRateTickerProvider implements TickerProvider {
+  // Dart web integers are only precise through Number.MAX_SAFE_INTEGER.
+  static const _maximumWebSafeInteger = 0x1fffffffffffff;
+
   /// Creates a provider capped at [framesPerSecond].
   FrameRateTickerProvider({required double framesPerSecond})
     : _framesPerSecond = _validateFramesPerSecond(framesPerSecond);
@@ -108,12 +111,12 @@ final class FrameRateTickerProvider implements TickerProvider {
     _disposed = true;
   }
 
-  Duration get _frameInterval => Duration(
-    microseconds: (Duration.microsecondsPerSecond / _framesPerSecond).round().clamp(1, 1 << 62),
-  );
+  Duration get _frameInterval => _intervalForRate(_framesPerSecond);
 
-  Duration get _displayInterval => Duration(
-    microseconds: (Duration.microsecondsPerSecond / _displayRefreshRate).round().clamp(1, 1 << 62),
+  Duration get _displayInterval => _intervalForRate(_displayRefreshRate);
+
+  static Duration _intervalForRate(double rate) => Duration(
+    microseconds: (Duration.microsecondsPerSecond / rate).clamp(1, _maximumWebSafeInteger).round(),
   );
 
   void _timingDidChange() {
