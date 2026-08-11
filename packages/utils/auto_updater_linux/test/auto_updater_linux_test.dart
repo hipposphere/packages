@@ -1,10 +1,20 @@
 import 'dart:convert';
 
 import 'package:auto_updater_linux/auto_updater_linux.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  const uiChannel = MethodChannel('test.auto_updater_linux/ui');
+
+  tearDown(() async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+      uiChannel,
+      null,
+    );
+  });
 
   test('requires an absolute HTTPS feed URL', () async {
     final updater = AutoUpdaterLinux();
@@ -31,5 +41,42 @@ void main() {
 
     await expectLater(updater.setScheduledCheckInterval(3599), throwsArgumentError);
     await updater.setScheduledCheckInterval(0);
+  });
+
+  test('manual checks show progress and surface failures', () async {
+    final calls = <MethodCall>[];
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+      uiChannel,
+      (call) async {
+        calls.add(call);
+        return null;
+      },
+    );
+    final updater = AutoUpdaterLinux(uiChannel: uiChannel);
+
+    await updater.checkForUpdates();
+
+    expect(calls.map((call) => call.method), [
+      'showCheckingProgress',
+      'closeCheckingProgress',
+      'showError',
+    ]);
+    expect(calls.last.arguments, containsPair('message', contains('Call setFeedURL')));
+  });
+
+  test('background checks do not show UI', () async {
+    final calls = <MethodCall>[];
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+      uiChannel,
+      (call) async {
+        calls.add(call);
+        return null;
+      },
+    );
+    final updater = AutoUpdaterLinux(uiChannel: uiChannel);
+
+    await updater.checkForUpdates(inBackground: true);
+
+    expect(calls, isEmpty);
   });
 }

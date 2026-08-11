@@ -27,6 +27,15 @@ void main() {
     expect(items.single, containsPair('fileURL', 'https://example.com/app-aarch64.AppImage'));
   });
 
+  test('accepts a Linux enclosure without a custom architecture', () {
+    final appcast = parser.parse(_feedWithoutArchitecture, architecture: 'x86_64');
+    final items = appcast['items']! as List;
+
+    expect(items, hasLength(1));
+    expect(items.single, containsPair('versionString', '0.21.2+181'));
+    expect(items.single, containsPair('architecture', 'x86_64'));
+  });
+
   test('rejects malformed XML', () {
     expect(() => parser.parse('<rss>', architecture: 'x86_64'), throwsA(isA<XmlTagException>()));
   });
@@ -81,6 +90,23 @@ const _feed = '''
         length="125"
         sparkle:os="linux"
         hippo:arch="x86_64"
+        sparkle:edSignature="signature" />
+    </item>
+  </channel>
+</rss>
+''';
+
+const _feedWithoutArchitecture = '''
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <item>
+      <sparkle:version>0.21.2+181</sparkle:version>
+      <sparkle:shortVersionString>0.21.2</sparkle:shortVersionString>
+      <enclosure
+        url="https://example.com/app-x86_64.AppImage"
+        length="123"
+        sparkle:os="linux"
         sparkle:edSignature="signature" />
     </item>
   </channel>

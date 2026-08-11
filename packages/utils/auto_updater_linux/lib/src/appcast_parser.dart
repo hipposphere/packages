@@ -19,7 +19,7 @@ final class LinuxAppcastParser {
       final operatingSystem = _attribute(enclosure, 'os', namespace: _sparkleNamespace);
       final itemArchitecture = _attribute(enclosure, 'arch', namespace: _hippoNamespace);
       if (operatingSystem != 'linux' ||
-          itemArchitecture != architecture ||
+          (itemArchitecture != null && itemArchitecture != architecture) ||
           !_isDefaultChannel(element)) {
         continue;
       }
@@ -44,7 +44,7 @@ final class LinuxAppcastParser {
         'maximumSystemVersion': _sparkleText(element, 'maximumSystemVersion'),
         'channel': _sparkleText(element, 'channel'),
         'operatingSystem': operatingSystem,
-        'architecture': itemArchitecture,
+        'architecture': itemArchitecture ?? architecture,
         'contentType': enclosure.getAttribute('type'),
         'edSignature': _attribute(enclosure, 'edSignature', namespace: _sparkleNamespace),
       });

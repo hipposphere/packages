@@ -36,6 +36,7 @@ struct _AutoUpdaterLinuxPlugin {
 
   FlPluginRegistrar* registrar;
   FlMethodChannel* channel;
+  GtkWidget* checking_dialog;
   GtkWidget* progress_dialog;
   GtkWidget* progress_bar;
 };
@@ -161,6 +162,37 @@ void ShowProgress(AutoUpdaterLinuxPlugin* self, FlValue* arguments) {
   gtk_widget_show_all(dialog);
 }
 
+void ShowCheckingProgress(AutoUpdaterLinuxPlugin* self, FlValue* arguments) {
+  if (self->checking_dialog != nullptr) {
+    gtk_widget_destroy(self->checking_dialog);
+  }
+  const gchar* title = StringArgument(arguments, "title");
+  const gchar* message = StringArgument(arguments, "message");
+  GtkWidget* dialog = gtk_dialog_new_with_buttons(
+      title == nullptr ? "Software Update" : title, ParentWindow(self),
+      GTK_DIALOG_MODAL, nullptr);
+  gtk_window_set_deletable(GTK_WINDOW(dialog), FALSE);
+  GtkWidget* area = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
+  GtkWidget* row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
+  GtkWidget* spinner = gtk_spinner_new();
+  GtkWidget* label = gtk_label_new(
+      message == nullptr ? "Checking for updates…" : message);
+  gtk_spinner_start(GTK_SPINNER(spinner));
+  gtk_box_pack_start(GTK_BOX(row), spinner, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(row), label, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(area), row, FALSE, FALSE, 16);
+  self->checking_dialog = dialog;
+  gtk_widget_show_all(dialog);
+  gtk_window_present(GTK_WINDOW(dialog));
+}
+
+void CloseCheckingProgress(AutoUpdaterLinuxPlugin* self) {
+  if (self->checking_dialog != nullptr) {
+    gtk_widget_destroy(self->checking_dialog);
+    self->checking_dialog = nullptr;
+  }
+}
+
 void CloseProgress(AutoUpdaterLinuxPlugin* self) {
   if (self->progress_dialog != nullptr) {
     gtk_widget_destroy(self->progress_dialog);
@@ -195,6 +227,12 @@ void HandleMethodCall(AutoUpdaterLinuxPlugin* self, FlMethodCall* call) {
   } else if (strcmp(method, "showError") == 0) {
     ShowMessage(self, GTK_MESSAGE_ERROR, StringArgument(arguments, "title"),
                 StringArgument(arguments, "message"), nullptr);
+    RespondSuccess(call);
+  } else if (strcmp(method, "showCheckingProgress") == 0) {
+    ShowCheckingProgress(self, arguments);
+    RespondSuccess(call);
+  } else if (strcmp(method, "closeCheckingProgress") == 0) {
+    CloseCheckingProgress(self);
     RespondSuccess(call);
   } else if (strcmp(method, "showDownloadProgress") == 0) {
     ShowProgress(self, arguments);
@@ -239,6 +277,7 @@ void MethodCallCallback(FlMethodChannel* channel, FlMethodCall* call,
 
 static void auto_updater_linux_plugin_dispose(GObject* object) {
   AutoUpdaterLinuxPlugin* self = AUTO_UPDATER_LINUX_PLUGIN(object);
+  CloseCheckingProgress(self);
   CloseProgress(self);
   g_clear_object(&self->channel);
   g_clear_object(&self->registrar);

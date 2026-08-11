@@ -64,6 +64,7 @@ final class AutoUpdaterLinux extends AutoUpdaterPlatform {
   Future<void> checkForUpdates({bool? inBackground}) {
     final background = inBackground ?? false;
     return _check(
+      showChecking: !background,
       showUpdatePrompt: !background,
       showNoUpdate: !background,
       showErrors: !background,
@@ -85,11 +86,14 @@ final class AutoUpdaterLinux extends AutoUpdaterPlatform {
       );
     }
     _scheduledCheck = Timer.periodic(Duration(seconds: interval), (_) {
-      unawaited(_check(showUpdatePrompt: true, showNoUpdate: false, showErrors: false));
+      unawaited(
+        _check(showChecking: false, showUpdatePrompt: true, showNoUpdate: false, showErrors: false),
+      );
     });
   }
 
   Future<void> _check({
+    required bool showChecking,
     required bool showUpdatePrompt,
     required bool showNoUpdate,
     required bool showErrors,
@@ -98,7 +102,25 @@ final class AutoUpdaterLinux extends AutoUpdaterPlatform {
       return;
     }
     _checking = true;
+    var checkingDialogVisible = false;
+
+    Future<void> closeCheckingDialog() async {
+      if (!checkingDialogVisible) {
+        return;
+      }
+      checkingDialogVisible = false;
+      await _uiChannel.invokeMethod<void>('closeCheckingProgress');
+    }
+
     try {
+      if (showChecking) {
+        await _uiChannel.invokeMethod<void>('showCheckingProgress', {
+          'title': 'Software Update',
+          'message': 'Checking for updates…',
+        });
+        checkingDialogVisible = true;
+      }
+
       final feedUri = _feedUri;
       if (feedUri == null) {
         throw StateError('Call setFeedURL before checking for updates.');
@@ -121,6 +143,7 @@ final class AutoUpdaterLinux extends AutoUpdaterPlatform {
       if (item == null) {
         _emit('update-not-available');
         if (showNoUpdate) {
+          await closeCheckingDialog();
           await _showInformation(
             title: packageInfo.appName,
             message: 'You’re up to date.',
@@ -135,6 +158,7 @@ final class AutoUpdaterLinux extends AutoUpdaterPlatform {
         return;
       }
 
+      await closeCheckingDialog();
       final accepted = await _showUpdateDialog(
         appName: packageInfo.appName,
         currentVersion: packageInfo.version,
@@ -148,9 +172,11 @@ final class AutoUpdaterLinux extends AutoUpdaterPlatform {
     } catch (error) {
       _emit('error', {'error': error.toString()});
       if (showErrors) {
+        await closeCheckingDialog();
         await _showError(title: 'Update failed', message: error.toString());
       }
     } finally {
+      await closeCheckingDialog();
       _checking = false;
     }
   }

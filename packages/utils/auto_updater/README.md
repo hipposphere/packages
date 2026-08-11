@@ -63,6 +63,14 @@ AppImage from a user-writable directory. The AppImage should contain the
 standard Flutter Linux bundle, including the plugin's
 `auto_updater_linux_helper` executable.
 
+An explicit `checkForUpdates()` call shows progress and always ends with an
+update prompt, an up-to-date message, or an error. Background and scheduled
+checks do not show progress or no-update messages; background checks remain
+fully silent, while scheduled checks prompt when an update is available.
+Installing an available update still requires the app to be running from its
+AppImage; development builds, Flatpak, deb, and rpm installations can check the
+feed but cannot self-update.
+
 Sign the final AppImage using an exported Sparkle Ed25519 private key:
 
 ```sh

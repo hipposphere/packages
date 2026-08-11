@@ -26,6 +26,20 @@ void main() {
     expect(selector.compareVersions('2.0', '2'), 0);
   });
 
+  test('compares Flutter semver build metadata with the installed build number', () {
+    final selected = selector.select({
+      'items': [_item('0.21.2+181'), _item('0.24.0+195')],
+    }, installedBuild: '190');
+
+    expect(selected, containsPair('versionString', '0.24.0+195'));
+    expect(
+      selector.select({
+        'items': [_item('0.21.2+181')],
+      }, installedBuild: '181'),
+      isNull,
+    );
+  });
+
   test('requires HTTPS artifact and release notes URLs', () {
     expect(
       () => selector.select({

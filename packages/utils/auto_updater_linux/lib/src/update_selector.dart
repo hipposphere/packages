@@ -19,10 +19,12 @@ final class LinuxUpdateSelector {
       if (version is! String || version.isEmpty) {
         throw const FormatException('A Linux appcast item is missing sparkle:version.');
       }
-      if (compareVersions(version, installedBuild) <= 0) {
+      final build = _buildFromVersion(version);
+      if (compareVersions(build, installedBuild) <= 0) {
         continue;
       }
-      if (selected == null || compareVersions(version, selected['versionString']! as String) > 0) {
+      if (selected == null ||
+          compareVersions(build, _buildFromVersion(selected['versionString']! as String)) > 0) {
         selected = item;
       }
     }
@@ -49,6 +51,15 @@ final class LinuxUpdateSelector {
       }
     }
     return 0;
+  }
+
+  String _buildFromVersion(String version) {
+    final separator = version.lastIndexOf('+');
+    if (separator < 0 || separator == version.length - 1) {
+      return version;
+    }
+    final build = version.substring(separator + 1);
+    return BigInt.tryParse(build) == null ? version : build;
   }
 
   void _validateUpdateItem(Map<String, Object?> item) {
