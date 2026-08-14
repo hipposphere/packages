@@ -1,3 +1,8 @@
+## 0.1.11
+
+* Add injectable UUID generation through `UuidGenerator` and `RandomUuidGenerator`.
+* Add the platform-neutral `RuntimePlatform` model and category helpers.
+
 ## 0.1.10
 
 * Add `ValueChange` for explicit nullable value updates.

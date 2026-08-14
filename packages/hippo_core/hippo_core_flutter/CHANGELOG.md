@@ -1,3 +1,7 @@
+## 0.1.14
+
+- Add `currentRuntimePlatform` for Flutter applications.
+
 ## 0.1.13
 
 - Fix frame-rate ticker interval calculation on Flutter web.
