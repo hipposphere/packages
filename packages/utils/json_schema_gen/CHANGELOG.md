@@ -1,3 +1,7 @@
+## 0.1.5
+
+- Support analyzer 14.x while retaining analyzer 13.x compatibility.
+
 ## 0.1.2
 
 - Preserve primitive JSON Schema defaults and apply them to generated optional
