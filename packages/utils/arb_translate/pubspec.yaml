@@ -2,7 +2,7 @@ name: arb_translate
 description: >-
   A command-line tool for automatically generating missing translations to ARB
   files using Google Gemini or OpenAI ChatGPT by LeanCode.
-version: 1.3.4
+version: 1.3.5
 publish_to: https://pub.hippolabs.org
 resolution: workspace
 topics:
@@ -16,14 +16,14 @@ executables:
   arb_translate:
 
 environment:
-  sdk: ">=3.12.0 <4.0.0"
+  sdk: ">=3.13.0 <4.0.0"
 
 dependencies:
   args: ^2.7.0
   collection: ^1.19.1
   openai_dart: ">= 8.0.0 < 9.0.0"
   file: ^7.0.1
-  googleai_dart: ">= 10.0.0 < 11.0.0"
+  googleai_dart: ">= 11.0.0 < 12.0.0"
   http: ^1.6.0
   intl: ^0.20.2
   meta: ^1.16.0
