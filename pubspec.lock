@@ -333,10 +333,10 @@ packages:
     dependency: transitive
     description:
       name: dart_edge_s3_client
-      sha256: "6228bd301858adb95f7ffb18d16cbfd3ec6657f2475b1fce113d4c2d2b3ac8dd"
+      sha256: c2cd0f232b89734a086e3bcdb659ac206c75ed8058679d0d3145acc0c698047d
       url: "https://registry.hippolabs.org/pub/internal-pub/"
     source: hosted
-    version: "0.3.17"
+    version: "0.3.18"
   dart_edge_sql:
     dependency: transitive
     description:

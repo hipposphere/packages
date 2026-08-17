@@ -1,3 +1,10 @@
+## 0.1.8
+
+* Add an optional provider-neutral native streaming upload capability.
+* Forward native S3 upload bodies directly to `dart_edge_s3_client` without
+  materializing their chunks in Dart memory.
+* Require `dart_edge_s3_client` 0.3.18.
+
 ## 0.1.7
 
 * Add optional provider-neutral native byte-range downloads.

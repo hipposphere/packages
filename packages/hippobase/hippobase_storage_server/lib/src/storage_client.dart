@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:dart_edge_native_bridge/dart_edge_native_bridge.dart';
 import 'package:hippobase_storage_models/hippobase_storage_models.dart';
 
 import 'key_validation.dart';
@@ -92,5 +93,35 @@ final class StorageClient {
   }) {
     validateStorageKey(key);
     return provider.upload(key, bytes, options: options);
+  }
+
+  /// Moves [body] into the provider when native streaming uploads are
+  /// supported. Returns `false` without consuming [body] otherwise.
+  Future<bool> uploadNativeStream(
+    String key,
+    NativeByteStreamHandle body, {
+    required int contentLength,
+    StorageWriteOptions options = const StorageWriteOptions(),
+  }) {
+    validateStorageKey(key);
+    if (contentLength < 0) {
+      throw RangeError.value(
+        contentLength,
+        'contentLength',
+        'Native upload content length must not be negative.',
+      );
+    }
+    final provider = this.provider;
+    if (provider case NativeStreamingUploadStorageProvider nativeProvider) {
+      return nativeProvider
+          .uploadNativeStream(
+            key,
+            body,
+            contentLength: contentLength,
+            options: options,
+          )
+          .then((_) => true);
+    }
+    return Future.value(false);
   }
 }

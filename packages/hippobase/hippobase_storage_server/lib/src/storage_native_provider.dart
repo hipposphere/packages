@@ -1,3 +1,4 @@
+import 'package:dart_edge_native_bridge/dart_edge_native_bridge.dart';
 import 'package:hippobase_storage_models/hippobase_storage_models.dart';
 
 import 'storage_native_download.dart';
@@ -23,4 +24,15 @@ abstract interface class NativeFileStorageProvider {
     String key,
     String outputPath,
   );
+}
+
+/// Optional capability for providers that can consume a single-owner native
+/// byte stream without materializing its chunks in Dart.
+abstract interface class NativeStreamingUploadStorageProvider {
+  Future<void> uploadNativeStream(
+    String key,
+    NativeByteStreamHandle body, {
+    required int contentLength,
+    StorageWriteOptions options = const StorageWriteOptions(),
+  });
 }

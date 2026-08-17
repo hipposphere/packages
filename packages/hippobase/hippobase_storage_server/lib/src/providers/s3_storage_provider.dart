@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dart_edge_core/dart_edge_core.dart';
+import 'package:dart_edge_native_bridge/dart_edge_native_bridge.dart';
 import 'package:dart_edge_s3_client/dart_edge_s3_client.dart';
 import 'package:hippobase_storage_models/hippobase_storage_models.dart';
 
@@ -15,7 +16,8 @@ final class S3StorageProvider
     implements
         StorageProvider,
         NativeStreamingStorageProvider,
-        NativeRangedStreamingStorageProvider {
+        NativeRangedStreamingStorageProvider,
+        NativeStreamingUploadStorageProvider {
   const S3StorageProvider({required this.client, required this.bucket});
 
   final DartEdgeS3Client client;
@@ -124,6 +126,28 @@ final class S3StorageProvider
         contentLanguage: options.contentLanguage,
         metadata: options.metadata,
       ),
+    );
+  }
+
+  @override
+  Future<void> uploadNativeStream(
+    String key,
+    NativeByteStreamHandle body, {
+    required int contentLength,
+    StorageWriteOptions options = const StorageWriteOptions(),
+  }) async {
+    validateStorageKey(key);
+    await client.putObjectNativeStream(
+      bucket: bucket,
+      key: key,
+      body: body,
+      contentLength: contentLength,
+      contentType: options.contentType,
+      cacheControl: options.cacheControl,
+      contentDisposition: options.contentDisposition,
+      contentEncoding: options.contentEncoding,
+      contentLanguage: options.contentLanguage,
+      metadata: options.metadata,
     );
   }
 }
