@@ -1,5 +1,0 @@
-# Libraries should not include pubspec.lock.
-/pubspec.lock
-.dart_tool/
-/build/
-/coverage/
