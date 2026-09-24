@@ -1,7 +1,7 @@
-## Next
+## 0.2.0
 
-- Add image pull progress and registry authentication.
-- Add typed container creation and removal.
+- Add one-shot container statistics collection.
+- Add cache-adjusted memory, network, block I/O, and process metrics.
 
 ## 0.1.0
 

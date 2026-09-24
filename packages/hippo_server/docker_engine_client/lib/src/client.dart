@@ -64,7 +64,10 @@ final class DockerEngineClient {
       DockerContainer.fromJson(await _getObject('/containers/${_segment(id)}/json'));
 
   Future<DockerContainerStats> containerStats(String id) async => DockerContainerStats.fromJson(
-    await _getObject('/containers/${_segment(id)}/stats', query: const {'stream': 'false'}),
+    await _getObject(
+      '/containers/${_segment(id)}/stats',
+      query: const {'stream': 'false', 'one-shot': 'true'},
+    ),
   );
 
   Stream<DockerContainerStats> watchContainerStats(String id) async* {

@@ -109,8 +109,23 @@ final class DockerContainerStats {
   final DateTime? readAt;
   final JsonObject raw;
 
-  int? get memoryUsageBytes => _nestedInt(raw, const ['memory_stats', 'usage']);
+  int? get memoryUsageBytes {
+    final usage = _nestedInt(raw, const ['memory_stats', 'usage']);
+    if (usage == null) return null;
+    final inactiveFile =
+        _nestedInt(raw, const ['memory_stats', 'stats', 'inactive_file']) ??
+        _nestedInt(raw, const ['memory_stats', 'stats', 'total_inactive_file']) ??
+        0;
+    return (usage - inactiveFile).clamp(0, usage);
+  }
+
   int? get memoryLimitBytes => _nestedInt(raw, const ['memory_stats', 'limit']);
+
+  int get networkReceivedBytes => _networkTotal('rx_bytes');
+  int get networkSentBytes => _networkTotal('tx_bytes');
+  int get blockReadBytes => _blockIoTotal('read');
+  int get blockWrittenBytes => _blockIoTotal('write');
+  int? get processCount => _nestedInt(raw, const ['pids_stats', 'current']);
 
   double? get memoryPercent {
     final usage = memoryUsageBytes;
@@ -132,6 +147,26 @@ final class DockerContainerStats {
     final systemDelta = system - previousSystem;
     if (cpuDelta < 0 || systemDelta <= 0) return null;
     return cpuDelta / systemDelta * onlineCpus * 100;
+  }
+
+  int _networkTotal(String field) {
+    final networks = raw['networks'];
+    if (networks is! Map) return 0;
+    return networks.values.fold<int>(0, (total, network) {
+      if (network is! Map) return total;
+      return total + (_optionalInteger(network[field]) ?? 0);
+    });
+  }
+
+  int _blockIoTotal(String operation) {
+    final entries = _nestedValue(raw, const ['blkio_stats', 'io_service_bytes_recursive']);
+    if (entries is! List) return 0;
+    return entries.fold<int>(0, (total, entry) {
+      if (entry is! Map || entry['op']?.toString().toLowerCase() != operation) {
+        return total;
+      }
+      return total + (_optionalInteger(entry['value']) ?? 0);
+    });
   }
 }
 
@@ -579,15 +614,20 @@ Map<String, String> _stringMap(Object? value) =>
 JsonObject _objectOrEmpty(Object? value) => value is Map ? jsonObject(value) : const {};
 
 int? _nestedInt(JsonObject json, List<String> path) {
-  Object? value = json;
-  for (final segment in path) {
-    if (value is! Map) return null;
-    value = value[segment];
-  }
+  final value = _nestedValue(json, path);
   return switch (value) {
     int number => number,
     num number => number.toInt(),
     String text => int.tryParse(text),
     _ => null,
   };
+}
+
+Object? _nestedValue(JsonObject json, List<String> path) {
+  Object? value = json;
+  for (final segment in path) {
+    if (value is! Map) return null;
+    value = value[segment];
+  }
+  return value;
 }

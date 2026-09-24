@@ -6,6 +6,45 @@ import 'package:test/test.dart';
 
 void main() {
   group('DockerEngineClient', () {
+    test('calculates detailed container resource metrics', () {
+      final stats = DockerContainerStats.fromJson(<String, Object?>{
+        'memory_stats': <String, Object?>{
+          'usage': 800,
+          'limit': 2000,
+          'stats': <String, Object?>{'inactive_file': 200},
+        },
+        'cpu_stats': <String, Object?>{
+          'cpu_usage': <String, Object?>{'total_usage': 300},
+          'system_cpu_usage': 2000,
+          'online_cpus': 2,
+        },
+        'precpu_stats': <String, Object?>{
+          'cpu_usage': <String, Object?>{'total_usage': 100},
+          'system_cpu_usage': 1000,
+        },
+        'networks': <String, Object?>{
+          'eth0': <String, Object?>{'rx_bytes': 20, 'tx_bytes': 30},
+          'eth1': <String, Object?>{'rx_bytes': 5, 'tx_bytes': 7},
+        },
+        'blkio_stats': <String, Object?>{
+          'io_service_bytes_recursive': <Object?>[
+            <String, Object?>{'op': 'Read', 'value': 40},
+            <String, Object?>{'op': 'Write', 'value': 50},
+          ],
+        },
+        'pids_stats': <String, Object?>{'current': 6},
+      });
+
+      expect(stats.cpuPercent, 40);
+      expect(stats.memoryUsageBytes, 600);
+      expect(stats.memoryPercent, 30);
+      expect(stats.networkReceivedBytes, 25);
+      expect(stats.networkSentBytes, 37);
+      expect(stats.blockReadBytes, 40);
+      expect(stats.blockWrittenBytes, 50);
+      expect(stats.processCount, 6);
+    });
+
     test('negotiates API version and lists resources', () async {
       final transport = _FakeTransport({
         '/version': _jsonResponse({
