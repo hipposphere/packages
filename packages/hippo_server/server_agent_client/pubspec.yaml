@@ -1,0 +1,12 @@
+name: server_agent_client
+description: Typed Dart protocol and Unix-socket client for Hippo Server Agent.
+version: 0.1.0
+homepage: https://hippolabs.org
+publish_to: "https://pub.hippolabs.org"
+resolution: workspace
+
+environment:
+  sdk: ">=3.13.0 <4.0.0"
+
+dev_dependencies:
+  test: ^1.30.0
