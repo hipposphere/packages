@@ -1,3 +1,7 @@
+## 0.2.1
+
+- Preserve Docker's previous CPU sample when collecting non-streaming stats.
+
 ## 0.2.0
 
 - Add one-shot container statistics collection.

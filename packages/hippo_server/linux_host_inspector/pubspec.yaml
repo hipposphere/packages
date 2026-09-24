@@ -1,6 +1,6 @@
 name: linux_host_inspector
 description: Typed, read-only Linux host and process inspection through procfs, sysfs, and libc.
-version: 0.2.0
+version: 0.2.1
 homepage: https://hippolabs.org
 publish_to: "https://pub.hippolabs.org"
 resolution: workspace

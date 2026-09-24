@@ -1,3 +1,8 @@
+## 0.2.1
+
+- Read the hostname from the inspected root filesystem so containerized
+  inspection is not affected by the container UTS namespace.
+
 ## 0.2.0
 
 - Add lightweight aggregate system metrics with configurable procfs and root

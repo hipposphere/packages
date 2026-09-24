@@ -17,7 +17,7 @@ void main() {
         '/host/proc/meminfo': <String>['MemTotal: 1000 kB\nMemAvailable: 400 kB\n'],
         '/host/proc/uptime': <String>['3600.5 0\n'],
         '/host/proc/loadavg': <String>['0.75 0.50 0.25 1/100 1\n'],
-        '/host/proc/sys/kernel/hostname': <String>['hippo-test\n'],
+        '/host/root/etc/hostname': <String>['hippo-test\n'],
       }),
       nativeSystem: const _NativeSystem(),
     );

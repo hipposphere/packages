@@ -25,7 +25,7 @@ final class LinuxSystemMetricsInspector {
       fileSystem.readText('$procPath/meminfo'),
       fileSystem.readText('$procPath/uptime'),
       fileSystem.readText('$procPath/loadavg'),
-      fileSystem.readText('$procPath/sys/kernel/hostname'),
+      fileSystem.readText(_rootFile('/etc/hostname')),
       Future<void>.delayed(sampleDuration),
     ]);
     final secondCpu = await _cpuSample();
@@ -48,6 +48,8 @@ final class LinuxSystemMetricsInspector {
       loadAverage1Minute: loadAverage,
     );
   }
+
+  String _rootFile(String path) => rootPath == '/' ? path : '$rootPath$path';
 
   Future<_CpuSample> _cpuSample() async {
     final lines = (await fileSystem.readText('$procPath/stat')).split('\n');
