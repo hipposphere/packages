@@ -166,6 +166,123 @@ void main() {
         ),
       );
     });
+
+    test('pulls images with typed progress and registry authentication', () async {
+      final transport = _FakeTransport(
+        {
+          '/version': _jsonResponse({'Version': '27', 'ApiVersion': '1.46'}),
+        },
+        streams: {
+          '/v1.46/images/create': DockerStreamResponse(
+            statusCode: 200,
+            headers: const {'content-type': 'application/json'},
+            stream: Stream.value(
+              utf8.encode(
+                '{"status":"Pulling fs layer","id":"layer-1"}\n'
+                '{"status":"Download complete","id":"layer-1",'
+                '"progressDetail":{"current":10,"total":10}}\n',
+              ),
+            ),
+          ),
+        },
+      );
+      final client = DockerEngineClient(transport);
+      await client.initialize();
+
+      final progress = await client
+          .pullImage(
+            'ghcr.io/hipposphere/server-agent',
+            tag: 'v0.1.0',
+            platform: 'linux/amd64',
+            authentication: const DockerRegistryAuth(username: 'robot', password: 'secret'),
+          )
+          .toList();
+
+      expect(progress, hasLength(2));
+      expect(progress.last.currentBytes, 10);
+      final request = transport.requests.last;
+      expect(request.method, 'POST');
+      expect(request.queryParameters, {
+        'fromImage': 'ghcr.io/hipposphere/server-agent',
+        'tag': 'v0.1.0',
+        'platform': 'linux/amd64',
+      });
+      final credentials = jsonDecode(
+        utf8.decode(base64Url.decode(request.headers['X-Registry-Auth']!)),
+      );
+      expect(credentials, {'username': 'robot', 'password': 'secret'});
+    });
+
+    test('creates and removes containers with typed configuration', () async {
+      final transport = _FakeTransport({
+        '/version': _jsonResponse({'Version': '27', 'ApiVersion': '1.46'}),
+        '/v1.46/containers/create': _jsonResponse({
+          'Id': 'new-container',
+          'Warnings': ['using default network'],
+        }, 201),
+        '/v1.46/containers/new-container': _emptyResponse(204),
+      });
+      final client = DockerEngineClient(transport);
+      await client.initialize();
+
+      final created = await client.createContainer(
+        const DockerContainerCreateRequest(
+          image: 'nginx:stable',
+          environment: {'APP_ENV': 'production'},
+          exposedPorts: ['80/tcp'],
+          hostConfig: DockerHostConfig(
+            binds: ['/srv/site:/usr/share/nginx/html:ro'],
+            portBindings: {
+              '80/tcp': [DockerPortBinding(hostIp: '127.0.0.1', hostPort: '8080')],
+            },
+            restartPolicy: DockerRestartPolicy.unlessStopped(),
+          ),
+        ),
+        name: 'website',
+      );
+      await client.removeContainer(created.id, force: true, removeVolumes: true);
+
+      expect(created.id, 'new-container');
+      expect(created.warnings, ['using default network']);
+      final createRequest = transport.requests[1];
+      expect(createRequest.method, 'POST');
+      expect(createRequest.queryParameters, {'name': 'website'});
+      final createBody = jsonObject(jsonDecode(utf8.decode(createRequest.body!)));
+      expect(createBody['Image'], 'nginx:stable');
+      expect(createBody['Env'], ['APP_ENV=production']);
+      expect(createBody['HostConfig'], isA<Map>());
+      final removeRequest = transport.requests[2];
+      expect(removeRequest.method, 'DELETE');
+      expect(removeRequest.queryParameters, {'v': 'true', 'force': 'true', 'link': 'false'});
+    });
+
+    test('surfaces image pull errors embedded in the progress stream', () async {
+      final transport = _FakeTransport(
+        {
+          '/version': _jsonResponse({'Version': '27', 'ApiVersion': '1.46'}),
+        },
+        streams: {
+          '/v1.46/images/create': DockerStreamResponse(
+            statusCode: 200,
+            headers: const {'content-type': 'application/json'},
+            stream: Stream.value(utf8.encode('{"error":"manifest unknown"}\n')),
+          ),
+        },
+      );
+      final client = DockerEngineClient(transport);
+      await client.initialize();
+
+      await expectLater(
+        client.pullImage('missing/image').drain<void>(),
+        throwsA(
+          isA<DockerEngineException>().having(
+            (error) => error.message,
+            'message',
+            'manifest unknown',
+          ),
+        ),
+      );
+    });
   });
 }
 

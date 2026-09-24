@@ -176,6 +176,213 @@ final class DockerImage {
   final JsonObject raw;
 }
 
+final class DockerRegistryAuth {
+  const DockerRegistryAuth({
+    this.username,
+    this.password,
+    this.email,
+    this.serverAddress,
+    this.identityToken,
+    this.registryToken,
+  });
+
+  final String? username;
+  final String? password;
+  final String? email;
+  final String? serverAddress;
+  final String? identityToken;
+  final String? registryToken;
+
+  JsonObject toJson() => {
+    if (username != null) 'username': username,
+    if (password != null) 'password': password,
+    if (email != null) 'email': email,
+    if (serverAddress != null) 'serveraddress': serverAddress,
+    if (identityToken != null) 'identitytoken': identityToken,
+    if (registryToken != null) 'registrytoken': registryToken,
+  };
+
+  String toHeaderValue() => base64Url.encode(utf8.encode(jsonEncode(toJson())));
+}
+
+final class DockerImagePullProgress {
+  const DockerImagePullProgress({
+    required this.status,
+    required this.id,
+    required this.progress,
+    required this.currentBytes,
+    required this.totalBytes,
+    required this.error,
+    required this.raw,
+  });
+
+  factory DockerImagePullProgress.fromJson(JsonObject json) {
+    final detail = _objectOrEmpty(json['progressDetail']);
+    final errorDetail = _objectOrEmpty(json['errorDetail']);
+    return DockerImagePullProgress(
+      status: json['status']?.toString(),
+      id: json['id']?.toString(),
+      progress: json['progress']?.toString(),
+      currentBytes: _optionalInteger(detail['current']),
+      totalBytes: _optionalInteger(detail['total']),
+      error: json['error']?.toString() ?? errorDetail['message']?.toString(),
+      raw: json,
+    );
+  }
+
+  final String? status;
+  final String? id;
+  final String? progress;
+  final int? currentBytes;
+  final int? totalBytes;
+  final String? error;
+  final JsonObject raw;
+}
+
+final class DockerContainerCreateRequest {
+  const DockerContainerCreateRequest({
+    required this.image,
+    this.hostname,
+    this.user,
+    this.environment = const {},
+    this.command = const [],
+    this.entrypoint = const [],
+    this.workingDirectory,
+    this.labels = const {},
+    this.exposedPorts = const [],
+    this.attachStdin = false,
+    this.attachStdout = true,
+    this.attachStderr = true,
+    this.openStdin = false,
+    this.tty = false,
+    this.stopSignal,
+    this.hostConfig = const DockerHostConfig(),
+  });
+
+  final String image;
+  final String? hostname;
+  final String? user;
+  final Map<String, String> environment;
+  final List<String> command;
+  final List<String> entrypoint;
+  final String? workingDirectory;
+  final Map<String, String> labels;
+  final List<String> exposedPorts;
+  final bool attachStdin;
+  final bool attachStdout;
+  final bool attachStderr;
+  final bool openStdin;
+  final bool tty;
+  final String? stopSignal;
+  final DockerHostConfig hostConfig;
+
+  JsonObject toJson() => {
+    'Image': image,
+    if (hostname != null) 'Hostname': hostname,
+    if (user != null) 'User': user,
+    if (environment.isNotEmpty)
+      'Env': environment.entries.map((entry) => '${entry.key}=${entry.value}').toList(),
+    if (command.isNotEmpty) 'Cmd': command,
+    if (entrypoint.isNotEmpty) 'Entrypoint': entrypoint,
+    if (workingDirectory != null) 'WorkingDir': workingDirectory,
+    if (labels.isNotEmpty) 'Labels': labels,
+    if (exposedPorts.isNotEmpty) 'ExposedPorts': {for (final port in exposedPorts) port: const {}},
+    'AttachStdin': attachStdin,
+    'AttachStdout': attachStdout,
+    'AttachStderr': attachStderr,
+    'OpenStdin': openStdin,
+    'Tty': tty,
+    if (stopSignal != null) 'StopSignal': stopSignal,
+    'HostConfig': hostConfig.toJson(),
+  };
+}
+
+final class DockerHostConfig {
+  const DockerHostConfig({
+    this.binds = const [],
+    this.portBindings = const {},
+    this.networkMode,
+    this.restartPolicy = const DockerRestartPolicy.no(),
+    this.autoRemove = false,
+    this.privileged = false,
+    this.readOnlyRootFilesystem = false,
+    this.capabilitiesToAdd = const [],
+    this.capabilitiesToDrop = const [],
+    this.securityOptions = const [],
+    this.memoryBytes,
+    this.nanoCpus,
+  });
+
+  final List<String> binds;
+  final Map<String, List<DockerPortBinding>> portBindings;
+  final String? networkMode;
+  final DockerRestartPolicy restartPolicy;
+  final bool autoRemove;
+  final bool privileged;
+  final bool readOnlyRootFilesystem;
+  final List<String> capabilitiesToAdd;
+  final List<String> capabilitiesToDrop;
+  final List<String> securityOptions;
+  final int? memoryBytes;
+  final int? nanoCpus;
+
+  JsonObject toJson() => {
+    if (binds.isNotEmpty) 'Binds': binds,
+    if (portBindings.isNotEmpty)
+      'PortBindings': {
+        for (final entry in portBindings.entries)
+          entry.key: entry.value.map((binding) => binding.toJson()).toList(),
+      },
+    if (networkMode != null) 'NetworkMode': networkMode,
+    'RestartPolicy': restartPolicy.toJson(),
+    'AutoRemove': autoRemove,
+    'Privileged': privileged,
+    'ReadonlyRootfs': readOnlyRootFilesystem,
+    if (capabilitiesToAdd.isNotEmpty) 'CapAdd': capabilitiesToAdd,
+    if (capabilitiesToDrop.isNotEmpty) 'CapDrop': capabilitiesToDrop,
+    if (securityOptions.isNotEmpty) 'SecurityOpt': securityOptions,
+    if (memoryBytes != null) 'Memory': memoryBytes,
+    if (nanoCpus != null) 'NanoCpus': nanoCpus,
+  };
+}
+
+final class DockerPortBinding {
+  const DockerPortBinding({this.hostIp, this.hostPort});
+
+  final String? hostIp;
+  final String? hostPort;
+
+  JsonObject toJson() => {
+    if (hostIp != null) 'HostIp': hostIp,
+    if (hostPort != null) 'HostPort': hostPort,
+  };
+}
+
+final class DockerRestartPolicy {
+  const DockerRestartPolicy._(this.name, this.maximumRetryCount);
+
+  const DockerRestartPolicy.no() : this._('no', 0);
+  const DockerRestartPolicy.always() : this._('always', 0);
+  const DockerRestartPolicy.unlessStopped() : this._('unless-stopped', 0);
+  const DockerRestartPolicy.onFailure({int maximumRetryCount = 0})
+    : this._('on-failure', maximumRetryCount);
+
+  final String name;
+  final int maximumRetryCount;
+
+  JsonObject toJson() => {'Name': name, 'MaximumRetryCount': maximumRetryCount};
+}
+
+final class DockerContainerCreateResult {
+  const DockerContainerCreateResult({required this.id, required this.warnings});
+
+  factory DockerContainerCreateResult.fromJson(JsonObject json) =>
+      DockerContainerCreateResult(id: _string(json, 'Id'), warnings: _strings(json['Warnings']));
+
+  final String id;
+  final List<String> warnings;
+}
+
 final class DockerVolume {
   const DockerVolume({
     required this.name,
@@ -358,6 +565,12 @@ int _integer(JsonObject json, String key) => switch (json[key]) {
   num value => value.toInt(),
   String value => int.parse(value),
   _ => 0,
+};
+int? _optionalInteger(Object? value) => switch (value) {
+  int number => number,
+  num number => number.toInt(),
+  String text => int.tryParse(text),
+  _ => null,
 };
 List<String> _strings(Object? value) =>
     value is List ? value.map((item) => item.toString()).toList(growable: false) : const [];

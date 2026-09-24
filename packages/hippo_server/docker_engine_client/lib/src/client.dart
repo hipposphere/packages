@@ -133,6 +133,59 @@ final class DockerEngineClient {
   Future<DockerImage> inspectImage(String id) async =>
       DockerImage.fromJson(await _getObject('/images/${_segment(id)}/json'));
 
+  Stream<DockerImagePullProgress> pullImage(
+    String image, {
+    String? tag,
+    String? platform,
+    DockerRegistryAuth? authentication,
+  }) async* {
+    final path = '/images/create';
+    final response = await _stream(
+      'POST',
+      path,
+      query: {
+        'fromImage': image,
+        ..._optionalQuery('tag', tag),
+        ..._optionalQuery('platform', platform),
+      },
+      headers: {if (authentication != null) 'X-Registry-Auth': authentication.toHeaderValue()},
+    );
+    await for (final json in decodeJsonLines(response.stream)) {
+      final progress = DockerImagePullProgress.fromJson(json);
+      if (progress.error case final error?) {
+        throw DockerEngineException(
+          message: error,
+          statusCode: response.statusCode,
+          path: _versioned(path),
+          body: json,
+        );
+      }
+      yield progress;
+    }
+  }
+
+  Future<DockerContainerCreateResult> createContainer(
+    DockerContainerCreateRequest request, {
+    String? name,
+    String? platform,
+  }) async => DockerContainerCreateResult.fromJson(
+    await _postObject(
+      '/containers/create',
+      query: {..._optionalQuery('name', name), ..._optionalQuery('platform', platform)},
+      body: request.toJson(),
+    ),
+  );
+
+  Future<void> removeContainer(
+    String id, {
+    bool removeVolumes = false,
+    bool force = false,
+    bool removeLinks = false,
+  }) => _deleteEmpty(
+    '/containers/${_segment(id)}',
+    query: {'v': '$removeVolumes', 'force': '$force', 'link': '$removeLinks'},
+  );
+
   Future<List<DockerVolume>> listVolumes({String? filters}) async {
     final response = await _getObject('/volumes', query: _optionalQuery('filters', filters));
     return jsonList(
@@ -180,8 +233,19 @@ final class DockerEngineClient {
   Future<List<Object?>> _getList(String path, {Map<String, String> query = const {}}) async =>
       jsonList(await _jsonRequest('GET', path, query: query));
 
-  Future<JsonObject> _postObject(String path, {Map<String, String> query = const {}}) async =>
-      jsonObject(await _jsonRequest('POST', path, query: query));
+  Future<JsonObject> _postObject(
+    String path, {
+    Map<String, String> query = const {},
+    JsonObject? body,
+  }) async => jsonObject(
+    await _jsonRequest(
+      'POST',
+      path,
+      query: query,
+      headers: {if (body != null) 'content-type': 'application/json'},
+      body: body == null ? null : utf8.encode(jsonEncode(body)),
+    ),
+  );
 
   Future<void> _postEmpty(String path, {Map<String, String> query = const {}}) async {
     final response = await transport.send(
@@ -190,15 +254,30 @@ final class DockerEngineClient {
     _ensureSuccess(response.statusCode, response.body, path);
   }
 
+  Future<void> _deleteEmpty(String path, {Map<String, String> query = const {}}) async {
+    final response = await transport.send(
+      DockerRequest(method: 'DELETE', path: _versioned(path), queryParameters: query),
+    );
+    _ensureSuccess(response.statusCode, response.body, path);
+  }
+
   Future<Object?> _jsonRequest(
     String method,
     String path, {
     Map<String, String> query = const {},
+    Map<String, String> headers = const {},
+    List<int>? body,
     bool versioned = true,
   }) async {
     final requestPath = versioned ? _versioned(path) : path;
     final response = await transport.send(
-      DockerRequest(method: method, path: requestPath, queryParameters: query),
+      DockerRequest(
+        method: method,
+        path: requestPath,
+        queryParameters: query,
+        headers: headers,
+        body: body,
+      ),
     );
     _ensureSuccess(response.statusCode, response.body, requestPath);
     if (response.body.isEmpty) return null;
@@ -209,10 +288,11 @@ final class DockerEngineClient {
     String method,
     String path, {
     Map<String, String> query = const {},
+    Map<String, String> headers = const {},
   }) async {
     final requestPath = _versioned(path);
     final response = await transport.sendStream(
-      DockerRequest(method: method, path: requestPath, queryParameters: query),
+      DockerRequest(method: method, path: requestPath, queryParameters: query, headers: headers),
     );
     if (response.statusCode >= 200 && response.statusCode < 300) return response;
     final bytes = <int>[];
