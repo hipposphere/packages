@@ -1,3 +1,8 @@
+## 0.2.0
+
+- Add lightweight aggregate system metrics with configurable procfs and root
+  filesystem paths for containerized host inspection.
+
 ## 0.1.0
 
 - Add typed host, CPU, memory, swap, load, disk, mount, network, and process inspection.

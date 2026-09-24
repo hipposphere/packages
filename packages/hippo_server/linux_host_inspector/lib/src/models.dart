@@ -1,3 +1,5 @@
+import 'native_system.dart';
+
 final class LinuxHostInfo {
   const LinuxHostInfo({
     required this.hostname,
@@ -77,6 +79,26 @@ final class LinuxCpuUsage {
   const LinuxCpuUsage({required this.percent});
 
   final double? percent;
+}
+
+final class LinuxSystemMetrics {
+  const LinuxSystemMetrics({
+    required this.hostname,
+    required this.cpuUsagePercent,
+    required this.logicalCpuCount,
+    required this.memory,
+    required this.rootFileSystem,
+    required this.uptime,
+    required this.loadAverage1Minute,
+  });
+
+  final String hostname;
+  final double cpuUsagePercent;
+  final int logicalCpuCount;
+  final LinuxMemoryUsage memory;
+  final LinuxFileSystemCapacity rootFileSystem;
+  final Duration uptime;
+  final double loadAverage1Minute;
 }
 
 final class LinuxMemoryUsage {
