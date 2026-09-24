@@ -8,7 +8,7 @@ void main() {
     projectName: 'example',
     profiles: ['observability'],
     environment: {'IMAGE_TAG': 'v1.2.3'},
-    envFile: '.env.production',
+    envFiles: ['public.env', '.env.production'],
   );
 
   test('builds typed pull and up commands without a shell', () async {
@@ -46,6 +46,8 @@ void main() {
       'example',
       '--profile',
       'observability',
+      '--env-file',
+      'public.env',
       '--env-file',
       '.env.production',
       'pull',

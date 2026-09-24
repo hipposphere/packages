@@ -152,7 +152,7 @@ final class DockerComposeClient {
       for (final file in project.files) ...['--file', file],
       if (project.projectName != null) ...['--project-name', project.projectName!],
       for (final profile in project.profiles) ...['--profile', profile],
-      if (project.envFile != null) ...['--env-file', project.envFile!],
+      for (final envFile in project.envFiles) ...['--env-file', envFile],
       ...command,
     ];
     final processResult = await processRunner.run(

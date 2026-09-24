@@ -7,7 +7,7 @@ final class DockerComposeProject {
     this.projectName,
     this.profiles = const [],
     this.environment = const {},
-    this.envFile,
+    this.envFiles = const [],
   });
 
   final String directory;
@@ -15,7 +15,7 @@ final class DockerComposeProject {
   final String? projectName;
   final List<String> profiles;
   final Map<String, String> environment;
-  final String? envFile;
+  final List<String> envFiles;
 }
 
 enum DockerComposePullPolicy {
