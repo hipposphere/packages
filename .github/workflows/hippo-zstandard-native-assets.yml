@@ -219,6 +219,11 @@ jobs:
             --target "$triple" \
             --target-dir ".dart_tool/native-assets/$PACKAGE"
 
+      - name: Verify Android 16 KB alignment
+        if: ${{ matrix.target.kind == 'android' }}
+        shell: bash
+        run: python3 "$PACKAGE_DIRECTORY/tool/check_android_alignment.py" "${{ matrix.target.source }}"
+
       - name: Stage artifact and checksum
         shell: pwsh
         run: |
