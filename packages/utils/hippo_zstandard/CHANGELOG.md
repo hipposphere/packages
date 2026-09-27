@@ -1,3 +1,9 @@
+## 0.1.2
+
+- Align Android native libraries to 16 KB pages, including builds using NDK r27.
+- Select native artifact version 0.1.1 so cached 4 KB binaries are not reused.
+- Check Android ELF load-segment alignment before publishing native artifacts.
+
 ## 0.1.1
 
 - Update the native asset hook to Code Assets 2 and the Hippolabs Rust toolchain

@@ -35,6 +35,19 @@ repository under a `hippo_zstandard-native-v<crate-version>` release. Native
 source or ABI changes must bump the version in `native/Cargo.toml` before the
 package is released.
 
+Android libraries use 16 KB ELF load-segment alignment. The crate's `build.rs`
+sets both Android linker page-size flags, including for NDK r27 and explicit
+source builds. The artifact workflow verifies the compiled libraries before
+uploading them:
+
+```sh
+python3 tool/check_android_alignment.py /path/to/libhippo_zstandard_native.so
+```
+
+Consumers must also use a compatible Android packaging toolchain and test on a
+16 KB device; ELF alignment alone does not verify APK ZIP alignment or runtime
+behavior. See [Android's page-size guidance](https://developer.android.com/guide/practices/page-sizes).
+
 Package developers can explicitly build from source with a hook user-define in
 the consuming workspace root. That is the only mode requiring `rustup`:
 
