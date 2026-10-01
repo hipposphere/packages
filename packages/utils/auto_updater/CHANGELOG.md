@@ -1,3 +1,9 @@
+## 1.2.0
+
+* Require auto_updater_macos 1.1.0 to fix stalled automatic-download sessions
+  and dropped manual checks.
+* Document macOS deferred startup, queued checks and PlatformExceptions.
+
 ## 1.1.0
 
 * feat(linux): Add signed AppImage updates for x86_64 and ARM64.

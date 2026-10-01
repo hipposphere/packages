@@ -1,5 +1,4 @@
 import Cocoa
-import FlutterMacOS
 import Sparkle
 
 extension SUAppcast {
@@ -39,48 +38,124 @@ extension SUAppcastItem {
     }
 }
 
+enum AutoUpdaterError: Error {
+    case feedURLNotSet
+}
+
+/// The Sparkle operations used by the plugin, injectable for native regression tests.
+protocol SparkleUpdaterControlling: AnyObject {
+    var canCheckForUpdates: Bool { get }
+    var sessionInProgress: Bool { get }
+    var updateCheckInterval: TimeInterval { get set }
+    func start() throws
+    func checkForUpdates()
+    func checkForUpdatesInBackground()
+    func observeCanCheckForUpdates(_ changed: @escaping () -> Void) -> AnyObject
+}
+
+extension SPUUpdater: SparkleUpdaterControlling {
+    func observeCanCheckForUpdates(_ changed: @escaping () -> Void) -> AnyObject {
+        observe(\.canCheckForUpdates) { _, _ in changed() }
+    }
+}
+
 public class AutoUpdater: NSObject, SPUUpdaterDelegate {
-    var _userDriver: SPUStandardUserDriver?
-    var _updater: SPUUpdater?
-    var feedURL: URL?
-    public var onEvent:((String, NSDictionary) -> Void)?
-    
+    private var userDriver: SPUStandardUserDriver?
+    private var controller: SparkleUpdaterControlling!
+    private var readinessObservation: AnyObject?
+    private var isStarted = false
+    private var startError: Error?
+    private var hasPendingUserCheck = false
+    private(set) var feedURL: URL?
+    public var onEvent: ((String, NSDictionary) -> Void)?
+
     override init() {
         super.init()
-        let hostBundle: Bundle = Bundle.main
-        
-        _userDriver = SPUStandardUserDriver(hostBundle: hostBundle, delegate: nil)
-        _updater = SPUUpdater(
+        let hostBundle = Bundle.main
+        userDriver = SPUStandardUserDriver(hostBundle: hostBundle, delegate: nil)
+        let updater = SPUUpdater(
             hostBundle: hostBundle,
             applicationBundle: hostBundle,
-            userDriver: _userDriver!,
+            userDriver: userDriver!,
             delegate: self
         )
-        _updater?.clearFeedURLFromUserDefaults()
-        try? _updater?.start()
-    }
-    
-    public func feedURLString(for updater: SPUUpdater) -> String? {
-        return feedURL?.absoluteString
+        updater.clearFeedURLFromUserDefaults()
+        controller = updater
+        configure(hasStaticFeed: hostBundle.object(forInfoDictionaryKey: "SUFeedURL") != nil)
     }
 
-    public func setFeedURL(_ feedURL: URL?) {
+    init(controller: SparkleUpdaterControlling, hasStaticFeed: Bool = false) {
+        self.controller = controller
+        super.init()
+        configure(hasStaticFeed: hasStaticFeed)
+    }
+
+    private func configure(hasStaticFeed: Bool) {
+        readinessObservation = controller.observeCanCheckForUpdates { [weak self] in
+            // KVO fires inside Sparkle's state transitions. Recheck readiness on the
+            // next main-loop turn, after Sparkle has finished updating its session.
+            DispatchQueue.main.async { [weak self] in self?.runPendingUserCheck() }
+        }
+        // Starting without a feed can disable scheduled updates for this launch.
+        // A static feed preserves the normal behavior for Info.plist-based clients.
+        if hasStaticFeed {
+            do { try start() } catch { /* Retained and returned by the next method call. */ }
+        }
+    }
+
+    public func feedURLString(for updater: SPUUpdater) -> String? {
+        feedURL?.absoluteString
+    }
+
+    public func setFeedURL(_ feedURL: URL) throws {
         self.feedURL = feedURL
-        try? _updater?.start()
+        try start()
     }
-    
-    public func checkForUpdates() {
-        _updater?.checkForUpdates()
+
+    private func start() throws {
+        guard !isStarted else { return }
+        do {
+            try controller.start()
+            isStarted = true
+            startError = nil
+        } catch {
+            startError = error
+            throw error
+        }
     }
-    
-    public func checkForUpdatesInBackground() {
-        _updater?.checkForUpdatesInBackground()
+
+    private func requireStarted() throws {
+        guard isStarted else { throw startError ?? AutoUpdaterError.feedURLNotSet }
     }
-    
+
+    public func checkForUpdates() throws {
+        try requireStarted()
+        if controller.canCheckForUpdates {
+            hasPendingUserCheck = false
+            controller.checkForUpdates()
+        } else {
+            // Multiple clicks join one request. A manual future acknowledges that
+            // the request was accepted; Sparkle's UI may appear after the download.
+            hasPendingUserCheck = true
+        }
+    }
+
+    private func runPendingUserCheck() {
+        guard hasPendingUserCheck, isStarted, controller.canCheckForUpdates else { return }
+        hasPendingUserCheck = false
+        controller.checkForUpdates()
+    }
+
+    public func checkForUpdatesInBackground() throws {
+        try requireStarted()
+        guard !controller.sessionInProgress else { return }
+        controller.checkForUpdatesInBackground()
+    }
+
     public func setScheduledCheckInterval(_ interval: Int) {
-        _updater?.updateCheckInterval = TimeInterval(interval)
+        controller.updateCheckInterval = TimeInterval(interval)
     }
-    
+
     // SPUUpdaterDelegate
     
     public func updater(_ updater: SPUUpdater, didAbortWithError error: Error) {
@@ -123,7 +198,10 @@ public class AutoUpdater: NSObject, SPUUpdaterDelegate {
             "appcastItem": item.toDictionary()
         ]
         _emitEvent("before-quit-for-update", data)
-        return true
+        // This plugin only reports readiness; it does not own installation.
+        // Returning true without invoking immediateInstallHandler stalls every
+        // later update cycle. Sparkle still installs on quit when we return false.
+        return false
     }
     
     public func _emitEvent(_ eventName: String, _ data: NSDictionary) {

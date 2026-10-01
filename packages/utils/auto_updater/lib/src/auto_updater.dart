@@ -76,6 +76,10 @@ class AutoUpdater {
 
   /// Sets the feed URL and initializes the auto updater.
   ///
+  /// On macOS, Sparkle starts on the first call unless the app defines
+  /// `SUFeedURL` in its Info.plist. Startup failures throw a `PlatformException`
+  /// with code `updater-start-failed`.
+  ///
   /// Linux requires the base64-encoded Sparkle Ed25519 [ed25519PublicKey].
   /// Native Sparkle implementations ignore this argument.
   Future<void> setFeedURL(String feedUrl, {String? ed25519PublicKey}) {
@@ -83,6 +87,13 @@ class AutoUpdater {
   }
 
   /// Asks the server whether there is an update. You must call setFeedURL before using this API.
+  ///
+  /// On macOS, a manual check made while Sparkle is busy is queued and runs
+  /// when Sparkle is ready. Repeated pending requests are coalesced. The future
+  /// completes when the request is accepted, before the check finishes.
+  /// Background checks are skipped during an active update session.
+  /// Before startup, this throws a `PlatformException` with code
+  /// `feed-url-not-set`, or `updater-start-failed` if startup failed.
   Future<void> checkForUpdates({bool? inBackground}) {
     return _platform.checkForUpdates(inBackground: inBackground);
   }

@@ -4,7 +4,17 @@ import FlutterMacOS
 public class AutoUpdaterMacosPlugin: NSObject, FlutterPlugin,FlutterStreamHandler {
     private var _eventSink: FlutterEventSink?
     
-    private var autoUpdater: AutoUpdater = AutoUpdater()
+    private let autoUpdater: AutoUpdater
+
+    override init() {
+        autoUpdater = AutoUpdater()
+        super.init()
+    }
+
+    init(autoUpdater: AutoUpdater) {
+        self.autoUpdater = autoUpdater
+        super.init()
+    }
     
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "dev.leanflutter.plugins/auto_updater", binaryMessenger: registrar.messenger)
@@ -13,8 +23,8 @@ public class AutoUpdaterMacosPlugin: NSObject, FlutterPlugin,FlutterStreamHandle
         let eventChannel = FlutterEventChannel(name: "dev.leanflutter.plugins/auto_updater_event", binaryMessenger: registrar.messenger)
         eventChannel.setStreamHandler(instance)
         instance.autoUpdater.onEvent = {
-            (eventName: String, eventData: NSDictionary) in
-            guard let eventSink = instance._eventSink else {
+            [weak instance] (eventName: String, eventData: NSDictionary) in
+            guard let eventSink = instance?._eventSink else {
                 return
             }
             let event: NSDictionary = [
@@ -38,29 +48,43 @@ public class AutoUpdaterMacosPlugin: NSObject, FlutterPlugin,FlutterStreamHandle
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         let args: [String: Any] = call.arguments as? [String: Any] ?? [:]
         
-        switch call.method {
-        case "setFeedURL":
-            let feedURL = URL(string: args["feedURL"] as! String)
-            autoUpdater.setFeedURL(feedURL)
-            result(true)
-            break
-        case "checkForUpdates":
-            let inBackground = args["inBackground"] as! Bool
-            if(inBackground) {
-                autoUpdater.checkForUpdatesInBackground()
-            }else {
-                autoUpdater.checkForUpdates()
+        do {
+            switch call.method {
+            case "setFeedURL":
+                guard let value = args["feedURL"] as? String,
+                      let feedURL = URL(string: value),
+                      let scheme = feedURL.scheme, !scheme.isEmpty else {
+                    result(FlutterError(code: "invalid-argument", message: "feedURL must be an absolute URL.", details: nil))
+                    return
+                }
+                try autoUpdater.setFeedURL(feedURL)
+            case "checkForUpdates":
+                guard let inBackground = args["inBackground"] as? Bool else {
+                    result(FlutterError(code: "invalid-argument", message: "inBackground must be a boolean.", details: nil))
+                    return
+                }
+                if inBackground {
+                    try autoUpdater.checkForUpdatesInBackground()
+                } else {
+                    try autoUpdater.checkForUpdates()
+                }
+            case "setScheduledCheckInterval":
+                guard let interval = args["interval"] as? Int, interval >= 0 else {
+                    result(FlutterError(code: "invalid-argument", message: "interval must be a non-negative integer.", details: nil))
+                    return
+                }
+                autoUpdater.setScheduledCheckInterval(interval)
+            default:
+                result(FlutterMethodNotImplemented)
+                return
             }
             result(true)
-            break
-        case "setScheduledCheckInterval":
-            let interval = args["interval"] as! Int
-            autoUpdater.setScheduledCheckInterval(interval)
-            result(true)
-            break
-        default:
-            result(FlutterMethodNotImplemented)
+        } catch AutoUpdaterError.feedURLNotSet {
+            result(FlutterError(code: "feed-url-not-set", message: "Call setFeedURL before checking for updates.", details: nil))
+        } catch {
+            let error = error as NSError
+            result(FlutterError(code: "updater-start-failed", message: error.localizedDescription,
+                                details: ["domain": error.domain, "code": error.code]))
         }
     }
 }
-
