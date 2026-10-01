@@ -30,6 +30,8 @@ jobs:
           tar -xf "$RUNNER_TEMP/sparkle.tar.xz" -C "$RUNNER_TEMP/sparkle"
       - name: Compile and run native regression tests
         run: |
+          flutter_binary=$(find "$FLUTTER_ROOT/bin/cache/artifacts/engine" -path '*/FlutterMacOS.framework/FlutterMacOS' -print -quit)
+          test -n "$flutter_binary"
           packages/utils/auto_updater_macos/tool/test_native.sh \
             "$RUNNER_TEMP/sparkle/Sparkle.framework" \
-            "$FLUTTER_ROOT/bin/cache/artifacts/engine/darwin-x64/FlutterMacOS.framework"
+            "$(dirname "$flutter_binary")"
