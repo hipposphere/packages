@@ -25,7 +25,7 @@ jobs:
       - name: Prepare real frameworks
         run: |
           flutter precache --macos
-          curl --fail --location https://github.com/sparkle-project/Sparkle/releases/download/2.9.4/Sparkle-2.9.4.tar.xz --output "$RUNNER_TEMP/sparkle.tar.xz"
+          curl --fail --location https://github.com/sparkle-project/Sparkle/releases/download/2.10.0/Sparkle-2.10.0.tar.xz --output "$RUNNER_TEMP/sparkle.tar.xz"
           mkdir "$RUNNER_TEMP/sparkle"
           tar -xf "$RUNNER_TEMP/sparkle.tar.xz" -C "$RUNNER_TEMP/sparkle"
       - name: Compile and run native regression tests

@@ -18,7 +18,7 @@ A new Flutter plugin project.
   s.dependency 'FlutterMacOS'
   s.dependency 'Sparkle', '>= 2.9.2', '< 3.0'
 
-  s.platform = :osx, '10.15'
+  s.platform = :osx, '12.0'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   s.swift_version = '5.0'
 end

@@ -1,3 +1,9 @@
+## 1.1.1
+
+* Align Swift Package Manager and CocoaPods deployment targets to macOS 12,
+  matching Sparkle 2.10 and the supported Flutter SDK. Fix builds that resolve
+  Sparkle 2.10 with the previous macOS 10.15 plugin target.
+
 ## 1.1.0
 
 * Fix Sparkle sessions remaining stalled after an automatic download. The

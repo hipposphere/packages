@@ -2,6 +2,8 @@
 
 The macOS implementation of `auto_updater`, using Sparkle 2.
 
+Requires macOS 12 or later for both Swift Package Manager and CocoaPods.
+
 ## Update lifecycle
 
 Call `setFeedURL` before checking for updates. Sparkle starts on the first call,
@@ -29,7 +31,7 @@ tool/test_native.sh /path/to/Sparkle.framework /path/to/FlutterMacOS.framework
 
 Both frameworks must include their native binaries, not only headers. The script
 builds an XCTest bundle against the real framework APIs and runs startup, queued
-checks, delegate and method-channel regressions. CI runs it with Sparkle 2.9.4.
+checks, delegate and method-channel regressions. CI runs it with Sparkle 2.10.0.
 The delegate fixture uses Sparkle's deprecated public appcast-item constructor;
 it does not depend on private Sparkle APIs.
 

@@ -1,3 +1,8 @@
+## 1.2.1
+
+* Require auto_updater_macos 1.1.1 to fix the deployment-target mismatch when
+  resolving Sparkle 2.10. macOS requires version 12 or later.
+
 ## 1.2.0
 
 * Require auto_updater_macos 1.1.0 to fix stalled automatic-download sessions
