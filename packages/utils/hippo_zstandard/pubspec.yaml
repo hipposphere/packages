@@ -21,7 +21,7 @@ dependencies:
   web: ^1.1.1
 
 dev_dependencies:
-  ffigen: ^20.1.1
+  ffigen: ^23.0.0
   flutter_test:
     sdk: flutter
   hippo_analysis:
