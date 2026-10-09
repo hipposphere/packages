@@ -1,3 +1,8 @@
+## 0.1.3
+
+- Build native artifacts 0.1.2 with zrip 0.8.11 and zrip-core 0.11.
+- Regenerate the FFI bindings with ffigen 23; the native function signatures are unchanged.
+
 ## 0.1.2
 
 - Align Android native libraries to 16 KB pages, including builds using NDK r27.
