@@ -168,9 +168,10 @@ void ShowCheckingProgress(AutoUpdaterLinuxPlugin* self, FlValue* arguments) {
   }
   const gchar* title = StringArgument(arguments, "title");
   const gchar* message = StringArgument(arguments, "message");
+  // GTK requires a variadic sentinel even when there is no first button.
   GtkWidget* dialog = gtk_dialog_new_with_buttons(
       title == nullptr ? "Software Update" : title, ParentWindow(self),
-      GTK_DIALOG_MODAL, nullptr);
+      GTK_DIALOG_MODAL, nullptr, nullptr);
   gtk_window_set_deletable(GTK_WINDOW(dialog), FALSE);
   GtkWidget* area = gtk_dialog_get_content_area(GTK_DIALOG(dialog));
   GtkWidget* row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);

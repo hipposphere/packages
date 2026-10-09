@@ -1,3 +1,7 @@
+## 1.0.2
+
+* Fix Linux builds with warnings treated as errors by terminating the buttonless GTK update-check dialog's variadic arguments.
+
 ## 1.0.1
 
 * Show progress during explicit update checks and surface the final result.
