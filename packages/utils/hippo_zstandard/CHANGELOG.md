@@ -1,3 +1,8 @@
+## 0.1.4
+
+- Pin native source builds to Rust 1.99.0, including the macOS 27 library-stripping fix.
+- Bump native artifacts to 0.1.3 for the updated toolchain.
+
 ## 0.1.3
 
 - Build native artifacts 0.1.2 with zrip 0.8.11 and zrip-core 0.11.

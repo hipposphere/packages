@@ -1,6 +1,6 @@
 import 'dart:io';
 
-const _rustVersion = '1.95.0';
+const _rustVersion = '1.99.0';
 
 Future<void> main() async {
   final result = await Process.run('rustup', [
