@@ -146,6 +146,11 @@ not yet launch an OS video recorder. Captures only include the app repaint
 boundary, not native dialogs or other windows. Recording is opt-in because it
 adds image work and artifact storage.
 
-The viewer lives in sibling `hippo_test_viewer`; app repos do not depend on Jaspr.
-When editing it, rebuild and commit `hippo_test/assets/`, run the viewer's tests
+The viewer lives in sibling `hippo_test_viewer`, with release assets in `hippo_test_core`; app repos do not depend on Jaspr.
+When editing it, rebuild and commit `hippo_test_core/assets/`, run the viewer's tests
 and `tool/build.dart --check`, then inspect a successful and failed report.
+
+`hippo_test_core` now owns shared recording/reporting/resources. `hippo_test_server`
+owns real subprocess/PostgreSQL fixtures and per-client network links. Flutter
+journeys can use `test.io(action)` and `test.waitUntil(condition, description: ...)`
+to let actual network I/O complete while advancing the widget clock.

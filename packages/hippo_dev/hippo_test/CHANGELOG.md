@@ -1,3 +1,9 @@
+# 0.1.1
+
+- Extract shared recording, resources, runner and viewer assets into hippo_test_core.
+- Add bounded real-I/O pumping and JSON/log evidence for real client/server journeys.
+- Keep existing Flutter imports and command compatible.
+
 # 0.1.0
 
 - Initial local prototype: Flutter feature harness, visual checkpoints, HTML

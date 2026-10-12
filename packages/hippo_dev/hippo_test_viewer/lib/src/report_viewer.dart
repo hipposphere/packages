@@ -27,6 +27,7 @@ class _ReportViewerState extends State<ReportViewer> {
     if (selected < 0) selected = 0;
     if (run.cases.isNotEmpty) {
       final c = run.cases[selected];
+      if (c.shots.isEmpty) tab = 'Steps';
       checkpoint =
           (int.tryParse(hash['checkpoint'] ?? '') ??
                   c.shots.indexWhere((s) => s['status'] == 'failed'))
@@ -241,6 +242,26 @@ class _ReportViewerState extends State<ReportViewer> {
                   txt(duration(step['durationMs']), classes: 'muted'),
                 ]),
             ], classes: 'steps'),
+          if (current.attachments.isNotEmpty)
+            el(
+              'details',
+              [
+                txt('Server and client evidence (${current.attachments.length})', tag: 'summary'),
+                el('ul', [
+                  for (final attachment in current.attachments)
+                    if (artifactPath(attachment['path'], evidence: true) case final path?)
+                      el('li', [
+                        el(
+                          'a',
+                          [Component.text('${attachment['name']} ↗')],
+                          attrs: {'href': path, 'target': '_blank', 'rel': 'noopener'},
+                        ),
+                      ]),
+                ]),
+              ],
+              classes: 'run-details',
+              attrs: {'open': ''},
+            ),
           if (current.errors.isNotEmpty)
             el(
               'details',
