@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 /// Report artifacts stay inside the exported directory, including under file://.
-String? artifactPath(Object? value) {
+String? artifactPath(Object? value, {bool evidence = false}) {
   if (value is! String ||
       !RegExp(
-        r'^[a-zA-Z0-9][a-zA-Z0-9._ /-]*\.(png|webp|jpg|jpeg|mp4|webm)$',
+        evidence
+            ? r'^[a-zA-Z0-9][a-zA-Z0-9._ /-]*\.(json|log|txt)$'
+            : r'^[a-zA-Z0-9][a-zA-Z0-9._ /-]*\.(png|webp|jpg|jpeg|mp4|webm)$',
         caseSensitive: false,
       ).hasMatch(value) ||
       value.split('/').any((part) => part.isEmpty || part == '.' || part == '..')) {
@@ -58,9 +60,10 @@ class Scenario {
   Scenario(this.data)
     : steps = records(data['steps']),
       shots = records(data['checkpoints']),
-      frames = records(data['frames']);
+      frames = records(data['frames']),
+      attachments = records(data['attachments']);
   final Map<String, dynamic> data;
-  final List<Map<String, dynamic>> steps, shots, frames;
+  final List<Map<String, dynamic>> steps, shots, frames, attachments;
   String get title => '${data['description'] ?? data['name'] ?? 'Unnamed scenario'}';
   String get id => '${data['id'] ?? data['name'] ?? title}';
   String get status => '${data['status'] ?? 'incomplete'}';

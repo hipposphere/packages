@@ -5,7 +5,7 @@ import 'dart:io';
 /// Use --check in CI to reject an outdated committed viewer bundle.
 Future<void> main(List<String> args) async {
   final root = File.fromUri(Platform.script).parent.parent;
-  final output = Directory.fromUri(root.uri.resolve('../hippo_test/assets/'));
+  final output = Directory.fromUri(root.uri.resolve('../hippo_test_core/assets/'));
   final build = Directory('${root.path}/build')..createSync(recursive: true);
   final result = await Process.run(Platform.resolvedExecutable, [
     'compile',

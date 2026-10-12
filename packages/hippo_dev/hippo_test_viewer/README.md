@@ -20,9 +20,9 @@ dart test
 dart analyze
 ```
 
-This intentionally uses Jaspr's client runtime with `dart compile js`: there are no server components, annotations, generated routes or hydration islands to generate. `Jaspr.initializeApp()` initializes the standalone client. The build copies the optimized JavaScript (~180 KB uncompressed) and stylesheet into `hippo_test/assets/`. Commit these release assets alongside source changes. `--check` recompiles and detects stale assets; run it with the same pinned SDK used to build the committed bundle.
+This intentionally uses Jaspr's client runtime with `dart compile js`: there are no server components, annotations, generated routes or hydration islands to generate. `Jaspr.initializeApp()` initializes the standalone client. The build copies the optimized JavaScript (~180 KB uncompressed) and stylesheet into `hippo_test_core/assets/`. Commit these release assets alongside source changes. `--check` recompiles and detects stale assets; run it with the same pinned SDK used to build the committed bundle.
 
-`hippo_test` copies that bundle into each run alongside `index.html`, `results.json`, `runner.log`, and PNG/video evidence. Keep the entire directory when uploading a CI artifact. Updating the viewer does not require rerunning an app test:
+`hippo_test_core` copies that bundle into each run alongside `index.html`, `results.json`, `runner.log`, and PNG/video evidence. Keep the entire directory when uploading a CI artifact. Updating the viewer does not require rerunning an app test:
 
 ```sh
 dart run hippo_test --report path/to/existing/run

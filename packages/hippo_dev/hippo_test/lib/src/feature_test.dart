@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:hippo_test_core/hippo_test_core.dart' as core;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -66,43 +67,38 @@ void featureTest(
       // Unmount before product cleanup callbacks dispose databases and blocs.
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.pump();
-      for (final cleanup in test._cleanups.reversed) {
-        await cleanup();
-      }
+      await test._resources.close();
     }
   }, timeout: timeout);
 }
 
 class FeatureTest {
   FeatureTest._(this.tester, this.id, String description, this.variant, String kind)
-    : _record = {
-        'id': id,
-        'name': '[$id] $description',
-        'description': description,
-        'kind': kind,
-        'variant': variant.name,
-        'viewport': '${variant.size.width.toInt()} × ${variant.size.height.toInt()}',
-        'locale': variant.locale.toLanguageTag(),
-        'brightness': variant.brightness.name,
-        'textScale': variant.textScale,
-        'status': 'running',
-        'steps': <Map<String, Object?>>[],
-        'checkpoints': <Map<String, Object?>>[],
-        'frames': <Map<String, Object?>>[],
-      };
-
-  final _cleanups = <Future<void> Function()>[];
-
-  /// Dispose resources after unmount, while still inside the widget test clock.
-  void onCleanup(Future<void> Function() cleanup) => _cleanups.add(cleanup);
+    : recorder = core.ScenarioRecorder(
+        id: id,
+        description: description,
+        kind: kind,
+        metadata: {
+          'variant': variant.name,
+          'viewport': '${variant.size.width.toInt()} × ${variant.size.height.toInt()}',
+          'locale': variant.locale.toLanguageTag(),
+          'brightness': variant.brightness.name,
+          'textScale': variant.textScale,
+        },
+      );
+  final core.ScenarioRecorder recorder;
+  final _resources = core.TestResources();
+  void onCleanup(Future<void> Function() cleanup) => _resources.onCleanup(cleanup);
+  void evidence(String name, Object? value) => recorder.evidence(name, value);
+  void attachText(String name, String value) => recorder.attachText(name, value);
 
   final WidgetTester tester;
   final String id;
   final FeatureVariant variant;
   final _boundary = GlobalKey();
-  final Map<String, Object?> _record;
+  Map<String, Object?> get _record => recorder.data;
   static const _recordSteps = bool.fromEnvironment('HIPPO_TEST_RECORD_STEPS');
-  static const _reportPath = String.fromEnvironment('HIPPO_TEST_REPORT');
+  String get _reportPath => recorder.reportPath;
 
   List<Map<String, Object?>> get _steps => _record['steps']! as List<Map<String, Object?>>;
   List<Map<String, Object?>> get _checkpoints =>
@@ -126,23 +122,15 @@ class FeatureTest {
     checkFlutterErrors();
   }
 
-  Future<T> step<T>(String name, Future<T> Function() action) async {
-    final entry = <String, Object?>{'name': name, 'status': 'running'};
-    _steps.add(entry);
-    _writeRecord();
-    final stopwatch = Stopwatch()..start();
-    try {
+  Future<T> step<T>(String name, Future<T> Function() action) => recorder.step(
+    name,
+    () async {
       final result = await action();
       checkFlutterErrors();
-      entry['status'] = 'passed';
       return result;
-    } catch (error) {
-      entry.addAll({'status': 'failed', 'error': '$error'});
-      rethrow;
-    } finally {
-      entry['durationMs'] = stopwatch.elapsedMilliseconds;
+    },
+    after: (entry) async {
       if (_recordSteps && _reportPath.isNotEmpty && _boundary.currentContext != null) {
-        // Capture evidence without masking the original action failure.
         try {
           final frames = _record['frames']! as List<Map<String, Object?>>;
           final frame = <String, Object?>{
@@ -156,9 +144,57 @@ class FeatureTest {
           entry['captureError'] = '$error';
         }
       }
-      _writeRecord();
-    }
+    },
+  );
+
+  /// Wait for real I/O while also advancing Flutter's test clock.
+  Future<T> io<T>(
+    Future<T> Function() action, {
+    Duration timeout = const Duration(seconds: 30),
+  }) async {
+    T? value;
+    Object? failure;
+    StackTrace? stack;
+    var done = false;
+    action().then(
+      (result) {
+        value = result;
+        done = true;
+      },
+      onError: (Object e, StackTrace s) {
+        failure = e;
+        stack = s;
+        done = true;
+      },
+    );
+    await core.waitUntil(
+      () => Future.value(done),
+      description: 'complete client/server I/O',
+      timeout: timeout,
+      pause: (duration) async {
+        await tester.runAsync(() => Future<void>.delayed(duration));
+        await tester.pump(const Duration(milliseconds: 25));
+        checkFlutterErrors();
+      },
+    );
+    if (failure != null) Error.throwWithStackTrace(failure!, stack!);
+    return value as T;
   }
+
+  Future<void> waitUntil(
+    Future<bool> Function() condition, {
+    required String description,
+    Duration timeout = const Duration(seconds: 20),
+  }) => core.waitUntil(
+    () => io(condition),
+    description: description,
+    timeout: timeout,
+    pause: (duration) async {
+      await tester.runAsync(() => Future<void>.delayed(duration));
+      await tester.pump(const Duration(milliseconds: 25));
+      checkFlutterErrors();
+    },
+  );
 
   /// A bounded condition wait that also works with continuously animated UIs.
   Future<void> waitFor(
@@ -316,19 +352,10 @@ class FeatureTest {
 
   void _saveImage(Map<String, Object?> entry, String key, String suffix, Uint8List bytes) {
     if (_reportPath.isEmpty) return;
-    final relative = '$id/$suffix.png';
-    final file = File('$_reportPath/$relative');
-    file.parent.createSync(recursive: true);
-    file.writeAsBytesSync(bytes);
-    entry[key] = relative;
+    entry[key] = recorder.saveBytes('$suffix.png', bytes);
   }
 
-  void _writeRecord() {
-    if (_reportPath.isEmpty) return;
-    final file = File('$_reportPath/$id.json');
-    file.parent.createSync(recursive: true);
-    file.writeAsStringSync(const JsonEncoder.withIndent('  ').convert(_record));
-  }
+  void _writeRecord() => recorder.write();
 }
 
 /// Real font rendering instead of Flutter test's square fallback glyphs.

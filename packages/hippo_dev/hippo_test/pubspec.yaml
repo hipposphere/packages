@@ -1,6 +1,6 @@
 name: hippo_test
 description: Inspectable Flutter feature tests with named steps, visual checkpoints and portable reports.
-version: 0.1.0
+version: 0.1.1
 homepage: https://hippolabs.org
 publish_to: https://pub.hippolabs.org
 resolution: workspace
@@ -10,6 +10,9 @@ environment:
   flutter: '>=3.47.0'
 
 dependencies:
+  hippo_test_core:
+    hosted: https://pub.hippolabs.org
+    version: ^0.1.0
   flutter:
     sdk: flutter
   flutter_test:
