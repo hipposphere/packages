@@ -1,0 +1,14 @@
+# hippo_test
+
+Dev-only Flutter feature harness and inspectable local test reports.
+
+- Public Flutter API: lib/hippo_test.dart
+- Plain Dart report generation: lib/report.dart
+- CLI: bin/hippo_test.dart (dart run hippo_test)
+- Consumer setup, boundaries, and commands: README.md
+- Meaningful negative-path verification: tool/verify_runner.dart
+
+Keep domain fixtures and user actions in the consuming product. Do not label a
+feature host or a mocked backend as end-to-end coverage. Preserve Flutter's final
+runner outcome, including compilation and teardown errors. Never auto-accept
+goldens during verification. Every run gets an isolated artifact directory.
