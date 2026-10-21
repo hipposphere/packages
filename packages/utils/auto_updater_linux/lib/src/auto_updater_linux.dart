@@ -22,9 +22,7 @@ final class AutoUpdaterLinux extends AutoUpdaterPlatform {
     return AutoUpdaterLinux.withDependencies(parser, uiChannel);
   }
 
-  AutoUpdaterLinux.withDependencies(this._parser, this._uiChannel) {
-    _uiChannel.setMethodCallHandler(_handleNativeMethod);
-  }
+  AutoUpdaterLinux.withDependencies(this._parser, this._uiChannel);
 
   static void registerWith() {
     AutoUpdaterPlatform.instance = AutoUpdaterLinux();
@@ -41,9 +39,21 @@ final class AutoUpdaterLinux extends AutoUpdaterPlatform {
   Timer? _scheduledCheck;
   bool _checking = false;
   bool _downloadCancelled = false;
+  bool _uiHandlerInstalled = false;
 
   @override
   Stream<Map<Object?, Object?>> get sparkleEvents => _events.stream;
+
+  /// Dart plugin registration runs before the services binding exists, so the
+  /// native callback handler is attached on first use instead of in the
+  /// constructor.
+  MethodChannel get _ui {
+    if (!_uiHandlerInstalled) {
+      _uiChannel.setMethodCallHandler(_handleNativeMethod);
+      _uiHandlerInstalled = true;
+    }
+    return _uiChannel;
+  }
 
   @override
   Future<void> setFeedURL(String feedUrl, {String? ed25519PublicKey}) async {
@@ -109,12 +119,12 @@ final class AutoUpdaterLinux extends AutoUpdaterPlatform {
         return;
       }
       checkingDialogVisible = false;
-      await _uiChannel.invokeMethod<void>('closeCheckingProgress');
+      await _ui.invokeMethod<void>('closeCheckingProgress');
     }
 
     try {
       if (showChecking) {
-        await _uiChannel.invokeMethod<void>('showCheckingProgress', {
+        await _ui.invokeMethod<void>('showCheckingProgress', {
           'title': 'Software Update',
           'message': 'Checking for updates…',
         });
@@ -218,7 +228,7 @@ final class AutoUpdaterLinux extends AutoUpdaterPlatform {
     final current = await _currentAppImage();
     final staged = await _createStagingFile(current);
     _downloadCancelled = false;
-    await _uiChannel.invokeMethod<void>('showDownloadProgress', {
+    await _ui.invokeMethod<void>('showDownloadProgress', {
       'title': 'Updating ${packageInfo.appName}',
       'message': 'Downloading ${item['displayVersionString'] ?? item['versionString']}…',
     });
@@ -237,14 +247,14 @@ final class AutoUpdaterLinux extends AutoUpdaterPlatform {
         encodedSignature: item['edSignature']! as String,
         publicKey: _publicKey!,
       );
-      await _uiChannel.invokeMethod<void>('closeDownloadProgress');
+      await _ui.invokeMethod<void>('closeDownloadProgress');
 
       _emit('update-downloaded', {'appcastItem': item});
       _emit('before-quit-for-update', {'appcastItem': item});
       await _startHelper(current: current, staged: staged);
-      await _uiChannel.invokeMethod<void>('quitApplication');
+      await _ui.invokeMethod<void>('quitApplication');
     } catch (_) {
-      await _uiChannel.invokeMethod<void>('closeDownloadProgress');
+      await _ui.invokeMethod<void>('closeDownloadProgress');
       if (await staged.exists()) {
         await staged.delete();
       }
@@ -337,7 +347,7 @@ final class AutoUpdaterLinux extends AutoUpdaterPlatform {
         if (now.difference(lastProgressUpdate).inMilliseconds >= 100) {
           lastProgressUpdate = now;
           unawaited(
-            _uiChannel.invokeMethod<void>('updateDownloadProgress', {
+            _ui.invokeMethod<void>('updateDownloadProgress', {
               'progress': received / expectedLength,
             }),
           );
@@ -362,7 +372,7 @@ final class AutoUpdaterLinux extends AutoUpdaterPlatform {
   }
 
   Future<void> _startHelper({required File current, required File staged}) async {
-    final helperPath = await _uiChannel.invokeMethod<String>('getHelperPath');
+    final helperPath = await _ui.invokeMethod<String>('getHelperPath');
     if (helperPath == null || helperPath.isEmpty) {
       throw StateError('The Linux updater helper is unavailable.');
     }
@@ -425,7 +435,7 @@ final class AutoUpdaterLinux extends AutoUpdaterPlatform {
     required String currentVersion,
     required Map<String, Object?> item,
   }) async {
-    return await _uiChannel.invokeMethod<bool>('showUpdateDialog', {
+    return await _ui.invokeMethod<bool>('showUpdateDialog', {
           'appName': appName,
           'currentVersion': currentVersion,
           'newVersion': item['displayVersionString'] ?? item['versionString'],
@@ -440,7 +450,7 @@ final class AutoUpdaterLinux extends AutoUpdaterPlatform {
     required String message,
     required String details,
   }) {
-    return _uiChannel.invokeMethod<void>('showInformation', {
+    return _ui.invokeMethod<void>('showInformation', {
       'title': title,
       'message': message,
       'details': details,
@@ -448,7 +458,7 @@ final class AutoUpdaterLinux extends AutoUpdaterPlatform {
   }
 
   Future<void> _showError({required String title, required String message}) {
-    return _uiChannel.invokeMethod<void>('showError', {'title': title, 'message': message});
+    return _ui.invokeMethod<void>('showError', {'title': title, 'message': message});
   }
 
   Future<void> _handleNativeMethod(MethodCall call) async {

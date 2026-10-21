@@ -1,3 +1,7 @@
+## 1.0.3
+
+* Fix plugin registration in release builds by attaching the native UI channel handler on first use instead of before the services binding exists.
+
 ## 1.0.2
 
 * Fix Linux builds with warnings treated as errors by terminating the buttonless GTK update-check dialog's variadic arguments.
