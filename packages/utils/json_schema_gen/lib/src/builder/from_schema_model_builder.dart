@@ -239,7 +239,10 @@ String generateFromSchemaModels(
   FromSchemaFormatterOptions formatterOptions = const FromSchemaFormatterOptions(),
 }) {
   final library = Library((builder) => builder.body.addAll(models.map(_modelSpec)));
-  const ignoreForFile = '// ignore_for_file: unused_element, unused_field\n';
+  // Generated model expressions intentionally retain their explicit type names.
+  const ignoreForFile =
+      '// ignore_for_file: unused_element, unused_field, '
+      'hippo_analysis_plugin/prefer_dot_shorthands\n';
   return formatterOptions.createFormatter().format(
     '$ignoreForFile${library.accept(DartEmitter())}',
   );
@@ -268,7 +271,10 @@ Class _objectModel(FromSchemaModelSpec model) {
           constructor
             ..constant = true
             ..optionalParameters.addAll([
-              for (final field in fields)
+              for (final field in [
+                ...fields.where((field) => field.requiredParameter),
+                ...fields.where((field) => !field.requiredParameter),
+              ])
                 Parameter((parameter) {
                   parameter
                     ..name = field.name
@@ -443,9 +449,9 @@ Field _schemaRefField() {
       ..static = true
       ..modifier = FieldModifier.constant
       ..name = 'schemaRef'
-      ..assignment = refer(
-        'JsonSchema',
-      ).constInstanceNamed('componentRef', [refer('schemaId')]).code;
+      ..assignment = refer('JsonSchema')
+          .constInstanceNamed('componentRef', [refer('schemaId')])
+          .code;
   });
 }
 
@@ -516,12 +522,15 @@ Expression _schemaExpression(JsonSchema schema, {Expression? idExpression}) {
         if (required.isNotEmpty) 'required': literalConstList(required, refer('String')),
         if (additionalProperties != null) 'additionalProperties': literalBool(additionalProperties),
       }),
-    JsonArraySchema(:final nullable, :final items) =>
-      refer('JsonSchema').constInstanceNamed('array', const [], {
+    JsonArraySchema(:final nullable, :final items) => refer('JsonSchema').constInstanceNamed(
+      'array',
+      const [],
+      {
         ...baseArguments,
         if (nullable) 'nullable': literalBool(nullable),
         if (items != null) 'items': _schemaExpression(items),
-      }),
+      },
+    ),
     JsonAnyOfSchema(:final schemas, :final nullable, :final dartType) =>
       refer('JsonSchema').constInstanceNamed(
         'anyOf',

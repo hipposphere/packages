@@ -1,3 +1,9 @@
+## 0.1.6
+
+- Support Hippo Analysis 0.2 and current analyzer/source_gen APIs.
+- Order required generated constructor parameters before optional parameters.
+- Preserve explicit generated type names under the dot shorthand lint.
+
 ## 0.1.5
 
 - Support analyzer 14.x while retaining analyzer 13.x compatibility.
