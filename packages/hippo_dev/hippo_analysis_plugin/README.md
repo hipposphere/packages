@@ -25,6 +25,11 @@ arguments alone. It does not add type annotations just to enable shorthand.
 Existing shorthands are accepted. Files using language versions before Dart 3.10
 are skipped.
 
+Public typedefs of private classes from another library keep their explicit
+constructor calls. Shorthand lookup uses the underlying class, so the alias
+cannot make that private class accessible. Aliases to public classes and private
+classes within the same library remain eligible.
+
 The **Use dot shorthand** quick fix changes only the qualifier, preserving
 `const`, argument evaluation order, and comments. Imported qualifiers are
 supported. Qualifiers with embedded comments are left unchanged rather than
@@ -38,7 +43,7 @@ To configure this plugin directly:
 plugins:
   hippo_analysis_plugin:
     hosted: https://pub.hippolabs.org
-    version: ^0.1.0
+    version: ^0.1.1
     diagnostics:
       prefer_dot_shorthands: true
 ```

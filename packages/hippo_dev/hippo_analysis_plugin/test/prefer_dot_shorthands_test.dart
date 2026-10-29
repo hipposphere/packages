@@ -260,6 +260,36 @@ final statuses = [Status.active];
 Status inferredReturn() => .active;
 ''');
 
+  Future<void> test_typedefPrivateConstructorAcrossLibraries() async {
+    newFile('$testPackageLibPath/model.dart', 'class _Body { _Body(); } typedef Body = _Body;');
+    await assertNoDiagnostics('''
+import 'model.dart';
+Body createBody() => Body();
+void accept(Body value) {}
+void f() => accept(Body());
+''');
+  }
+
+  Future<void> test_typedefPublicConstructor() => _assertFix(
+    '''
+class Body { Body(); }
+typedef PublicBody = Body;
+PublicBody createBody() => PublicBody();
+''',
+    'PublicBody()',
+    '.new()',
+  );
+
+  Future<void> test_typedefPrivateConstructorSameLibrary() => _assertFix(
+    '''
+class _Body { _Body(); }
+typedef Body = _Body;
+Body createBody() => Body();
+''',
+    'Body()',
+    '.new()',
+  );
+
   Future<void> test_genericConstructors() => assertNoDiagnostics('''
 class Box<T> { Box.value(T value); }
 Box<int> explicit() => Box<int>.value(1);

@@ -33,6 +33,10 @@ ShorthandEdit? shorthandEdit(Expression expression) {
         expression.keyword?.lexeme == 'new') {
       return null;
     }
+    final library = expression.thisOrAncestorOfType<CompilationUnit>()?.declaredFragment?.element;
+    if (element.enclosingElement.isPrivate && element.enclosingElement.library != library) {
+      return null;
+    }
     target = constructor.type;
     owner = element.enclosingElement;
     replacement = constructor.name == null ? '.new' : '';

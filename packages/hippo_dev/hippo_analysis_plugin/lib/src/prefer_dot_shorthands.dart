@@ -69,6 +69,7 @@ class _Visitor extends SimpleAstVisitor<void> {
     var expected = _contextType(node);
     if (expected == null) return;
     if (expected.isDartAsyncFutureOr) expected = context.typeSystem.flatten(expected);
+    if (edit.owner.isPrivate && edit.owner.library != context.libraryElement) return;
     if (expected is! InterfaceType || expected.element != edit.owner) return;
     // A constructor must retain its inferred generic arguments as well as its class.
     if (node is InstanceCreationExpression &&

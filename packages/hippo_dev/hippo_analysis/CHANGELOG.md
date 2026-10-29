@@ -1,3 +1,8 @@
+## 0.2.1
+
+- Require the corrected dot-shorthand plugin, which preserves public typedef
+  constructor calls when their underlying private class belongs to another library.
+
 ## 0.2.0
 
 - Enforce constructors before other members, unnamed constructors first, required
