@@ -1,6 +1,7 @@
 include:
   - package:flutter_lints/flutter.yaml
   - base.yaml
+  - plugins.yaml
 
 analyzer:
   # Flutter 3.47+ regenerates these directories; platform customization

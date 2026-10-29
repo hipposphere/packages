@@ -18,7 +18,7 @@ const hippoFormatterTrailingCommas = TrailingCommas.automate;
 
 /// Creates a formatter using the shared Hipposphere formatting policy.
 DartFormatter createHippoDartFormatter({int? pageWidth, TrailingCommas? trailingCommas}) {
-  return DartFormatter(
+  return .new(
     languageVersion: DartFormatter.latestLanguageVersion,
     pageWidth: pageWidth ?? hippoFormatterPageWidth,
     trailingCommas: trailingCommas ?? hippoFormatterTrailingCommas,

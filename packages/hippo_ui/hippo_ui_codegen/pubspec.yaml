@@ -16,7 +16,7 @@ dependencies:
   glob: ^2.1.3
   hippo_analysis:
     hosted: https://pub.hippolabs.org
-    version: ^0.1.0
+    version: ">=0.1.0 <0.3.0"
   hippo_ui:
     hosted: https://pub.hippolabs.org
     version: ^0.1.0

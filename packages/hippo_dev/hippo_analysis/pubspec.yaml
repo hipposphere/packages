@@ -1,6 +1,6 @@
 name: hippo_analysis
 description: Shared analysis and Dart formatting policy for Hipposphere packages.
-version: 0.1.2
+version: 0.2.0
 homepage: https://hippolabs.org
 publish_to: "https://pub.hippolabs.org"
 resolution: workspace
@@ -14,4 +14,7 @@ dependencies:
   lints: ^6.1.0
 
 dev_dependencies:
+  hippo_analysis_plugin:
+    hosted: https://pub.hippolabs.org
+    version: ^0.1.0
   test: ^1.30.0

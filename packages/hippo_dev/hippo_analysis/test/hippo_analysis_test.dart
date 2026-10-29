@@ -6,9 +6,7 @@ import 'package:test/test.dart';
 
 void main() {
   test('YAML and Dart formatter policies stay aligned', () async {
-    final optionsUri = await Isolate.resolvePackageUri(
-      Uri.parse('package:hippo_analysis/base.yaml'),
-    );
+    final optionsUri = await Isolate.resolvePackageUri(.parse('package:hippo_analysis/base.yaml'));
     final options = File.fromUri(optionsUri!).readAsStringSync();
 
     expect(options, contains('page_width: $hippoFormatterPageWidth'));
@@ -17,7 +15,7 @@ void main() {
 
   test('Flutter analysis excludes generated build and platform directories', () async {
     final optionsUri = await Isolate.resolvePackageUri(
-      Uri.parse('package:hippo_analysis/flutter.yaml'),
+      .parse('package:hippo_analysis/flutter.yaml'),
     );
     final options = File.fromUri(optionsUri!).readAsStringSync();
 

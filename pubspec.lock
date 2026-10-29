@@ -5,18 +5,42 @@ packages:
     dependency: transitive
     description:
       name: _fe_analyzer_shared
-      sha256: "48e48f73a431eb269eec66d243a63a07ed90ef9417a74047a3b98d52338626ad"
+      sha256: "9bfb8122e2505aca17219018593c384a87166cfe860d11c7ae927e7f978eb05f"
       url: "https://pub.dev"
     source: hosted
-    version: "109.0.0"
+    version: "110.0.0"
+  analysis_server_plugin:
+    dependency: transitive
+    description:
+      name: analysis_server_plugin
+      sha256: b94419fc81828edb7870340cb64b8648e9515613d7647309d3d0ea605c6d1f95
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.25"
   analyzer:
     dependency: transitive
     description:
       name: analyzer
-      sha256: "6d377901d198536b648172974d9d4f277910502cad92193466869cac0ff34990"
+      sha256: "74c36179c4de542efea24c9dff78324375e4b118a2c1e14e8a7659f457947f8d"
       url: "https://pub.dev"
     source: hosted
-    version: "14.5.0"
+    version: "14.6.0"
+  analyzer_plugin:
+    dependency: transitive
+    description:
+      name: analyzer_plugin
+      sha256: d218f0916ff564cfd9dd032d11e5a990059cb66f88cc741ec6e5e55abdebefcc
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.14.19"
+  analyzer_testing:
+    dependency: transitive
+    description:
+      name: analyzer_testing
+      sha256: "79647f2465b2efe9b06500789c91774aebe300a37c3a3614090cd2697036b54a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.4"
   ansi_styles:
     dependency: transitive
     description:
@@ -968,6 +992,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.19"
+  test_reflective_loader:
+    dependency: transitive
+    description:
+      name: test_reflective_loader
+      sha256: "9c4327839510a742171b9d37b37464d0d215ebee4d7701a272db337dbde3e17b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.0"
   toml:
     dependency: transitive
     description:
@@ -1004,10 +1036,10 @@ packages:
     dependency: transitive
     description:
       name: vector_math
-      sha256: f36f9f3be64c6198714492bb455c11056e33e2f85d9a0b676a48301e44fdcf47
+      sha256: fa49e1674cb84acb900141714e6c6e1f9ae099827c24d141430ff6819db4e1bc
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.2"
+    version: "2.4.4"
   vm_service:
     dependency: transitive
     description:
