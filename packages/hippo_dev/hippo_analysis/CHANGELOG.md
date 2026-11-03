@@ -1,3 +1,12 @@
+## 0.2.2
+
+- Make the dot-shorthand analyzer plugin opt-in. The default Dart and Flutter
+  presets retain their standard lints and formatting policy without loading the
+  plugin. Include `package:hippo_analysis/plugins.yaml` explicitly at the workspace
+  root to enable the shorthand diagnostic and quick fix.
+- Document how to unload inherited plugins while using older presets. Disabling
+  only a plugin diagnostic does not remove the plugin runtime's analysis overhead.
+
 ## 0.2.1
 
 - Require the corrected dot-shorthand plugin, which preserves public typedef

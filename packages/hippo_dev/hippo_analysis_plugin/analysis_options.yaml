@@ -1,6 +1,1 @@
 include: package:hippo_analysis/dart.yaml
-
-plugins:
-  dependency_overrides:
-    hippo_analysis_plugin:
-      path: .

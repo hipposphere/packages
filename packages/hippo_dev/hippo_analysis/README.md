@@ -97,15 +97,43 @@ Keep the type name where context is absent, such as
 arguments such as `DataSubject<int>.seeded(0)`. Do not introduce redundant type
 annotations just to enable shorthand.
 
-Both presets enable the native
+Dot shorthands remain a coding convention. Since 0.2.2, both default presets
+leave analyzer plugin enforcement **off**. To opt in to the native
 `hippo_analysis_plugin/prefer_dot_shorthands` diagnostic and its **Use dot
-shorthand** IDE quick fix. The companion plugin is loaded separately from the
-formatter library and does not add analyzer dependencies to formatter consumers.
-It preserves generic constructors, explicit generic arguments, inferred
-variables, and expressions whose context would select a different class or enum.
-See the [plugin documentation](../hippo_analysis_plugin/README.md) for supported
-contexts and local development configuration. This is a plugin diagnostic under
-`plugins.hippo_analysis_plugin.diagnostics`, not a standard `linter.rules` entry.
+shorthand** IDE quick fix, add the optional include at the workspace root:
+
+```yaml
+include:
+  - package:hippo_analysis/dart.yaml
+  - package:hippo_analysis/plugins.yaml
+```
+
+Use `flutter.yaml` instead of `dart.yaml` for a Flutter baseline. Opt in at the
+workspace root; package-local includes select their lint and formatting baseline.
+
+The plugin creates a separate analyzer with an in-memory analysis cache, which
+can substantially increase analysis time and memory use in large workspaces.
+Disabling only `prefer_dot_shorthands` leaves the plugin loaded and retains this
+overhead. To unload plugins inherited from the 0.2.0/0.2.1 presets, clear plugin
+configuration in each options file that includes them:
+
+```yaml
+include: package:hippo_analysis/dart.yaml
+plugins: null
+```
+
+This clears all plugins inherited by that options file. In workspaces with
+package-local presets, apply it to those files too: clearing only the root does
+not clear plugins imported independently by a package-local include. Remove the
+override before opting in to plugins. Restart the Dart Analysis Server after
+changing plugin configuration.
+
+The companion plugin does not add analyzer dependencies to formatter consumers.
+It preserves generic constructors, explicit generic arguments, inferred variables,
+and expressions whose context would select a different class or enum. See the
+[plugin documentation](../hippo_analysis_plugin/README.md) for supported contexts.
+Configure its diagnostic under `plugins.hippo_analysis_plugin.diagnostics`, not
+`linter.rules`.
 
 ## Adoption
 
@@ -118,15 +146,19 @@ Use `dart analyze --fatal-infos` (or `flutter analyze --fatal-infos`) in CI when
 style diagnostics should fail the check; `dart analyze` does not fail on infos by
 default.
 
-For a local checkout, keep the preset's diagnostics and override the plugin
-dependency source:
+For local plugin development, opt in explicitly and override its dependency
+source:
 
 ```yaml
+include:
+  - package:hippo_analysis/dart.yaml
+  - package:hippo_analysis/plugins.yaml
+
 plugins:
   dependency_overrides:
     hippo_analysis_plugin:
       path: /path/to/hippo_analysis_plugin
 ```
 
-Publish the companion plugin before releasing this preset version. Restart the
-Dart Analysis Server after changing plugin sources.
+Publish the companion plugin before updating the optional preset to require a
+new version. Restart the Dart Analysis Server after changing plugin sources.

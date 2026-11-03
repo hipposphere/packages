@@ -1,3 +1,5 @@
+# Optional analyzer plugin enforcement. Include this explicitly at the workspace
+# root alongside dart.yaml or flutter.yaml to enable it.
 plugins:
   hippo_analysis_plugin:
     hosted: https://pub.hippolabs.org

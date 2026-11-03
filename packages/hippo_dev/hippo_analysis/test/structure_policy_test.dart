@@ -5,7 +5,7 @@ import 'dart:isolate';
 import 'package:test/test.dart';
 
 void main() {
-  test('both presets report structural violations and accept ordered code', () async {
+  test('both presets keep structural lints and make the plugin opt-in', () async {
     final packageConfigUri = (await Isolate.packageConfig)!;
     final packageConfig =
         jsonDecode(await File.fromUri(packageConfigUri).readAsString()) as Map<String, dynamic>;
@@ -21,19 +21,11 @@ void main() {
         .writeAsString(jsonEncode(packageConfig));
 
     for (final preset in ['dart', 'flutter']) {
-      final pluginUri = (await Isolate.resolvePackageUri(
-        .parse('package:hippo_analysis_plugin/main.dart'),
-      ))!;
-      final pluginPath = File.fromUri(pluginUri).parent.parent.path;
       final presetUri = (await Isolate.resolvePackageUri(
         .parse('package:hippo_analysis/$preset.yaml'),
       ))!;
       await File('${fixture.path}/analysis_options.yaml').writeAsString('''
 include: ${presetUri.toFilePath()}
-plugins:
-  dependency_overrides:
-    hippo_analysis_plugin:
-      path: $pluginPath
 ''');
       final pubspec = File('${fixture.path}/pubspec.yaml');
       final source = File('${fixture.path}/example.dart');
@@ -77,7 +69,6 @@ class Example {
         'sort_constructors_first',
         'sort_pub_dependencies',
         'sort_unnamed_constructors_first',
-        'prefer_dot_shorthands',
       ]) {
         final codes = diagnostics
             .split('\n')
@@ -85,6 +76,11 @@ class Example {
             .map((line) => line.split('|')[2].toLowerCase().split('/').last);
         expect(codes, contains(rule), reason: '$preset: $diagnostics');
       }
+      expect(
+        diagnostics.toLowerCase(),
+        isNot(contains('prefer_dot_shorthands')),
+        reason: diagnostics,
+      );
 
       await pubspec.writeAsString('''
 name: structure_fixture
@@ -101,7 +97,7 @@ import 'dart:math';
 Future<double> calculate() => Future<double>.value(sqrt(4));
 
 enum Mode { active }
-Mode get mode => .active;
+Mode get mode => Mode.active;
 
 class Example {
   const Example({required this.value, bool enabled = false});
@@ -118,6 +114,37 @@ class Example {
         '.',
       ], workingDirectory: fixture.path);
       expect(ordered.exitCode, 0, reason: '$preset: ${ordered.stdout}\n${ordered.stderr}');
+
+      final pluginUri = (await Isolate.resolvePackageUri(
+        .parse('package:hippo_analysis_plugin/main.dart'),
+      ))!;
+      final pluginPath = File.fromUri(pluginUri).parent.parent.path;
+      final pluginsUri = (await Isolate.resolvePackageUri(
+        .parse('package:hippo_analysis/plugins.yaml'),
+      ))!;
+      await File('${fixture.path}/analysis_options.yaml').writeAsString('''
+include:
+  - ${presetUri.toFilePath()}
+  - ${pluginsUri.toFilePath()}
+plugins:
+  dependency_overrides:
+    hippo_analysis_plugin:
+      path: $pluginPath
+''');
+      final optedIn = await Process.run(Platform.resolvedExecutable, [
+        'analyze',
+        '--fatal-infos',
+        '--format=machine',
+        '.',
+      ], workingDirectory: fixture.path);
+      final optedInDiagnostics = '${optedIn.stdout}\n${optedIn.stderr}';
+      expect(optedIn.exitCode, isNot(0), reason: '$preset: $optedInDiagnostics');
+      expect(optedInDiagnostics, isNot(contains('ERROR|')), reason: optedInDiagnostics);
+      final optedInCodes = optedInDiagnostics
+          .split('\n')
+          .where((line) => line.startsWith('INFO|'))
+          .map((line) => line.split('|')[2].toLowerCase().split('/').last);
+      expect(optedInCodes, ['prefer_dot_shorthands'], reason: optedInDiagnostics);
     }
   }, timeout: const .new(.new(minutes: 3)));
 }

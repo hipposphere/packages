@@ -1,7 +1,9 @@
 # Hippo Analysis Plugin
 
-Native Dart analyzer rules and IDE quick fixes for Hipposphere workspaces. The
-`hippo_analysis` Dart and Flutter presets enable this plugin automatically.
+Native Dart analyzer rules and IDE quick fixes for Hipposphere workspaces. Since
+`hippo_analysis` 0.2.2, its default Dart and Flutter presets leave this plugin off.
+Opt in at the workspace root with `package:hippo_analysis/plugins.yaml` alongside
+your Dart or Flutter preset, or configure the plugin directly as shown below.
 Formatter users do not acquire analyzer dependencies through `hippo_analysis`.
 
 ## prefer_dot_shorthands
@@ -51,6 +53,15 @@ plugins:
 Consumers may disable the rule with `prefer_dot_shorthands: false` in the same
 diagnostics section or suppress one instance using
 `// ignore: hippo_analysis_plugin/prefer_dot_shorthands`.
+
+Disabling the rule leaves the plugin runtime loaded. That runtime uses a separate
+analyzer with an in-memory cache and can substantially increase analysis time and
+memory use in large workspaces. To remove that overhead, remove the explicit
+plugin declaration/include. For older presets that enable it automatically,
+`plugins: null` clears all plugins inherited by an options file. Apply it to every
+options file that includes those older presets, including package-local files;
+a root-only override does not clear their independent includes. Restart the Dart
+Analysis Server after changing plugin configuration.
 
 For local development, replace the hosted/version source with a `path` pointing
 to this package, then restart the Dart Analysis Server. Publish this package
