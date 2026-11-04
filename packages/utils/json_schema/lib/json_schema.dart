@@ -2,6 +2,7 @@
 library;
 
 export 'src/from_schema.dart';
+export 'src/json_discriminator.dart';
 export 'src/json_encodable.dart';
 export 'src/json_pointer.dart';
 export 'src/json_schema.dart';

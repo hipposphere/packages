@@ -1,3 +1,11 @@
+targets:
+  $default:
+    builders:
+      json_schema_gen:json_schema:
+        enabled: true
+        generate_for:
+          - test/fixtures/**
+
 builders:
   json_schema:
     import: "package:json_schema_gen/builder.dart"

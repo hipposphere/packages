@@ -1,3 +1,18 @@
+## 0.2.0
+
+- Generate sealed Dart unions for discriminated `oneOf`/`anyOf` schemas whose
+  branches reference other `@FromSchema` models, with exhaustive `switch`
+  support, tag inference, `FormatException` on unknown tags, and an opt-in
+  `unknownVariant` fallback that preserves the raw JSON.
+- Type properties and list items that reference or inline such unions with the
+  generated sealed type.
+- Treat `anyOf`/`oneOf` of one schema plus `JsonSchema.nullType()` as that
+  schema made nullable, including nullable references.
+- Fix re-emitted schema constants dropping `anyOf`/`oneOf`/`allOf` branches and
+  emitting redundant `const` keywords.
+- Escape `$` and backslashes in generated string literals.
+- Require `json_schema` 0.2.
+
 ## 0.1.6
 
 - Support Hippo Analysis 0.2 and current analyzer/source_gen APIs.

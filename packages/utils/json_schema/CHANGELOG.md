@@ -1,3 +1,15 @@
+## 0.2.0
+
+- Add `JsonDiscriminator` for `JsonSchema.oneOf` and `JsonSchema.anyOf`,
+  serialized as the OpenAPI `discriminator` keyword with
+  `#/components/schemas/...` mapping references. Mappings can be inferred from
+  branches that pin the discriminator property to a single enum value, and
+  `JsonSchemaRegistry.asMap` completes them from the registry.
+- Add `JsonSchema.nullType()` (`JsonNullSchema`), serialized as
+  `{"type": "null"}`. Breaking: exhaustive `switch`es over the sealed
+  `JsonSchema` hierarchy need a `JsonNullSchema` case.
+- Add `FromSchema.unknownVariant` for generated discriminated unions.
+
 ## 0.1.5
 
 - Add typed `JsonSchemaPath` traversal, serialized JSON Pointer conversion,

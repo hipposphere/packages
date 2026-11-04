@@ -216,4 +216,140 @@ void main() {
       'nullable': true,
     });
   });
+
+  group('discriminator', () {
+    const phaseLine = JsonSchema.object(
+      id: 'PhaseLine',
+      properties: <String, JsonSchema>{
+        'type': JsonSchema.string(enumValues: <Object?>['phase']),
+        'phase': JsonSchema.string(),
+      },
+      required: <String>['type', 'phase'],
+    );
+    const keepaliveLine = JsonSchema.object(
+      id: 'KeepaliveLine',
+      properties: <String, JsonSchema>{
+        'type': JsonSchema.string(enumValues: <Object?>['keepalive']),
+      },
+      required: <String>['type'],
+    );
+
+    test('serializes an explicit mapping as OpenAPI component references', () {
+      const schema = JsonSchema.oneOf(
+        <JsonSchema>[
+          JsonSchema.componentRef('PhaseLine'),
+          JsonSchema.componentRef('KeepaliveLine'),
+        ],
+        discriminator: JsonDiscriminator(
+          propertyName: 'type',
+          mapping: <String, String>{
+            'phase': 'PhaseLine',
+            'keepalive': '#/components/schemas/KeepaliveLine',
+          },
+        ),
+      );
+
+      expect(schema.toJson(), {
+        'oneOf': [
+          {r'$ref': '#/components/schemas/PhaseLine'},
+          {r'$ref': '#/components/schemas/KeepaliveLine'},
+        ],
+        'discriminator': {
+          'propertyName': 'type',
+          'mapping': {
+            'phase': '#/components/schemas/PhaseLine',
+            'keepalive': '#/components/schemas/KeepaliveLine',
+          },
+        },
+      });
+    });
+
+    test('omits an empty mapping', () {
+      const schema = JsonSchema.anyOf(<JsonSchema>[
+        JsonSchema.componentRef('PhaseLine'),
+      ], discriminator: JsonDiscriminator(propertyName: 'type'));
+
+      expect(schema.toJson()['discriminator'], {'propertyName': 'type'});
+    });
+
+    test('infers missing mapping entries from single-value branch properties', () {
+      const discriminator = JsonDiscriminator(
+        propertyName: 'type',
+        mapping: <String, String>{'beat': 'KeepaliveLine'},
+      );
+      final schemas = <String, JsonSchema>{'PhaseLine': phaseLine, 'KeepaliveLine': keepaliveLine};
+
+      expect(
+        discriminator.resolveMapping(const <JsonSchema>[
+          JsonSchema.componentRef('PhaseLine'),
+          JsonSchema.componentRef('KeepaliveLine'),
+          JsonSchema.componentRef('Missing'),
+        ], lookup: (id) => schemas[id]),
+        {'beat': 'KeepaliveLine', 'phase': 'PhaseLine'},
+      );
+      expect(discriminator.valueOf(phaseLine), 'phase');
+      expect(discriminator.valueOf(const JsonSchema.string()), isNull);
+    });
+
+    test('registry serialization completes inferred mappings', () {
+      const registry = JsonSchemaRegistry(
+        schemas: <JsonSchema>[
+          phaseLine,
+          keepaliveLine,
+          JsonSchema.oneOf(
+            <JsonSchema>[
+              JsonSchema.componentRef('PhaseLine'),
+              JsonSchema.componentRef('KeepaliveLine'),
+            ],
+            id: 'StreamLine',
+            discriminator: JsonDiscriminator(propertyName: 'type'),
+          ),
+        ],
+      );
+
+      expect(registry.asMap()['StreamLine']?['discriminator'], {
+        'propertyName': 'type',
+        'mapping': {
+          'phase': '#/components/schemas/PhaseLine',
+          'keepalive': '#/components/schemas/KeepaliveLine',
+        },
+      });
+    });
+
+    test('copyWith keeps the discriminator', () {
+      const schema = JsonSchema.oneOf(<JsonSchema>[
+        JsonSchema.componentRef('PhaseLine'),
+      ], discriminator: JsonDiscriminator(propertyName: 'type'));
+
+      final copied = (schema as JsonOneOfSchema).copyWith(nullable: true);
+
+      expect(copied.discriminator?.propertyName, 'type');
+    });
+
+    test('reference helpers distinguish ids from references', () {
+      expect(JsonDiscriminator.referenceFor('PhaseLine'), '#/components/schemas/PhaseLine');
+      expect(JsonDiscriminator.referenceFor('other.json#/Line'), 'other.json#/Line');
+      expect(JsonDiscriminator.schemaIdFor('#/components/schemas/PhaseLine'), 'PhaseLine');
+      expect(JsonDiscriminator.schemaIdFor('PhaseLine'), 'PhaseLine');
+      expect(JsonDiscriminator.schemaIdFor('#/definitions/PhaseLine'), isNull);
+    });
+  });
+
+  test('null type serializes as JSON Schema null', () {
+    const schema = JsonSchema.nullType(description: 'Nothing');
+
+    expect(schema, isA<JsonNullSchema>());
+    expect(schema.nullable, isTrue);
+    expect(schema.toJson(), {'description': 'Nothing', 'type': 'null'});
+    expect(
+      const JsonSchema.anyOf(<JsonSchema>[JsonSchema.componentRef('User'), JsonSchema.nullType()])
+          .toJson(),
+      {
+        'anyOf': [
+          {r'$ref': '#/components/schemas/User'},
+          {'type': 'null'},
+        ],
+      },
+    );
+  });
 }

@@ -10,6 +10,8 @@ import 'package:hippo_analysis/hippo_analysis.dart';
 import 'package:json_schema/json_schema.dart';
 import 'package:source_gen/source_gen.dart';
 
+part 'from_schema_union_builder.dart';
+
 /// Build-time description of a model generated from a JSON Schema.
 final class FromSchemaModelSpec {
   const FromSchemaModelSpec({
@@ -22,11 +24,24 @@ final class FromSchemaModelSpec {
     required this.schemasById,
     required this.responseStatus,
     required this.source,
-  });
+    JsonSchema? emittedSchema,
+    this.unions = const <UnionModelSpec>[],
+  }) : emittedSchema = emittedSchema ?? schema;
 
   final String publicName;
   final String backingClassName;
+
+  /// Schema used to choose Dart types and conversions.
+  ///
+  /// Inline discriminated unions carry their generated type as `dartType`.
   final JsonSchema schema;
+
+  /// Schema re-emitted as the generated `schema` constant.
+  final JsonSchema emittedSchema;
+
+  /// Sealed unions generated for this model: the root union, when the model
+  /// itself is a discriminated union, followed by inline property unions.
+  final List<UnionModelSpec> unions;
   final String schemaId;
   final Map<String, SchemaRefModelSpec> refModels;
   final List<TypeParameterSpec> typeParameters;
@@ -84,14 +99,34 @@ FromSchemaModelSpec buildFromSchemaModel(
   );
   final typeParameters = _typeParameterSpecs(element);
   final publicName = element.displayName;
+  final schemaId = _schemaIdForModel(sourceSchema, schema, publicName);
+  final schemasById = _schemasById(registry);
+  final lookup = _SchemaLookup(element: element, schemasById: schemasById, refModels: refModels);
+  final unions = _UnionCollector(
+    lookup: lookup,
+    element: element,
+    unknownVariant: reader.peek('unknownVariant')?.boolValue ?? false,
+  );
+  final rootUnion = _isDiscriminatedUnion(schema)
+      ? unions.root(schema as JsonCompositeSchema, publicName: publicName)
+      : null;
+  if (rootUnion != null && typeParameters.isNotEmpty) {
+    throw InvalidGenerationSourceError(
+      '@${_annotationName(source)} cannot generate generic discriminated unions.',
+      element: element,
+    );
+  }
+  final typingSchema = rootUnion == null ? unions.inline(schema, ownerName: publicName) : schema;
   return FromSchemaModelSpec(
     publicName: publicName,
     backingClassName: '_\$$publicName',
-    schema: schema,
-    schemaId: _schemaIdForModel(sourceSchema, schema, publicName),
+    schema: typingSchema,
+    emittedSchema: _resolveDiscriminators(schema, lookup),
+    unions: [?rootUnion, ...unions.inlineUnions],
+    schemaId: schemaId,
     refModels: refModels,
     typeParameters: typeParameters,
-    schemasById: _schemasById(registry),
+    schemasById: schemasById,
     responseStatus: reader.peek('responseStatus')?.intValue ?? 200,
     source: source,
   );
@@ -142,6 +177,7 @@ JsonSchema jsonSchemaFromDartObject(DartObject object, {required Element element
       description: _stringField(object, 'description'),
       enumValues: _objectListField(object, 'enumValues', element: element),
       nullable: _boolField(object, 'nullable') ?? false,
+      discriminator: _discriminatorField(object, 'discriminator', element: element),
       dartType: _dartSchemaTypeField(object, 'dartType', element: element),
     ),
     'JsonOneOfSchema' => JsonSchema.oneOf(
@@ -151,6 +187,7 @@ JsonSchema jsonSchemaFromDartObject(DartObject object, {required Element element
       description: _stringField(object, 'description'),
       enumValues: _objectListField(object, 'enumValues', element: element),
       nullable: _boolField(object, 'nullable') ?? false,
+      discriminator: _discriminatorField(object, 'discriminator', element: element),
       dartType: _dartSchemaTypeField(object, 'dartType', element: element),
     ),
     'JsonAllOfSchema' => JsonSchema.allOf(
@@ -209,6 +246,11 @@ JsonSchema jsonSchemaFromDartObject(DartObject object, {required Element element
       description: _stringField(object, 'description'),
       enumValues: _objectListField(object, 'enumValues', element: element),
     ),
+    'JsonNullSchema' => JsonSchema.nullType(
+      id: _stringField(object, 'id'),
+      title: _stringField(object, 'title'),
+      description: _stringField(object, 'description'),
+    ),
     'JsonRawSchema' => JsonSchema.raw(
       _objectMapField(object, 'schema', element: element),
       id: _stringField(object, 'id'),
@@ -238,14 +280,26 @@ String generateFromSchemaModels(
   List<FromSchemaModelSpec> models, {
   FromSchemaFormatterOptions formatterOptions = const FromSchemaFormatterOptions(),
 }) {
-  final library = Library((builder) => builder.body.addAll(models.map(_modelSpec)));
+  final library = Library((builder) => builder.body.addAll(models.expand(_modelSpecs)));
   // Generated model expressions intentionally retain their explicit type names.
+  // Public union variants wrap typedefs of private generated backing classes.
   const ignoreForFile =
       '// ignore_for_file: unused_element, unused_field, '
+      'library_private_types_in_public_api, '
       'hippo_analysis_plugin/prefer_dot_shorthands\n';
   return formatterOptions.createFormatter().format(
     '$ignoreForFile${library.accept(DartEmitter())}',
   );
+}
+
+Iterable<Spec> _modelSpecs(FromSchemaModelSpec model) sync* {
+  final isRootUnion = model.unions.firstOrNull?.isRoot ?? false;
+  if (!isRootUnion) {
+    yield _modelSpec(model);
+  }
+  for (final union in model.unions) {
+    yield* _unionSpecs(union, model);
+  }
 }
 
 Spec _modelSpec(FromSchemaModelSpec model) {
@@ -298,7 +352,7 @@ Class _objectModel(FromSchemaModelSpec model) {
       )
       ..fields.addAll([
         _schemaIdField(model.schemaId),
-        _schemaField(model.schema, schemaId: model.schemaId),
+        _schemaField(model.emittedSchema, schemaId: model.schemaId),
         _schemaRefField(),
         for (final field in fields)
           Field((builder) {
@@ -334,7 +388,7 @@ Enum _stringEnumModel(FromSchemaModelSpec model) {
           EnumValue((builder) {
             builder
               ..name = value.name
-              ..arguments.add(literalString(value.wireValue));
+              ..arguments.add(_literalString(value.wireValue));
           }),
       ])
       ..constructors.add(
@@ -358,7 +412,7 @@ Enum _stringEnumModel(FromSchemaModelSpec model) {
             ..name = 'value';
         }),
         _schemaIdField(model.schemaId),
-        _schemaField(model.schema, schemaId: model.schemaId),
+        _schemaField(model.emittedSchema, schemaId: model.schemaId),
         _schemaRefField(),
       ])
       ..methods.addAll([
@@ -386,7 +440,7 @@ ExtensionType _arrayModel(FromSchemaModelSpec model) {
       ? 'Object?'
       : _schemaDartType(
           schema.items!,
-          nullable: schema.items!.nullable,
+          nullable: _isNullable(schema.items!),
           refModels: model.refModels,
           typeParameters: model.typeParameters,
           source: model.source,
@@ -405,7 +459,7 @@ ExtensionType _arrayModel(FromSchemaModelSpec model) {
       ..implements.add(refer('List<$itemType>'))
       ..fields.addAll([
         _schemaIdField(model.schemaId),
-        _schemaField(model.schema, schemaId: model.schemaId),
+        _schemaField(model.emittedSchema, schemaId: model.schemaId),
         _schemaRefField(),
       ])
       ..methods.addAll([
@@ -439,7 +493,7 @@ Field _schemaIdField(String schemaId) {
       ..static = true
       ..modifier = FieldModifier.constant
       ..name = 'schemaId'
-      ..assignment = literalString(schemaId).code;
+      ..assignment = _literalString(schemaId).code;
   });
 }
 
@@ -455,7 +509,7 @@ Field _schemaRefField() {
   });
 }
 
-Field _schemaField(JsonSchema schema, {required String schemaId}) {
+Field _schemaField(JsonSchema schema, {required String? schemaId}) {
   return Field((builder) {
     builder
       ..static = true
@@ -464,7 +518,7 @@ Field _schemaField(JsonSchema schema, {required String schemaId}) {
       ..name = 'schema'
       ..assignment = _schemaExpression(
         schema,
-        idExpression: schema.id == schemaId ? refer('schemaId') : null,
+        idExpression: schemaId != null && schema.id == schemaId ? refer('schemaId') : null,
       ).code;
   });
 }
@@ -496,9 +550,9 @@ Expression _schemaExpression(JsonSchema schema, {Expression? idExpression}) {
     if (idExpression != null)
       'id': idExpression
     else if (schema.id case final id?)
-      'id': literalString(id),
-    if (schema.title case final title?) 'title': literalString(title),
-    if (schema.description case final description?) 'description': literalString(description),
+      'id': _literalString(id),
+    if (schema.title case final title?) 'title': _literalString(title),
+    if (schema.description case final description?) 'description': _literalString(description),
     if (schema.enumValues.isNotEmpty) 'enumValues': literalConstList(schema.enumValues),
   };
 
@@ -531,23 +585,25 @@ Expression _schemaExpression(JsonSchema schema, {Expression? idExpression}) {
         if (items != null) 'items': _schemaExpression(items),
       },
     ),
-    JsonAnyOfSchema(:final schemas, :final nullable, :final dartType) =>
+    JsonAnyOfSchema(:final schemas, :final nullable, :final discriminator, :final dartType) =>
       refer('JsonSchema').constInstanceNamed(
         'anyOf',
         [_schemaListExpression(schemas)],
         {
           ...baseArguments,
           if (nullable) 'nullable': literalBool(nullable),
+          if (discriminator != null) 'discriminator': _discriminatorExpression(discriminator),
           if (dartType != null) 'dartType': _dartSchemaTypeExpression(dartType),
         },
       ),
-    JsonOneOfSchema(:final schemas, :final nullable, :final dartType) =>
+    JsonOneOfSchema(:final schemas, :final nullable, :final discriminator, :final dartType) =>
       refer('JsonSchema').constInstanceNamed(
         'oneOf',
         [_schemaListExpression(schemas)],
         {
           ...baseArguments,
           if (nullable) 'nullable': literalBool(nullable),
+          if (discriminator != null) 'discriminator': _discriminatorExpression(discriminator),
           if (dartType != null) 'dartType': _dartSchemaTypeExpression(dartType),
         },
       ),
@@ -565,8 +621,8 @@ Expression _schemaExpression(JsonSchema schema, {Expression? idExpression}) {
       refer('JsonSchema').constInstanceNamed('string', const [], {
         ...baseArguments,
         if (nullable) 'nullable': literalBool(nullable),
-        if (defaultValue != null) 'defaultValue': literalString(defaultValue),
-        if (format != null) 'format': literalString(format),
+        if (defaultValue != null) 'defaultValue': _literalString(defaultValue),
+        if (format != null) 'format': _literalString(format),
         if (dartType != null) 'dartType': _dartSchemaTypeExpression(dartType),
       }),
     JsonIntegerSchema(
@@ -580,7 +636,7 @@ Expression _schemaExpression(JsonSchema schema, {Expression? idExpression}) {
         ...baseArguments,
         if (nullable) 'nullable': literalBool(nullable),
         if (defaultValue != null) 'defaultValue': literalNum(defaultValue),
-        if (format != null) 'format': literalString(format),
+        if (format != null) 'format': _literalString(format),
         if (minimum != null) 'minimum': literalNum(minimum),
         if (maximum != null) 'maximum': literalNum(maximum),
       }),
@@ -595,7 +651,7 @@ Expression _schemaExpression(JsonSchema schema, {Expression? idExpression}) {
         ...baseArguments,
         if (nullable) 'nullable': literalBool(nullable),
         if (defaultValue != null) 'defaultValue': literalNum(defaultValue),
-        if (format != null) 'format': literalString(format),
+        if (format != null) 'format': _literalString(format),
         if (minimum != null) 'minimum': literalNum(minimum),
         if (maximum != null) 'maximum': literalNum(maximum),
       }),
@@ -607,25 +663,48 @@ Expression _schemaExpression(JsonSchema schema, {Expression? idExpression}) {
       }),
     JsonReferenceSchema(:final ref) => refer(
       'JsonSchema',
-    ).constInstanceNamed('ref', [literalString(ref)], baseArguments),
+    ).constInstanceNamed('ref', [_literalString(ref)], baseArguments),
+    JsonNullSchema() => refer('JsonSchema').constInstanceNamed('nullType', const [], {
+      if (idExpression != null)
+        'id': idExpression
+      else if (schema.id case final id?)
+        'id': _literalString(id),
+      if (schema.title case final title?) 'title': _literalString(title),
+      if (schema.description case final description?) 'description': _literalString(description),
+    }),
     JsonRawSchema(:final schema, :final id) => refer('JsonSchema').constInstanceNamed(
       'raw',
       [literalConstMap(schema, refer('String'), refer('Object?'))],
-      {if (id != null) 'id': literalString(id)},
+      {if (id != null) 'id': _literalString(id)},
     ),
     _ => throw StateError('Unsupported request body schema $schema.'),
   };
 }
 
 Expression _schemaListExpression(List<JsonSchema> schemas) {
-  final emitter = DartEmitter();
-  final values = schemas.map((schema) => _schemaExpression(schema).accept(emitter)).join(', ');
-  return CodeExpression(Code('const <JsonSchema>[$values]'));
+  return literalConstList(<Expression>[
+    for (final schema in schemas) _schemaExpression(schema),
+  ], refer('JsonSchema'));
+}
+
+Expression _discriminatorExpression(JsonDiscriminator discriminator) {
+  return refer('JsonDiscriminator').constInstanceNamed('', const [], {
+    'propertyName': _literalString(discriminator.propertyName),
+    if (discriminator.mapping.isNotEmpty)
+      'mapping': literalConstMap(
+        <Object, Object>{
+          for (final entry in discriminator.mapping.entries)
+            _literalString(entry.key): _literalString(entry.value),
+        },
+        refer('String'),
+        refer('String'),
+      ),
+  });
 }
 
 Expression _dartSchemaTypeExpression(DartSchemaType dartType) {
   final typeName = _dartTypeName(dartType);
-  final name = literalString(typeName ?? 'Object');
+  final name = _literalString(typeName ?? 'Object');
   return switch (dartType) {
     DartConcreteSchemaType(:final conversion) ||
     DartNamedSchemaType(:final conversion) => switch (conversion) {
@@ -781,7 +860,7 @@ List<_SchemaFieldSpec> _modelFields(FromSchemaModelSpec model) {
 
     final requiredParameter = required.contains(entry.key);
     final defaultValue = _defaultValue(entry.value);
-    final nullable = (!requiredParameter && defaultValue == null) || entry.value.nullable;
+    final nullable = (!requiredParameter && defaultValue == null) || _isNullable(entry.value);
     fields.add(
       _SchemaFieldSpec(
         wireName: entry.key,
@@ -832,7 +911,7 @@ Object? _defaultValue(JsonSchema schema) {
 
 Code _defaultValueCode(Object value) {
   return switch (value) {
-    String() => literalString(value).code,
+    String() => _literalString(value).code,
     num() => literalNum(value).code,
     bool() => literalBool(value).code,
     _ => throw StateError('Unsupported JSON Schema default value $value.'),
@@ -854,6 +933,16 @@ String _schemaDartType(
   required List<TypeParameterSpec> typeParameters,
   required FromSchemaModelSource source,
 }) {
+  final (schema: effectiveSchema, nullable: schemaNullable) = _unwrapNullable(schema);
+  if (!identical(effectiveSchema, schema)) {
+    return _schemaDartType(
+      effectiveSchema,
+      nullable: nullable || schemaNullable,
+      refModels: refModels,
+      typeParameters: typeParameters,
+      source: source,
+    );
+  }
   final type = switch (schema) {
     JsonStringSchema(:final dartType, :final format) => _stringSchemaDartType(
       dartType,
@@ -865,7 +954,7 @@ String _schemaDartType(
     JsonNumberSchema() => source == FromSchemaModelSource.multipart ? 'double' : 'num',
     JsonBooleanSchema() => 'bool',
     JsonArraySchema(:final items) =>
-      'List<${items == null ? 'Object?' : _schemaDartType(items, nullable: items.nullable, refModels: refModels, typeParameters: typeParameters, source: source)}>',
+      'List<${items == null ? 'Object?' : _schemaDartType(items, nullable: _isNullable(items), refModels: refModels, typeParameters: typeParameters, source: source)}>',
     JsonCompositeSchema(:final dartType) =>
       _dartTypeName(dartType, typeParameters: typeParameters) ?? 'Object?',
     JsonReferenceSchema(:final ref) =>
@@ -995,6 +1084,17 @@ String _decodeValue(
   List<TypeParameterSpec> typeParameters = const <TypeParameterSpec>[],
   String path = '',
 }) {
+  final (schema: effectiveSchema, nullable: schemaNullable) = _unwrapNullable(schema);
+  if (!identical(effectiveSchema, schema)) {
+    return _decodeValue(
+      effectiveSchema,
+      source,
+      nullable: nullable || schemaNullable,
+      refModels: refModels,
+      typeParameters: typeParameters,
+      path: path,
+    );
+  }
   return switch (schema) {
     JsonStringSchema(:final dartType, :final format) => _decodeStringValue(
       dartType,
@@ -1058,7 +1158,7 @@ String _decodeArrayValue(
       : _decodeValue(
           items,
           'item',
-          nullable: items.nullable,
+          nullable: _isNullable(items),
           refModels: refModels,
           typeParameters: typeParameters,
           path: path,
@@ -1126,7 +1226,7 @@ String _decodeObjectValue(
         final fieldName = _fieldName(entry.key);
         final fieldPath = path.isEmpty ? fieldName : '$path.$fieldName';
         final fieldSource = '($mapSource)[${_dartString(entry.key)}]';
-        final fieldNullable = !required.contains(entry.key) || entry.value.nullable;
+        final fieldNullable = !required.contains(entry.key) || _isNullable(entry.value);
         return '${_dartString(entry.key)}: ${_decodeValue(entry.value, fieldSource, nullable: fieldNullable, refModels: refModels, typeParameters: typeParameters, path: fieldPath)},';
       })
       .join('\n');
@@ -1220,6 +1320,15 @@ String _encodeValue(
   required bool nullable,
   required Map<String, SchemaRefModelSpec> refModels,
 }) {
+  final (schema: effectiveSchema, nullable: schemaNullable) = _unwrapNullable(schema);
+  if (!identical(effectiveSchema, schema)) {
+    return _encodeValue(
+      effectiveSchema,
+      source,
+      nullable: nullable || schemaNullable,
+      refModels: refModels,
+    );
+  }
   return switch (schema) {
     JsonStringSchema(:final dartType, :final format)
         when dartType == null && format == 'date-time' =>
@@ -1333,7 +1442,7 @@ String _encodeArrayValue(
 }) {
   final itemExpression = items == null
       ? 'item'
-      : _encodeValue(items, 'item', nullable: items.nullable, refModels: refModels);
+      : _encodeValue(items, 'item', nullable: _isNullable(items), refModels: refModels);
   final receiver = nullable ? '$source?' : source;
   return '$receiver.map((item) => $itemExpression).toList()';
 }
@@ -1480,14 +1589,15 @@ JsonSchema _resolveRootSchema(
   }
 
   throw InvalidGenerationSourceError(
-    '@FromSchema supports object schemas, non-null array schemas, and string '
-    'schemas with enumValues.',
+    '@FromSchema supports object schemas, non-null array schemas, string '
+    'schemas with enumValues, and discriminated oneOf/anyOf unions.',
     element: element,
   );
 }
 
 bool _supportedRootSchema(JsonSchema schema) {
   return schema is JsonObjectSchema ||
+      _isDiscriminatedUnion(schema) ||
       (schema is JsonArraySchema && !schema.nullable) ||
       (schema is JsonStringSchema && schema.enumValues.isNotEmpty);
 }
@@ -1521,13 +1631,16 @@ Iterable<String> _schemaRefs(JsonSchema schema) sync* {
       if (items != null) {
         yield* _schemaRefs(items);
       }
-    case JsonCompositeSchema(:final schemas):
+    case JsonCompositeSchema(:final schemas, :final discriminator):
       for (final schema in schemas) {
         yield* _schemaRefs(schema);
       }
+      for (final target in discriminator?.mapping.values ?? const <String>[]) {
+        yield JsonDiscriminator.referenceFor(target);
+      }
     case JsonReferenceSchema(:final ref):
       yield ref;
-    case JsonRawSchema() || JsonAnySchema() || JsonStringSchema():
+    case JsonRawSchema() || JsonAnySchema() || JsonStringSchema() || JsonNullSchema():
     case JsonIntegerSchema() || JsonNumberSchema() || JsonBooleanSchema():
     case _:
   }
@@ -1619,6 +1732,31 @@ DartSchemaType? _dartSchemaTypeField(DartObject object, String name, {required E
   };
 }
 
+JsonDiscriminator? _discriminatorField(DartObject object, String name, {required Element element}) {
+  final value = _field(object, name);
+  if (value == null || value.isNull) {
+    return null;
+  }
+  final propertyName = _stringField(value, 'propertyName');
+  if (propertyName == null || propertyName.isEmpty) {
+    throw InvalidGenerationSourceError(
+      'JsonDiscriminator must use a non-empty propertyName.',
+      element: element,
+    );
+  }
+  final mapping = _field(value, 'mapping')?.toMapValue() ?? const <DartObject?, DartObject?>{};
+  return JsonDiscriminator(
+    propertyName: propertyName,
+    mapping: <String, String>{
+      for (final entry in mapping.entries)
+        _requiredStringObject(entry.key, element: element): _requiredStringObject(
+          entry.value,
+          element: element,
+        ),
+    },
+  );
+}
+
 DartSchemaConversion _dartSchemaConversionField(DartObject object) {
   final name = _field(object, 'conversion')?.getField('_name')?.toStringValue();
   return switch (name) {
@@ -1707,9 +1845,12 @@ int? _intField(DartObject object, String name) {
 }
 
 DartObject? _field(DartObject object, String name) {
-  final field = object.getField(name);
-  if (field != null) {
-    return field;
+  // Inherited fields, such as composite `schemas`, live on the `(super)`
+  // object of the constant's runtime class.
+  for (DartObject? current = object; current != null; current = current.getField('(super)')) {
+    if (current.getField(name) case final field?) {
+      return field;
+    }
   }
 
   final invocation = object.constructorInvocation;
@@ -1910,7 +2051,7 @@ bool _validIdentifier(String value) {
   return RegExp(r'^[A-Za-z$][A-Za-z0-9$]*$').hasMatch(value);
 }
 
-String _dartString(String value) => jsonEncode(value);
+String _dartString(String value) => jsonEncode(value).replaceAll(r'$', r'\$');
 
 final class _SchemaFieldSpec {
   const _SchemaFieldSpec({
@@ -2020,3 +2161,7 @@ const _dartKeywords = <String>{
   'with',
   'yield',
 };
+
+/// [literalString] that also escapes backslashes and `$` interpolation.
+Expression _literalString(String value) =>
+    literalString(value.replaceAll(r'\', r'\\').replaceAll(r'$', r'\$'));

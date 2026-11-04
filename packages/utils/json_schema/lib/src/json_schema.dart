@@ -1,3 +1,4 @@
+import 'json_discriminator.dart';
 import 'json_encodable.dart';
 
 /// JSON Schema primitive type keywords supported by this package.
@@ -192,6 +193,7 @@ sealed class JsonSchema implements JsonEncodable {
 
   /// Describes a value that may match any schema in [schemas].
   ///
+  /// [discriminator] is serialized as the OpenAPI `discriminator` keyword.
   /// [dartType] is optional Dart-only metadata for generators and is not
   /// included in [toJson].
   const factory JsonSchema.anyOf(
@@ -201,10 +203,24 @@ sealed class JsonSchema implements JsonEncodable {
     String? description,
     List<Object?> enumValues,
     bool nullable,
+    JsonDiscriminator? discriminator,
     DartSchemaType? dartType,
   }) = JsonAnyOfSchema;
 
   /// Describes a value that should match exactly one schema in [schemas].
+  ///
+  /// [discriminator] names the property that selects the matching schema and
+  /// is serialized as the OpenAPI `discriminator` keyword:
+  ///
+  /// ```dart
+  /// const event = JsonSchema.oneOf(
+  ///   <JsonSchema>[
+  ///     JsonSchema.componentRef('CreatedEvent'),
+  ///     JsonSchema.componentRef('DeletedEvent'),
+  ///   ],
+  ///   discriminator: JsonDiscriminator(propertyName: 'type'),
+  /// );
+  /// ```
   ///
   /// [dartType] is optional Dart-only metadata for generators and is not
   /// included in [toJson].
@@ -215,6 +231,7 @@ sealed class JsonSchema implements JsonEncodable {
     String? description,
     List<Object?> enumValues,
     bool nullable,
+    JsonDiscriminator? discriminator,
     DartSchemaType? dartType,
   }) = JsonOneOfSchema;
 
@@ -317,6 +334,14 @@ sealed class JsonSchema implements JsonEncodable {
     String? description,
     List<Object?> enumValues,
   }) = JsonReferenceSchema.component;
+
+  /// Describes the JSON `null` value.
+  ///
+  /// Serializes as `{"type": "null"}`. Combine it with another schema in
+  /// [JsonSchema.anyOf] to describe an optional value the way OpenAPI 3.1 and
+  /// JSON Schema 2020-12 documents do.
+  const factory JsonSchema.nullType({String? id, String? title, String? description}) =
+      JsonNullSchema;
 
   /// Wraps an already-built JSON Schema map.
   ///
@@ -524,6 +549,7 @@ sealed class JsonCompositeSchema extends JsonSchema {
     super.description,
     super.enumValues,
     super.nullable = false,
+    this.discriminator,
     this.dartType,
   }) : super._();
 
@@ -532,6 +558,11 @@ sealed class JsonCompositeSchema extends JsonSchema {
 
   /// JSON Schema composition keyword, such as `anyOf`, `oneOf`, or `allOf`.
   final String keyword;
+
+  /// Optional OpenAPI discriminator selecting a branch of [schemas].
+  ///
+  /// Only `anyOf` and `oneOf` schemas accept a discriminator.
+  final JsonDiscriminator? discriminator;
 
   /// Optional Dart-only type metadata for generators.
   final DartSchemaType? dartType;
@@ -544,6 +575,7 @@ sealed class JsonCompositeSchema extends JsonSchema {
     List<Object?>? enumValues,
     bool? nullable,
     List<JsonSchema>? schemas,
+    JsonDiscriminator? discriminator,
     DartSchemaType? dartType,
   }) => switch (this) {
     JsonAnyOfSchema() => JsonAnyOfSchema(
@@ -553,6 +585,7 @@ sealed class JsonCompositeSchema extends JsonSchema {
       description: description ?? this.description,
       enumValues: enumValues ?? this.enumValues,
       nullable: nullable ?? this.nullable,
+      discriminator: discriminator ?? this.discriminator,
       dartType: dartType ?? this.dartType,
     ),
     JsonOneOfSchema() => JsonOneOfSchema(
@@ -562,6 +595,7 @@ sealed class JsonCompositeSchema extends JsonSchema {
       description: description ?? this.description,
       enumValues: enumValues ?? this.enumValues,
       nullable: nullable ?? this.nullable,
+      discriminator: discriminator ?? this.discriminator,
       dartType: dartType ?? this.dartType,
     ),
     JsonAllOfSchema() => JsonAllOfSchema(
@@ -580,6 +614,7 @@ sealed class JsonCompositeSchema extends JsonSchema {
     return <String, Object?>{
       keyword: schemas.map((schema) => schema.toJson()).toList(),
       if (nullable) 'nullable': true,
+      'discriminator': ?discriminator?.toJson(),
     };
   }
 }
@@ -594,6 +629,7 @@ final class JsonAnyOfSchema extends JsonCompositeSchema {
     super.description,
     super.enumValues,
     super.nullable,
+    super.discriminator,
     super.dartType,
   }) : super(keyword: 'anyOf');
 }
@@ -608,6 +644,7 @@ final class JsonOneOfSchema extends JsonCompositeSchema {
     super.description,
     super.enumValues,
     super.nullable,
+    super.discriminator,
     super.dartType,
   }) : super(keyword: 'oneOf');
 }
@@ -871,6 +908,28 @@ final class JsonReferenceSchema extends JsonSchema {
 
   @override
   Map<String, Object?> toJsonKeywords() => <String, Object?>{r'$ref': ref};
+}
+
+/// JSON Schema `null` value.
+final class JsonNullSchema extends JsonSchema {
+  /// Creates a schema accepting only JSON `null`.
+  const JsonNullSchema({super.id, super.title, super.description}) : super._(nullable: true);
+
+  @override
+  JsonNullSchema copyWith({
+    String? id,
+    String? title,
+    String? description,
+    List<Object?>? enumValues,
+    bool? nullable,
+  }) => JsonNullSchema(
+    id: id ?? this.id,
+    title: title ?? this.title,
+    description: description ?? this.description,
+  );
+
+  @override
+  Map<String, Object?> toJsonKeywords() => const <String, Object?>{'type': 'null'};
 }
 
 /// JSON Schema value backed by an existing JSON-compatible map.
