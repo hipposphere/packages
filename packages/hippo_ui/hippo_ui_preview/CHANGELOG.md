@@ -1,3 +1,7 @@
+## 0.1.5
+
+- Allow `json_schema` 0.2.
+
 ## 0.1.3
 
 - Require `json_schema` 0.1.1 for the shared JSON encoding contract.

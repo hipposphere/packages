@@ -1,3 +1,4 @@
+import 'json_discriminator.dart';
 import 'json_schema.dart';
 
 /// Collection of top-level JSON Schemas installed on an app.
@@ -24,10 +25,29 @@ final class JsonSchemaRegistry {
   /// Returns serialized schemas keyed by schema id.
   ///
   /// Schemas without an [JsonSchema.id] are skipped because they cannot be
-  /// addressed from the map.
+  /// addressed from the map. Discriminator mappings are completed with
+  /// [resolveDiscriminators].
   Map<String, Map<String, Object?>> asMap() =>
       Map<String, Map<String, Object?>>.fromEntries(<MapEntry<String, Map<String, Object?>>>[
         for (final schema in schemas)
-          if (schema.id case final id?) MapEntry(id, schema.toJson()),
+          if (schema.id case final id?) MapEntry(id, resolveDiscriminators(schema).toJson()),
       ]);
+
+  /// Returns [schema] with every nested [JsonDiscriminator.mapping] completed
+  /// from the schemas in this registry.
+  ///
+  /// See [JsonDiscriminator.resolveMapping] for the inference rules.
+  JsonSchema resolveDiscriminators(JsonSchema schema) => switch (schema) {
+    JsonObjectSchema(:final properties) when properties.isNotEmpty => schema.copyWith(
+      properties: <String, JsonSchema>{
+        for (final entry in properties.entries) entry.key: resolveDiscriminators(entry.value),
+      },
+    ),
+    JsonArraySchema(:final items?) => schema.copyWith(items: resolveDiscriminators(items)),
+    JsonCompositeSchema(:final schemas, :final discriminator) => schema.copyWith(
+      schemas: <JsonSchema>[for (final branch in schemas) resolveDiscriminators(branch)],
+      discriminator: discriminator?.withResolvedMapping(schemas, lookup: schemaFor),
+    ),
+    _ => schema,
+  };
 }

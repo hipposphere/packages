@@ -18,6 +18,41 @@ pair this package with `json_schema_gen`. `JsonSchema` and generated JSON model
 objects implement `JsonEncodable`, the shared contract for values exposing a
 JSON-friendly `toJson()` representation.
 
+## Discriminated unions and null
+
+`JsonSchema.oneOf` and `JsonSchema.anyOf` accept an OpenAPI
+`JsonDiscriminator`. Mapping values are component schema ids and serialize as
+`#/components/schemas/...` references:
+
+```dart
+const streamLine = JsonSchema.oneOf(
+  <JsonSchema>[
+    JsonSchema.componentRef('PhaseLine'),
+    JsonSchema.componentRef('KeepaliveLine'),
+  ],
+  id: 'StreamLine',
+  discriminator: JsonDiscriminator(
+    propertyName: 'type',
+    mapping: <String, String>{'phase': 'PhaseLine', 'keepalive': 'KeepaliveLine'},
+  ),
+);
+```
+
+The mapping may be omitted when every branch pins the property to a single
+value, for example `'type': JsonSchema.string(enumValues: ['phase'])`.
+`JsonDiscriminator.resolveMapping` infers those tags, and
+`JsonSchemaRegistry.asMap` completes mappings from the registry's schemas.
+
+`JsonSchema.nullType()` serializes as `{"type": "null"}`. Use it in an `anyOf`
+to describe an optional value, including a nullable reference:
+
+```dart
+const owner = JsonSchema.anyOf(<JsonSchema>[
+  JsonSchema.componentRef('User'),
+  JsonSchema.nullType(),
+]);
+```
+
 ## JSON Pointer
 
 `JsonPointer` parses and serializes the RFC 6901 string representation and can
