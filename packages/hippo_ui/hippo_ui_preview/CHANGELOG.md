@@ -1,6 +1,6 @@
 ## 0.1.5
 
-- Allow `json_schema` 0.2.
+- Require JSON Schema 0.2.
 
 ## 0.1.3
 
