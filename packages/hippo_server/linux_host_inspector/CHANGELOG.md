@@ -1,3 +1,10 @@
+## 0.3.0
+
+- Report per-core CPU usage from `/proc/stat` over the same sampling window as
+  the aggregate value (`LinuxSystemMetrics.cpuCoreUsagePercents`).
+- Report a memory breakdown (`MemFree`, `Buffers + Cached + SReclaimable`, and
+  derived process memory) on `LinuxMemoryUsage`; all new fields are optional.
+
 ## 0.2.1
 
 - Read the hostname from the inspected root filesystem so containerized

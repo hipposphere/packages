@@ -90,10 +90,15 @@ final class LinuxSystemMetrics {
     required this.rootFileSystem,
     required this.uptime,
     required this.loadAverage1Minute,
+    this.cpuCoreUsagePercents = const <double>[],
   });
 
   final String hostname;
   final double cpuUsagePercent;
+
+  /// Per-core usage from the `cpuN` lines of `/proc/stat`, in core order,
+  /// sampled over the same window as [cpuUsagePercent].
+  final List<double> cpuCoreUsagePercents;
   final int logicalCpuCount;
   final LinuxMemoryUsage memory;
   final LinuxFileSystemCapacity rootFileSystem;
@@ -102,10 +107,30 @@ final class LinuxSystemMetrics {
 }
 
 final class LinuxMemoryUsage {
-  const LinuxMemoryUsage({required this.totalBytes, required this.availableBytes});
+  const LinuxMemoryUsage({
+    required this.totalBytes,
+    required this.availableBytes,
+    this.freeBytes,
+    this.cacheBytes,
+  });
 
   final int totalBytes;
   final int availableBytes;
+
+  /// `MemFree`: memory that is completely unused. Null when not reported.
+  final int? freeBytes;
+
+  /// `Buffers + Cached + SReclaimable`. Null when not reported.
+  final int? cacheBytes;
+
+  /// Memory held by processes: total minus free and cache. Null when the
+  /// breakdown is unavailable.
+  int? get processBytes {
+    final free = freeBytes;
+    final cache = cacheBytes;
+    if (free == null || cache == null) return null;
+    return (totalBytes - free - cache).clamp(0, totalBytes);
+  }
 
   int get usedBytes => totalBytes - availableBytes;
   double? get percent => totalBytes == 0 ? null : usedBytes / totalBytes * 100;

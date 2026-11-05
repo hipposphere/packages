@@ -34,13 +34,22 @@ final class LinuxSystemMetricsInspector {
     final loadAverage = _firstDouble(values[2] as String);
     final totalDelta = secondCpu.totalTicks - firstCpu.totalTicks;
     final idleDelta = secondCpu.idleTicks - firstCpu.idleTicks;
-    final cpuUsage = totalDelta <= 0
-        ? 0.0
-        : ((totalDelta - idleDelta) / totalDelta * 100).clamp(0, 100).toDouble();
+    final cpuUsage = _usagePercent(totalDelta, idleDelta);
+    final coreCount = firstCpu.cores.length < secondCpu.cores.length
+        ? firstCpu.cores.length
+        : secondCpu.cores.length;
+    final coreUsage = <double>[
+      for (var index = 0; index < coreCount; index++)
+        _usagePercent(
+          secondCpu.cores[index].totalTicks - firstCpu.cores[index].totalTicks,
+          secondCpu.cores[index].idleTicks - firstCpu.cores[index].idleTicks,
+        ),
+    ];
 
     return LinuxSystemMetrics(
       hostname: (values[3] as String).trim(),
       cpuUsagePercent: cpuUsage,
+      cpuCoreUsagePercents: coreUsage,
       logicalCpuCount: secondCpu.logicalCpuCount,
       memory: memory,
       rootFileSystem: nativeSystem.fileSystemCapacity(rootPath),
@@ -53,18 +62,28 @@ final class LinuxSystemMetricsInspector {
 
   Future<_CpuSample> _cpuSample() async {
     final lines = (await fileSystem.readText('$procPath/stat')).split('\n');
-    final aggregate = lines.firstWhere((line) => line.startsWith('cpu '));
-    final values = aggregate.trim().split(RegExp(r'\s+')).skip(1).map(int.parse).toList();
-    if (values.length < 5) {
-      throw const FormatException('Invalid /proc/stat CPU line.');
+    final aggregate = _parseCpuLine(lines.firstWhere((line) => line.startsWith('cpu ')));
+    final cores = <_CpuTicks>[];
+    for (final line in lines) {
+      if (RegExp(r'^cpu\d+\s').hasMatch(line)) cores.add(_parseCpuLine(line));
     }
-    return _CpuSample(
-      totalTicks: values.take(8).fold<int>(0, (total, value) => total + value),
-      idleTicks: values[3] + values[4],
-      logicalCpuCount: lines.where((line) => RegExp(r'^cpu\d+\s').hasMatch(line)).length,
-    );
+    return _CpuSample(total: aggregate, cores: cores);
   }
 }
+
+_CpuTicks _parseCpuLine(String line) {
+  final values = line.trim().split(RegExp(r'\s+')).skip(1).map(int.parse).toList();
+  if (values.length < 5) {
+    throw const FormatException('Invalid /proc/stat CPU line.');
+  }
+  return _CpuTicks(
+    totalTicks: values.take(8).fold<int>(0, (total, value) => total + value),
+    idleTicks: values[3] + values[4],
+  );
+}
+
+double _usagePercent(int totalDelta, int idleDelta) =>
+    totalDelta <= 0 ? 0.0 : ((totalDelta - idleDelta) / totalDelta * 100).clamp(0, 100).toDouble();
 
 LinuxMemoryUsage _memoryUsage(String source) {
   final values = <String, int>{};
@@ -81,19 +100,36 @@ LinuxMemoryUsage _memoryUsage(String source) {
   final available =
       values['MemAvailable'] ??
       (values['MemFree'] ?? 0) + (values['Buffers'] ?? 0) + (values['Cached'] ?? 0);
-  return LinuxMemoryUsage(totalBytes: total, availableBytes: available.clamp(0, total));
+  final free = values['MemFree'];
+  final buffers = values['Buffers'];
+  final cached = values['Cached'];
+  final hasBreakdown = free != null && buffers != null && cached != null;
+  return LinuxMemoryUsage(
+    totalBytes: total,
+    availableBytes: available.clamp(0, total),
+    freeBytes: hasBreakdown ? free.clamp(0, total) : null,
+    cacheBytes: hasBreakdown
+        ? (buffers + cached + (values['SReclaimable'] ?? 0)).clamp(0, total)
+        : null,
+  );
 }
 
 double _firstDouble(String source) => double.parse(source.trim().split(RegExp(r'\s+')).first);
 
-final class _CpuSample {
-  const _CpuSample({
-    required this.totalTicks,
-    required this.idleTicks,
-    required this.logicalCpuCount,
-  });
+final class _CpuTicks {
+  const _CpuTicks({required this.totalTicks, required this.idleTicks});
 
   final int totalTicks;
   final int idleTicks;
-  final int logicalCpuCount;
+}
+
+final class _CpuSample {
+  const _CpuSample({required this.total, required this.cores});
+
+  final _CpuTicks total;
+  final List<_CpuTicks> cores;
+
+  int get totalTicks => total.totalTicks;
+  int get idleTicks => total.idleTicks;
+  int get logicalCpuCount => cores.length;
 }

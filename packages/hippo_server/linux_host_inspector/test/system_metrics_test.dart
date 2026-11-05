@@ -27,10 +27,44 @@ void main() {
     expect(metrics.hostname, 'hippo-test');
     expect(metrics.cpuUsagePercent, 60);
     expect(metrics.logicalCpuCount, 2);
+    expect(metrics.cpuCoreUsagePercents, [60, 60]);
+    expect(metrics.memory.freeBytes, isNull);
+    expect(metrics.memory.processBytes, isNull);
     expect(metrics.memory.usedBytes, 600 * 1024);
     expect(metrics.rootFileSystem.totalBytes, 1000000);
     expect(metrics.uptime, const Duration(milliseconds: 3600500));
     expect(metrics.loadAverage1Minute, 0.75);
+  });
+
+  test('reports per-core usage and the memory breakdown', () async {
+    final inspector = LinuxSystemMetricsInspector(
+      procPath: '/host/proc',
+      rootPath: '/host/root',
+      sampleDuration: Duration.zero,
+      fileSystem: _SequenceFileSystem(<String, List<String>>{
+        '/host/proc/stat': <String>[
+          'cpu 100 0 0 300 0 0 0 0\ncpu0 100 0 0 100 0 0 0 0\ncpu1 0 0 0 200 0 0 0 0\n',
+          'cpu 150 0 0 350 0 0 0 0\ncpu0 150 0 0 100 0 0 0 0\ncpu1 0 0 0 250 0 0 0 0\n',
+        ],
+        '/host/proc/meminfo': <String>[
+          'MemTotal: 1000 kB\nMemFree: 100 kB\nMemAvailable: 500 kB\n'
+              'Buffers: 50 kB\nCached: 250 kB\nSReclaimable: 50 kB\n',
+        ],
+        '/host/proc/uptime': <String>['1.0 0\n'],
+        '/host/proc/loadavg': <String>['0.1 0.1 0.1 1/1 1\n'],
+        '/host/root/etc/hostname': <String>['hippo-test\n'],
+      }),
+      nativeSystem: const _NativeSystem(),
+    );
+
+    final metrics = await inspector.read();
+
+    expect(metrics.cpuCoreUsagePercents, [100, 0]);
+    expect(metrics.cpuUsagePercent, 50);
+    expect(metrics.memory.freeBytes, 100 * 1024);
+    expect(metrics.memory.cacheBytes, 350 * 1024);
+    expect(metrics.memory.processBytes, 550 * 1024);
+    expect(metrics.memory.availableBytes, 500 * 1024);
   });
 }
 
