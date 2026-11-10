@@ -1,5 +1,5 @@
-import 'package:jaspr/jaspr.dart';
 import 'package:jaspr/dom.dart' as dom;
+import 'package:jaspr/jaspr.dart';
 
 Component el(String tag, List<Component> children, {String? classes, Map<String, String>? attrs}) =>
     Component.element(tag: tag, classes: classes, attributes: attrs, children: children);

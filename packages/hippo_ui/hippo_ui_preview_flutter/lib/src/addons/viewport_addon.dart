@@ -78,9 +78,6 @@ final class ViewportAddon extends HippoUiPreviewAddon<ViewportAddonState> {
 final class ViewportAddonState extends HippoUiPreviewAddonState {
   const ViewportAddonState({this.viewport = HippoUiPreviewViewport.responsive})
     : super(addonId: ViewportAddon.addonId);
-
-  final HippoUiPreviewViewport viewport;
-
   factory ViewportAddonState.fromJson(Object? json) {
     final configuration = HippoUiPreviewAddonState.readConfiguration(json);
     return ViewportAddonState(
@@ -89,6 +86,8 @@ final class ViewportAddonState extends HippoUiPreviewAddonState {
           HippoUiPreviewViewport.responsive,
     );
   }
+
+  final HippoUiPreviewViewport viewport;
 
   ViewportAddonState copyWith({HippoUiPreviewViewport? viewport}) {
     return ViewportAddonState(viewport: viewport ?? this.viewport);

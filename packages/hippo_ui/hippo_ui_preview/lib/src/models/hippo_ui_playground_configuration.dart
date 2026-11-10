@@ -8,8 +8,8 @@
 // ---------------------------------------------------------------------------
 */
 
-import 'package:json_schema/json_schema.dart';
 import 'package:hippo_ui/hippo_ui.dart';
+import 'package:json_schema/json_schema.dart';
 
 /// Runtime option values for a generated preview playground.
 final class HippoUiPlaygroundConfiguration implements JsonEncodable {

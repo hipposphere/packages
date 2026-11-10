@@ -36,15 +36,14 @@ final class AlignmentAddon extends HippoUiPreviewAddon<AlignmentAddonState> {
 final class AlignmentAddonState extends HippoUiPreviewAddonState {
   const AlignmentAddonState({this.alignment = Alignment.center})
     : super(addonId: AlignmentAddon.addonId);
-
-  final Alignment alignment;
-
   factory AlignmentAddonState.fromJson(Object? json) {
     final configuration = HippoUiPreviewAddonState.readConfiguration(json);
     return AlignmentAddonState(
       alignment: const HippoUiAlignmentConverter().convert(configuration['alignment']),
     );
   }
+
+  final Alignment alignment;
 
   AlignmentAddonState copyWith({Alignment? alignment}) {
     return AlignmentAddonState(alignment: alignment ?? this.alignment);

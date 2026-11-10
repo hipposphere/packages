@@ -8,9 +8,9 @@
 // ---------------------------------------------------------------------------
 */
 
-import 'package:json_schema/json_schema.dart';
 import 'package:hippo_core/hippo_core.dart';
 import 'package:hippo_ui/hippo_ui.dart';
+import 'package:json_schema/json_schema.dart';
 
 import 'hippo_ui_playground_configuration.dart';
 

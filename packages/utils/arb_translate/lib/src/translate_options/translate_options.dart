@@ -90,28 +90,6 @@ class TranslateOptions {
        useEscaping = useEscaping ?? false,
        relaxSyntax = relaxSyntax ?? false;
 
-  static const arbDirKey = 'arb-dir';
-  static const templateArbFileKey = 'template-arb-file';
-  static const useEscapingKey = 'use-escaping';
-  static const relaxSyntaxKey = 'relax-syntax';
-
-  static const maxContextLength = 32768;
-
-  final ModelProvider modelProvider;
-  final Model model;
-  final String? customModel;
-  final String apiKey;
-  final Uri? vertexAiProjectUrl;
-  final Uri? customModelProviderBaseUrl;
-  final bool disableSafety;
-  final String? context;
-  final String arbDir;
-  final String templateArbFile;
-  final List<String>? excludeLocales;
-  final int batchSize;
-  final bool useEscaping;
-  final bool relaxSyntax;
-
   /// Factory method to resolve [TranslateOptions] from command line arguments
   /// and YAML configuration.
   factory TranslateOptions.resolve(
@@ -206,4 +184,26 @@ class TranslateOptions {
       relaxSyntax: argResults.relaxSyntax ?? yamlResults.relaxSyntax,
     );
   }
+
+  static const arbDirKey = 'arb-dir';
+  static const templateArbFileKey = 'template-arb-file';
+  static const useEscapingKey = 'use-escaping';
+  static const relaxSyntaxKey = 'relax-syntax';
+
+  static const maxContextLength = 32768;
+
+  final ModelProvider modelProvider;
+  final Model model;
+  final String? customModel;
+  final String apiKey;
+  final Uri? vertexAiProjectUrl;
+  final Uri? customModelProviderBaseUrl;
+  final bool disableSafety;
+  final String? context;
+  final String arbDir;
+  final String templateArbFile;
+  final List<String>? excludeLocales;
+  final int batchSize;
+  final bool useEscaping;
+  final bool relaxSyntax;
 }

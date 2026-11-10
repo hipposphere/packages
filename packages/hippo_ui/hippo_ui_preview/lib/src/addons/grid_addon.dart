@@ -34,11 +34,6 @@ final class GridAddon extends HippoUiPreviewAddon<GridAddonState> {
 /// Persisted state for [GridAddon].
 final class GridAddonState extends HippoUiPreviewAddonState {
   const GridAddonState({this.enabled = false, this.size = 8}) : super(addonId: GridAddon.addonId);
-
-  final bool enabled;
-
-  final double size;
-
   factory GridAddonState.fromJson(Object? json) {
     final configuration = HippoUiPreviewAddonState.readConfiguration(json);
     return GridAddonState(
@@ -46,6 +41,10 @@ final class GridAddonState extends HippoUiPreviewAddonState {
       size: readHippoUiPreviewDouble(configuration['size']) ?? 8,
     );
   }
+
+  final bool enabled;
+
+  final double size;
 
   GridAddonState copyWith({bool? enabled, double? size}) {
     return GridAddonState(enabled: enabled ?? this.enabled, size: size ?? this.size);

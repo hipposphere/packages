@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:jaspr/jaspr.dart';
 import 'package:jaspr/dom.dart' as dom;
+import 'package:jaspr/jaspr.dart';
 
 import 'report_model.dart';
 import 'ui.dart';

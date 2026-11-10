@@ -8,8 +8,8 @@
 // ---------------------------------------------------------------------------
 */
 
-import 'hippo_ui_option_value.dart';
 import 'hippo_ui_option_converter.dart';
+import 'hippo_ui_option_value.dart';
 
 /// Describes one editable preview option.
 abstract class HippoUiOption {
@@ -33,10 +33,10 @@ abstract class HippoUiOption {
   }) = HippoUiIntegerOption;
 
   const factory HippoUiOption.integerRange({
-    String? key,
     required int defaultValue,
     required int min,
     required int max,
+    String? key,
     int step,
     String? label,
     String? description,
@@ -53,10 +53,10 @@ abstract class HippoUiOption {
   }) = HippoUiDoubleOption;
 
   const factory HippoUiOption.doubleRange({
-    String? key,
     required double defaultValue,
     required double min,
     required double max,
+    String? key,
     double step,
     String? label,
     String? description,
@@ -73,11 +73,11 @@ abstract class HippoUiOption {
   }) = HippoUiTextOption;
 
   const factory HippoUiOption.choice({
+    required List<HippoUiOptionValue<String>> values,
     String? key,
     String? label,
     String? description,
     String defaultValue,
-    required List<HippoUiOptionValue<String>> values,
     HippoUiOptionConverter<dynamic>? converter,
   }) = HippoUiTextOption;
 
@@ -144,10 +144,10 @@ final class HippoUiIntegerOption extends HippoUiOption {
   });
 
   const HippoUiIntegerOption.range({
-    this.key,
     required this.defaultValue,
     required int this.min,
     required int this.max,
+    this.key,
     int this.step = 1,
     this.label,
     this.description,
@@ -197,10 +197,10 @@ final class HippoUiDoubleOption extends HippoUiOption {
   });
 
   const HippoUiDoubleOption.range({
-    this.key,
     required this.defaultValue,
     required double this.min,
     required double this.max,
+    this.key,
     double this.step = 0.1,
     this.label,
     this.description,
@@ -267,11 +267,11 @@ final class HippoUiTextOption extends HippoUiOption {
 
 final class HippoUiEnumOption<T extends Enum> extends HippoUiOption {
   const HippoUiEnumOption({
+    required this.defaultValue,
+    required this.values,
     this.key,
     this.label,
     this.description,
-    required this.defaultValue,
-    required this.values,
     this.converter,
   });
 

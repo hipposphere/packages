@@ -41,9 +41,9 @@ abstract interface class HippoWidgetPreviewMetadata {
 /// Source annotation used by tooling to discover a hippo-ui widget preview target.
 class HippoWidgetPreview implements HippoWidgetPreviewMetadata {
   const HippoWidgetPreview({
-    this.id,
     required this.name,
     required this.path,
+    this.id,
     this.description,
     this.tags = const <String>[],
   });

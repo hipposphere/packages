@@ -17,9 +17,9 @@ import 'package:hippo_ui/hippo_ui.dart';
 /// annotation. Hippo tooling can discover it through [HippoWidgetPreviewMetadata].
 final class HippoWidgetPreviewJaspr implements HippoWidgetPreviewMetadata {
   const HippoWidgetPreviewJaspr({
-    this.id,
     required this.name,
     required this.path,
+    this.id,
     this.description,
     this.tags = const <String>[],
   });

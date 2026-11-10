@@ -45,9 +45,6 @@ final class ThemeTypeAddon extends HippoUiPreviewAddon<ThemeTypeAddonState> {
 final class ThemeTypeAddonState extends HippoUiPreviewAddonState {
   const ThemeTypeAddonState({this.themeType = ThemeType.system})
     : super(addonId: ThemeTypeAddon.addonId);
-
-  final ThemeType themeType;
-
   factory ThemeTypeAddonState.fromJson(Object? json) {
     final configuration = HippoUiPreviewAddonState.readConfiguration(json);
     return ThemeTypeAddonState(
@@ -55,6 +52,8 @@ final class ThemeTypeAddonState extends HippoUiPreviewAddonState {
           ThemeType.tryParse(configuration['themeType'] as String? ?? '') ?? ThemeType.system,
     );
   }
+
+  final ThemeType themeType;
 
   ThemeTypeAddonState copyWith({ThemeType? themeType}) {
     return ThemeTypeAddonState(themeType: themeType ?? this.themeType);

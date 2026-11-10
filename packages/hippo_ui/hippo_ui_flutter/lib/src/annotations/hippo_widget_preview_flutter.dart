@@ -27,9 +27,9 @@ import 'package:hippo_ui/hippo_ui.dart';
 /// Flutter preview bridges.
 base class HippoWidgetPreviewFlutter extends Preview implements HippoWidgetPreviewMetadata {
   const HippoWidgetPreviewFlutter({
-    this.id,
     required String name,
     required this.path,
+    this.id,
     this.description,
     this.tags = const <String>[],
     String? group,

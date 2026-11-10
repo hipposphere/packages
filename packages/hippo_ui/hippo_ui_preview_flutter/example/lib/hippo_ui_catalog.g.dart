@@ -2,8 +2,8 @@
 
 import 'package:flutter/widget_previews.dart';
 import 'package:flutter/widgets.dart';
-import 'package:hippo_ui_preview_flutter_example/button_preview.dart';
 import 'package:hippo_ui_flutter/hippo_ui_flutter.dart';
+import 'package:hippo_ui_preview_flutter_example/button_preview.dart';
 
 final List<HippoUiGeneratedPreview> hippoUiGeneratedPreviews = <HippoUiGeneratedPreview>[
   HippoUiGeneratedPreview(

@@ -35,12 +35,11 @@ abstract class HippoUiPreviewAddon<TState extends HippoUiPreviewAddonState> {
 /// Base type for serializable preview addon state.
 abstract class HippoUiPreviewAddonState {
   const HippoUiPreviewAddonState({required this.addonId});
-
-  final String addonId;
-
   factory HippoUiPreviewAddonState.fromJson(String addonId, Object? json) {
     return HippoUiPreviewConfiguredAddonState.fromJson(addonId, json);
   }
+
+  final String addonId;
 
   Map<String, Object?> toJson();
 

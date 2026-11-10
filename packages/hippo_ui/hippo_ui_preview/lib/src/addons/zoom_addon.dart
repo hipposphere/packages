@@ -40,13 +40,12 @@ final class ZoomAddon extends HippoUiPreviewAddon<ZoomAddonState> {
 /// Persisted state for [ZoomAddon].
 final class ZoomAddonState extends HippoUiPreviewAddonState {
   const ZoomAddonState({this.scale = 1}) : super(addonId: ZoomAddon.addonId);
-
-  final double scale;
-
   factory ZoomAddonState.fromJson(Object? json) {
     final configuration = HippoUiPreviewAddonState.readConfiguration(json);
     return ZoomAddonState(scale: readHippoUiPreviewDouble(configuration['scale']) ?? 1);
   }
+
+  final double scale;
 
   ZoomAddonState copyWith({double? scale}) {
     return ZoomAddonState(scale: scale ?? this.scale);

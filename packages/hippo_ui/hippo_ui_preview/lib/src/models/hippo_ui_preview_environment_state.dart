@@ -17,11 +17,6 @@ final class HippoUiPreviewEnvironmentState implements JsonEncodable {
   const HippoUiPreviewEnvironmentState({
     this.addonStates = const <String, HippoUiPreviewAddonState>{},
   });
-
-  static const empty = HippoUiPreviewEnvironmentState();
-
-  final Map<String, HippoUiPreviewAddonState> addonStates;
-
   factory HippoUiPreviewEnvironmentState.fromJson(
     Object? json, {
     Iterable<HippoUiPreviewAddon<HippoUiPreviewAddonState>> addons =
@@ -35,6 +30,10 @@ final class HippoUiPreviewEnvironmentState implements JsonEncodable {
       addonStates: _readAddonStates(json['addons'], addons: addons),
     );
   }
+
+  static const empty = HippoUiPreviewEnvironmentState();
+
+  final Map<String, HippoUiPreviewAddonState> addonStates;
 
   HippoUiPreviewEnvironmentState copyWith({Map<String, HippoUiPreviewAddonState>? addonStates}) {
     return HippoUiPreviewEnvironmentState(addonStates: addonStates ?? this.addonStates);

@@ -41,14 +41,22 @@ class CatalogLibraryEmitter {
     final hippoUiExportedByFlutter = imports.contains(
       'package:hippo_ui_flutter/hippo_ui_flutter.dart',
     );
+    if (!hippoUiExportedByFlutter) imports.add('package:hippo_ui/hippo_ui.dart');
+    int importGroup(String uri) => uri.startsWith('dart:')
+        ? 0
+        : uri.startsWith('package:')
+        ? 1
+        : 2;
+    final sortedImports = imports.toList()
+      ..sort((a, b) {
+        final groupComparison = importGroup(a).compareTo(importGroup(b));
+        return groupComparison != 0 ? groupComparison : a.compareTo(b);
+      });
 
     final library = Library(
       (builder) => builder
         ..comments.add('GENERATED CODE - DO NOT MODIFY BY HAND.')
-        ..directives.addAll(<Directive>[
-          if (!hippoUiExportedByFlutter) Directive.import('package:hippo_ui/hippo_ui.dart'),
-          ...imports.map(Directive.import),
-        ])
+        ..directives.addAll(<Directive>[...sortedImports.map(Directive.import)])
         ..body.addAll(<Spec>[
           _generatedListField(
             name: 'hippoUiGeneratedPreviews',

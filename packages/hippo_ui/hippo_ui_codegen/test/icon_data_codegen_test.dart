@@ -70,6 +70,20 @@ void main() {
     expect(createHippoDartFormatter().format(source), source);
   });
 
+  test('emits generated imports in directive order', () {
+    final source = CatalogLibraryEmitter().emit(catalog);
+    final imports = RegExp(r"import '[^']+';")
+        .allMatches(source)
+        .map((match) => match.group(0)!)
+        .toList();
+
+    expect(imports, [
+      "import 'package:example/preview.dart';",
+      "import 'package:flutter/widgets.dart';",
+      "import 'package:hippo_ui/hippo_ui.dart';",
+    ]);
+  });
+
   test('keeps icon tokens JSON-safe in the manifest', () {
     final manifest = jsonDecode(const CatalogManifestEmitter().emit(catalog));
     final previews = (manifest as Map<String, Object?>)['previews']! as List<Object?>;

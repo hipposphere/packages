@@ -21,10 +21,10 @@ abstract interface class SystemdBus {
   });
 
   Stream<DBusSignal> signals({
-    DBusObjectPath? path,
-    DBusObjectPath? pathNamespace,
     required String interface,
     required String name,
+    DBusObjectPath? path,
+    DBusObjectPath? pathNamespace,
     DBusSignature? signature,
   });
 
@@ -68,10 +68,10 @@ final class DBusSystemdBus implements SystemdBus {
 
   @override
   Stream<DBusSignal> signals({
-    DBusObjectPath? path,
-    DBusObjectPath? pathNamespace,
     required String interface,
     required String name,
+    DBusObjectPath? path,
+    DBusObjectPath? pathNamespace,
     DBusSignature? signature,
   }) => DBusSignalStream(
     _client,

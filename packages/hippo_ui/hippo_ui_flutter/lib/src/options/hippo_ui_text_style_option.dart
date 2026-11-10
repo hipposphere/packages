@@ -13,12 +13,12 @@ import 'package:hippo_ui/hippo_ui.dart';
 
 final class HippoUiTextStyleOption<T extends TextStyle> extends HippoUiOption {
   const HippoUiTextStyleOption({
+    required this.converter,
     this.key,
     this.label,
     this.description,
     this.defaultValue = '',
     this.values = const <HippoUiOptionValue<String>>[],
-    required this.converter,
   });
 
   @override

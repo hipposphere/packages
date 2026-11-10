@@ -10,9 +10,6 @@
 export 'package:hippo_ui/hippo_ui.dart';
 
 export 'src/annotations/hippo_widget_preview_flutter.dart';
-
-export 'src/models/hippo_ui_flutter_icon_catalog.dart';
-
 // converters
 export 'src/converters/hippo_ui_alignment_converter.dart';
 export 'src/converters/hippo_ui_border_radius_converter.dart';
@@ -26,7 +23,7 @@ export 'src/converters/hippo_ui_main_axis_alignment_converter.dart';
 export 'src/converters/hippo_ui_size_converter.dart';
 export 'src/converters/hippo_ui_text_align_converter.dart';
 export 'src/converters/hippo_ui_text_direction_converter.dart';
-
+export 'src/models/hippo_ui_flutter_icon_catalog.dart';
 // options
 export 'src/options/hippo_ui_alignment_option.dart';
 export 'src/options/hippo_ui_border_radius_option.dart';
