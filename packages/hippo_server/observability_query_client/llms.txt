@@ -1,0 +1,20 @@
+# observability_query_client
+
+Purpose: read-only Prometheus, Loki and Tempo clients over Dart HTTP's
+HttpClientTransport, built on observability_wire (re-exported).
+
+Read first:
+- README.md
+- lib/observability_query_client.dart
+
+Main APIs:
+- lib/src/source.dart (ObservabilitySource: base URL, credentials, transport, limits)
+- lib/src/clients.dart (PrometheusClient, LokiClient, TempoClient)
+
+Rules:
+- Calls refuse redirects, cap response bytes, time out and redact URLs and credentials.
+- Parsing and request building belong in observability_wire, not here.
+
+Validation:
+- dart analyze
+- dart test

@@ -1,0 +1,12 @@
+name: observability_wire
+description: Transport-independent wire contracts for the Prometheus, Loki and Tempo query APIs - request builders, response parsers, frames and query planning.
+version: 0.1.0
+homepage: https://hippolabs.org
+publish_to: "https://pub.hippolabs.org"
+resolution: workspace
+
+environment:
+  sdk: ">=3.13.0 <4.0.0"
+
+dev_dependencies:
+  test: ^1.30.0

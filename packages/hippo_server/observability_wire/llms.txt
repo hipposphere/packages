@@ -1,0 +1,24 @@
+# observability_wire
+
+Purpose: transport-independent wire contracts for Prometheus, Loki and Tempo
+queries. Pure Dart, no dependencies, no I/O.
+
+Read first:
+- README.md
+- lib/observability_wire.dart
+
+Main APIs:
+- lib/src/requests.dart (WireRequest, PrometheusRequests, LokiRequests, TempoRequests)
+- lib/src/metrics.dart (normalizeMetricData, envelope helpers, legends)
+- lib/src/loki.dart (normalizeLokiStreams)
+- lib/src/tempo.dart (normalizeTempoSearch, parseTempoTrace, parseTempoTags, normalizeTraceId)
+- lib/src/planning.dart (planStepSeconds, expandMacros, time formats)
+- lib/src/errors.dart (decodeUpstreamJson, redactText, ObservabilityUpstreamException)
+
+Rules:
+- No I/O and no imports beyond dart:core, dart:convert and dart:math.
+- Error messages must never contain a source URL or credential; pass them as `secrets`.
+
+Validation:
+- dart analyze
+- dart test
