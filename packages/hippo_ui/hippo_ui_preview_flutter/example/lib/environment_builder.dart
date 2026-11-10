@@ -8,12 +8,14 @@
 // ---------------------------------------------------------------------------
 */
 
-import 'package:flutter/material.dart';
 import 'package:hippo_ui/hippo_ui.dart';
 import 'package:hippo_ui_preview_flutter/hippo_ui_preview_flutter.dart';
+import 'package:material_ui/material_ui.dart';
 
-typedef PreviewEnvironmentWidgetBuilder =
-    Widget Function(BuildContext context, PreviewEnvironment environment);
+typedef PreviewEnvironmentWidgetBuilder = Widget Function(
+  BuildContext context,
+  PreviewEnvironment environment,
+);
 
 final class PreviewEnvironmentBuilder extends StatelessWidget {
   const PreviewEnvironmentBuilder({

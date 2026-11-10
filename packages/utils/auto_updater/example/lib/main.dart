@@ -1,23 +1,21 @@
 import 'package:auto_updater_example/pages/home.dart';
 import 'package:bot_toast/bot_toast.dart';
-import 'package:flutter/material.dart';
-import 'package:window_manager/legacy.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:window_manager/window_manager.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await windowManager.ensureInitialized();
-
-  windowManager.waitUntilReadyToShow(null, () async {
-    await windowManager.setPreventClose(true);
-    await windowManager.show();
-    await windowManager.focus();
-  });
-
-  runApp(const MyApp());
+  final window = WindowManager.instance.getCurrent();
+  if (window == null) throw StateError('The application window is unavailable.');
+  runApp(MyApp(window: window));
+  window.show();
+  window.focus();
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  const MyApp({required this.window, super.key});
+
+  final Window window;
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -35,7 +33,7 @@ class _MyAppState extends State<MyApp> {
       ),
       builder: BotToastInit(),
       navigatorObservers: [BotToastNavigatorObserver()],
-      home: const HomePage(),
+      home: HomePage(window: widget.window),
     );
   }
 }

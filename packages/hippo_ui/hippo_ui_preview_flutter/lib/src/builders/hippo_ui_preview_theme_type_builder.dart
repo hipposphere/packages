@@ -8,12 +8,14 @@
 // ---------------------------------------------------------------------------
 */
 
-import 'package:flutter/material.dart';
 import 'package:hippo_ui_flutter/hippo_ui_flutter.dart';
 import 'package:hippo_ui_preview/hippo_ui_preview.dart';
+import 'package:material_ui/material_ui.dart';
 
-typedef HippoUiPreviewThemeDataBuilder =
-    ThemeData Function(BuildContext context, Brightness brightness);
+typedef HippoUiPreviewThemeDataBuilder = ThemeData Function(
+  BuildContext context,
+  Brightness brightness,
+);
 
 /// Applies the selected preview theme type to [child].
 final class HippoUiPreviewThemeTypeBuilder extends StatelessWidget {

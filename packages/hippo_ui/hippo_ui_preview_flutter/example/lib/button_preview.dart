@@ -8,8 +8,8 @@
 // ---------------------------------------------------------------------------
 */
 
-import 'package:flutter/material.dart';
 import 'package:hippo_ui_flutter/hippo_ui_flutter.dart';
+import 'package:material_ui/material_ui.dart';
 
 @HippoWidgetPreviewFlutter(
   name: 'Demo button',

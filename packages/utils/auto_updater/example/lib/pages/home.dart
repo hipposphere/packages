@@ -1,11 +1,13 @@
 import 'package:auto_updater/auto_updater.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:window_manager/legacy.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:window_manager/window_manager.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({required this.window, super.key});
+
+  final Window window;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -18,16 +20,21 @@ class _HomePageState extends State<HomePage> with UpdaterListener {
   );
 
   bool _isFeedURLSetted = false;
+  late final ListenerId _closeListener;
 
   @override
   void initState() {
-    autoUpdater.addListener(this);
     super.initState();
+    _closeListener = widget.window.addListener((event) {
+      if (event is WindowCloseRequestedEvent) event.request.cancel();
+    });
+    autoUpdater.addListener(this);
   }
 
   @override
   void dispose() {
     autoUpdater.removeListener(this);
+    widget.window.removeListener(_closeListener);
     super.dispose();
   }
 
@@ -140,6 +147,6 @@ class _HomePageState extends State<HomePage> with UpdaterListener {
     if (kDebugMode) {
       print('onUpdaterBeforeQuitForUpdate: ${item?.toJson()}');
     }
-    windowManager.setPreventClose(false);
+    widget.window.removeListener(_closeListener);
   }
 }

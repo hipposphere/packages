@@ -16,7 +16,10 @@ callbacks.
 - `HippoUiPreviewHitboxBuilder` applies `HitboxAddonState` to a Flutter subtree.
 - `HippoUiPreviewLocaleBuilder` applies `LocaleAddonState` to a Flutter subtree.
 - `HippoUiPreviewSharedAddonsBuilder` applies common layout/debug addon states.
-- `HippoUiPreviewThemeTypeBuilder` applies `ThemeTypeAddonState` to a Flutter subtree.
+- `HippoUiPreviewThemeTypeBuilder` applies `ThemeTypeAddonState` to a subtree using
+  `material_ui` themes. Its optional theme builder returns `material_ui`'s `ThemeData`;
+  consuming applications should use `package:material_ui/material_ui.dart` for their
+  Material widgets and themes.
 - `HippoUiPreviewWidgetOutlineBuilder` applies `WidgetOutlineAddon` state to a Flutter subtree.
 - `HippoUiPreviewZoomBuilder` applies `ZoomAddonState` to a Flutter subtree.
 - `HippoUiIconCatalogListBuilder` rebuilds with filtered icon catalog results.

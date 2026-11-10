@@ -8,10 +8,10 @@
 // ---------------------------------------------------------------------------
 */
 
-import 'package:flutter/material.dart';
 import 'package:hippo_core_flutter/hippo_core_flutter.dart';
 import 'package:hippo_ui/hippo_ui.dart';
 import 'package:hippo_ui_preview_flutter/hippo_ui_preview_flutter.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'environment_builder.dart';
 import 'hippo_ui_catalog.g.dart';
