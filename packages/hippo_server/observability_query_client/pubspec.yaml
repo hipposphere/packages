@@ -1,6 +1,6 @@
 name: observability_query_client
 description: Read-only Prometheus, Loki and Tempo query clients over Dart HTTP's transport interface, built on observability_wire.
-version: 0.2.0
+version: 0.2.1
 homepage: https://hippolabs.org
 publish_to: "https://pub.hippolabs.org"
 resolution: workspace

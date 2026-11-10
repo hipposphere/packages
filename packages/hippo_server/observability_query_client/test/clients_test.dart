@@ -181,7 +181,7 @@ void main() {
       final transport = FakeTransport(
         (_, _) => json({
           'status': 'success',
-          'warnings': ['careful'],
+          'warnings': ['careful with https://prom.internal:9090/proxy and tok-123456'],
           'data': {
             'resultType': 'matrix',
             'result': [
@@ -196,7 +196,7 @@ void main() {
           },
         }),
       );
-      final result = await PrometheusClient(source(transport))
+      final result = await PrometheusClient(source(transport, bearer: 'tok-123456'))
           .queryRange('up', start: start, end: end, stepSeconds: 15, name: 'A', legend: '{{job}}');
       final request = transport.requests.single;
       expect(request.uri.queryParameters['step'], '15');
@@ -204,7 +204,7 @@ void main() {
       final frame = result.frames.single;
       expect(frame.fields[1].displayName, 'api');
       expect(frame.fields[1].numbers, [1, 2]);
-      expect(result.notices, ['careful']);
+      expect(result.notices, ['careful with [redacted] and [redacted]']);
     });
   });
 

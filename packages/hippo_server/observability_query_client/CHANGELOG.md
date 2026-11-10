@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- Redact the source's URL and credentials from backend warnings, which were passed on as notices unchanged.
+
 ## 0.2.0
 
 - Breaking: clients run over Dart HTTP's `HttpClientTransport` instead of `package:http`; `ObservabilityHttpClient` is replaced by `ObservabilitySource`.

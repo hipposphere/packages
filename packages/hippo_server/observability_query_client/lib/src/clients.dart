@@ -18,7 +18,7 @@ final class PrometheusClient {
     String? unit,
   }) async {
     final json = await source.getJson(PrometheusRequests.query(expression, time: time));
-    return _metrics(json, time, maxSeries, name, legend, unit);
+    return _metrics(source, json, time, maxSeries, name, legend, unit);
   }
 
   /// A range query; [stepSeconds] is used as given (see [planStepSeconds]).
@@ -35,7 +35,7 @@ final class PrometheusClient {
     final json = await source.getJson(
       PrometheusRequests.queryRange(expression, start: start, end: end, stepSeconds: stepSeconds),
     );
-    return _metrics(json, end, maxSeries, name, legend, unit);
+    return _metrics(source, json, end, maxSeries, name, legend, unit);
   }
 
   /// Label names, or with [label] its values; [match] is a series selector.
@@ -56,6 +56,7 @@ final class PrometheusClient {
 }
 
 WireResult _metrics(
+  ObservabilitySource source,
   Object? json,
   DateTime evaluatedAt,
   int maxSeries,
@@ -74,9 +75,14 @@ WireResult _metrics(
   return WireResult(
     result.frames,
     limited: result.limited,
-    notices: [...result.notices, ...envelopeNotices(json)],
+    notices: [...result.notices, ..._notices(source, json)],
   );
 }
+
+/// Warnings of the backend, without its URL or credentials.
+List<String> _notices(ObservabilitySource source, Object? json) => [
+  for (final notice in envelopeNotices(json)) redactText(notice, source.secrets),
+];
 
 /// LogQL against the Loki HTTP API: log streams and metric queries.
 final class LokiClient {
@@ -169,7 +175,7 @@ final class LokiClient {
     return WireResult(
       result.frames,
       limited: result.limited,
-      notices: [...result.notices, ...envelopeNotices(json)],
+      notices: [...result.notices, ..._notices(source, json)],
     );
   }
 }
