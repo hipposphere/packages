@@ -1,7 +1,7 @@
 import 'package:auto_updater_example/pages/home.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
-import 'package:window_manager/window_manager.dart';
+import 'package:window_manager/legacy.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
